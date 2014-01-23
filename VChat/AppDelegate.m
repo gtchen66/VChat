@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import "VChatViewController.h"
+#import <Parse/Parse.h>
 
 @implementation AppDelegate
 
@@ -15,6 +16,15 @@
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch
+    
+    //Parse setup
+    [Parse setApplicationId:@"uuoLCIDzvZ9Fe0XQh22gdDP8rViouZ0n4VtZatnT"
+                  clientKey:@"vrg6u72H3S6dGV4ty1t18ywQdSiuMGqxL9294ZU9"];
+    
+    //test Parse 
+//    PFObject *testObject = [PFObject objectWithClassName:@"TestObject"];
+//    testObject[@"foo"] = @"bar";
+//    [testObject saveInBackground];
     
     VChatViewController *vc = [[VChatViewController alloc] init];
     UINavigationController *nvc = [[UINavigationController alloc] initWithRootViewController:vc];
