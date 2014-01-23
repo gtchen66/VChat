@@ -7,12 +7,19 @@
 //
 
 #import "VChatViewController.h"
+#import "SignupViewController.h"
 
 @interface VChatViewController ()
 
 @end
 
 @implementation VChatViewController
+- (IBAction)onSignupButton:(id)sender {
+    NSLog(@"VChat: Signup pressed");
+    
+    [self.navigationController pushViewController:[[SignupViewController alloc] init] animated:YES];
+    
+}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {

@@ -33,6 +33,9 @@
                     <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="17"/>
                     <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     <state key="normal" title="Signup"/>
+                    <connections>
+                        <action selector="onSignupButton:" destination="-1" eventType="touchUpInside" id="PCI-qH-azj"/>
+                    </connections>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dcx-7r-WOg">
                     <rect key="frame" x="177" y="269" width="46" height="33"/>
