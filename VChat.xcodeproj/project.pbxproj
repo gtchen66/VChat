@@ -19,6 +19,10 @@
 		B5FDE9781890C8A100A2AAF7 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5FDE9601890C8A100A2AAF7 /* UIKit.framework */; };
 		B5FDE9801890C8A100A2AAF7 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B5FDE97E1890C8A100A2AAF7 /* InfoPlist.strings */; };
 		B5FDE9821890C8A100A2AAF7 /* VChatTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FDE9811890C8A100A2AAF7 /* VChatTests.m */; };
+		B5FDE98E1890C9D000A2AAF7 /* VChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FDE98C1890C9D000A2AAF7 /* VChatViewController.m */; };
+		B5FDE98F1890C9D000A2AAF7 /* VChatViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B5FDE98D1890C9D000A2AAF7 /* VChatViewController.xib */; };
+		B5FDE9931890CDC100A2AAF7 /* SignupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FDE9911890CDC100A2AAF7 /* SignupViewController.m */; };
+		B5FDE9941890CDC100A2AAF7 /* SignupViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B5FDE9921890CDC100A2AAF7 /* SignupViewController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +52,12 @@
 		B5FDE97D1890C8A100A2AAF7 /* VChatTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "VChatTests-Info.plist"; sourceTree = "<group>"; };
 		B5FDE97F1890C8A100A2AAF7 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		B5FDE9811890C8A100A2AAF7 /* VChatTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VChatTests.m; sourceTree = "<group>"; };
+		B5FDE98B1890C9D000A2AAF7 /* VChatViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VChatViewController.h; sourceTree = "<group>"; };
+		B5FDE98C1890C9D000A2AAF7 /* VChatViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VChatViewController.m; sourceTree = "<group>"; };
+		B5FDE98D1890C9D000A2AAF7 /* VChatViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = VChatViewController.xib; sourceTree = "<group>"; };
+		B5FDE9901890CDC100A2AAF7 /* SignupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignupViewController.h; sourceTree = "<group>"; };
+		B5FDE9911890CDC100A2AAF7 /* SignupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignupViewController.m; sourceTree = "<group>"; };
+		B5FDE9921890CDC100A2AAF7 /* SignupViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SignupViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,6 +121,12 @@
 				B5FDE96C1890C8A100A2AAF7 /* AppDelegate.m */,
 				B5FDE96E1890C8A100A2AAF7 /* Images.xcassets */,
 				B5FDE9631890C8A100A2AAF7 /* Supporting Files */,
+				B5FDE98B1890C9D000A2AAF7 /* VChatViewController.h */,
+				B5FDE98C1890C9D000A2AAF7 /* VChatViewController.m */,
+				B5FDE98D1890C9D000A2AAF7 /* VChatViewController.xib */,
+				B5FDE9901890CDC100A2AAF7 /* SignupViewController.h */,
+				B5FDE9911890CDC100A2AAF7 /* SignupViewController.m */,
+				B5FDE9921890CDC100A2AAF7 /* SignupViewController.xib */,
 			);
 			path = VChat;
 			sourceTree = "<group>";
@@ -221,6 +237,8 @@
 			files = (
 				B5FDE9671890C8A100A2AAF7 /* InfoPlist.strings in Resources */,
 				B5FDE96F1890C8A100A2AAF7 /* Images.xcassets in Resources */,
+				B5FDE9941890CDC100A2AAF7 /* SignupViewController.xib in Resources */,
+				B5FDE98F1890C9D000A2AAF7 /* VChatViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -241,6 +259,8 @@
 			files = (
 				B5FDE96D1890C8A100A2AAF7 /* AppDelegate.m in Sources */,
 				B5FDE9691890C8A100A2AAF7 /* main.m in Sources */,
+				B5FDE9931890CDC100A2AAF7 /* SignupViewController.m in Sources */,
+				B5FDE98E1890C9D000A2AAF7 /* VChatViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
