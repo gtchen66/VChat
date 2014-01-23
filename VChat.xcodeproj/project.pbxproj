@@ -472,6 +472,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/jvlin/Documents/iOS/VChat,
+					"/Users/gtchen/mydir/sw/xcode/iOSClassProject\n/Users/gtchen/mydir/sw/xcode/iOSClassProject/VChat",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "VChat/VChat-Prefix.pch";
@@ -489,6 +490,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/jvlin/Documents/iOS/VChat,
+					"/Users/gtchen/mydir/sw/xcode/iOSClassProject\n/Users/gtchen/mydir/sw/xcode/iOSClassProject/VChat",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "VChat/VChat-Prefix.pch";
