@@ -8,6 +8,7 @@
 
 #import "VChatViewController.h"
 #import "SignupViewController.h"
+#import "ChatsTableViewController.h"
 
 @interface VChatViewController ()
 
@@ -18,6 +19,13 @@
     NSLog(@"VChat: Signup pressed");
     
     [self.navigationController pushViewController:[[SignupViewController alloc] init] animated:YES];
+    
+}
+
+// purely for debugging and testing.  remove in final
+- (IBAction)onDebugButton:(id)sender {
+    NSLog(@"VChat: Debug pressed");
+    [self.navigationController pushViewController:[[ChatsTableViewController alloc] init] animated:YES];
     
 }
 
@@ -39,21 +47,21 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    if (![PFUser currentUser]) { // No user logged in
-        // Create the log in view controller
-        PFLogInViewController *logInViewController = [[PFLogInViewController alloc] init];
-        [logInViewController setDelegate:self]; // Set ourselves as the delegate
-        
-        // Create the sign up view controller
-        PFSignUpViewController *signUpViewController = [[PFSignUpViewController alloc] init];
-        [signUpViewController setDelegate:self]; // Set ourselves as the delegate
-        
-        // Assign our sign up controller to be displayed from the login controller
-        [logInViewController setSignUpController:signUpViewController];
-        
-        // Present the log in view controller
-        [self presentViewController:logInViewController animated:YES completion:NULL];
-    }
+//    if (![PFUser currentUser]) { // No user logged in
+//        // Create the log in view controller
+//        PFLogInViewController *logInViewController = [[PFLogInViewController alloc] init];
+//        [logInViewController setDelegate:self]; // Set ourselves as the delegate
+//        
+//        // Create the sign up view controller
+//        PFSignUpViewController *signUpViewController = [[PFSignUpViewController alloc] init];
+//        [signUpViewController setDelegate:self]; // Set ourselves as the delegate
+//        
+//        // Assign our sign up controller to be displayed from the login controller
+//        [logInViewController setSignUpController:signUpViewController];
+//        
+//        // Present the log in view controller
+//        [self presentViewController:logInViewController animated:YES completion:NULL];
+//    }
 }
 
 /******** LOGIN LOGIC **********/
