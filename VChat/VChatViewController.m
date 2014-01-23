@@ -8,6 +8,7 @@
 
 #import "VChatViewController.h"
 #import "SignupViewController.h"
+#import "ChatsTableViewController.h"
 
 @interface VChatViewController ()
 
@@ -18,6 +19,13 @@
     NSLog(@"VChat: Signup pressed");
     
     [self.navigationController pushViewController:[[SignupViewController alloc] init] animated:YES];
+    
+}
+
+// purely for debugging and testing.  remove in final
+- (IBAction)onDebugButton:(id)sender {
+    NSLog(@"VChat: Debug pressed");
+    [self.navigationController pushViewController:[[ChatsTableViewController alloc] init] animated:YES];
     
 }
 
@@ -39,6 +47,7 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
+<<<<<<< HEAD
     if (![PFUser currentUser]) { // No user logged in
         // Create the log in view controller
         PFLogInViewController *logInViewController = [[PFLogInViewController alloc] init];
