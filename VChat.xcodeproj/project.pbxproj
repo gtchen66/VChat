@@ -69,13 +69,10 @@
 		5322D0C51891A8EA009A4023 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		5322D0C71891A8F0009A4023 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		5322D0C91891A8F8009A4023 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
-<<<<<<< HEAD
 		538272211891DADE0082A503 /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FacebookSDK.framework; path = ../../FacebookSDK/FacebookSDK.framework; sourceTree = "<group>"; };
-=======
 		B579A4BD1891E0860047CA89 /* ChatViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ChatViewCell.h; path = "../../VChat-original/VChat/ChatViewCell.h"; sourceTree = "<group>"; };
 		B579A4BE1891E0860047CA89 /* ChatViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ChatViewCell.m; path = "../../VChat-original/VChat/ChatViewCell.m"; sourceTree = "<group>"; };
 		B579A4C01891E0B70047CA89 /* ChatViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = ChatViewCell.xib; path = "../../VChat-original/VChat/ChatViewCell.xib"; sourceTree = "<group>"; };
->>>>>>> de4170457fe74b0ee6fcf932f00f7ee890228ff7
 		B5ECEEB8189100370012F86E /* ChatsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatsTableViewController.h; sourceTree = "<group>"; };
 		B5ECEEB9189100370012F86E /* ChatsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatsTableViewController.m; sourceTree = "<group>"; };
 		B5ECEEBA189100370012F86E /* ChatsTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChatsTableViewController.xib; sourceTree = "<group>"; };
@@ -489,11 +486,8 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/jvlin/Documents/iOS/VChat,
-<<<<<<< HEAD
 					/Users/jvlin/Documents/FacebookSDK,
-=======
 					"/Users/gtchen/mydir/sw/xcode/iOSClassProject\n/Users/gtchen/mydir/sw/xcode/iOSClassProject/VChat",
->>>>>>> de4170457fe74b0ee6fcf932f00f7ee890228ff7
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "VChat/VChat-Prefix.pch";
@@ -511,11 +505,8 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/jvlin/Documents/iOS/VChat,
-<<<<<<< HEAD
 					/Users/jvlin/Documents/FacebookSDK,
-=======
 					"/Users/gtchen/mydir/sw/xcode/iOSClassProject\n/Users/gtchen/mydir/sw/xcode/iOSClassProject/VChat",
->>>>>>> de4170457fe74b0ee6fcf932f00f7ee890228ff7
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "VChat/VChat-Prefix.pch";
