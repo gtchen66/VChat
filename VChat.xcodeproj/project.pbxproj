@@ -145,7 +145,6 @@
 		B5FDE9501890C8A100A2AAF7 = {
 			isa = PBXGroup;
 			children = (
-				535DD6EC1891E78600D48B95 /* FacebookSDK.framework */,
 				B5FDE9621890C8A100A2AAF7 /* VChat */,
 				B5FDE97B1890C8A100A2AAF7 /* VChatTests */,
 				B5FDE95B1890C8A100A2AAF7 /* Frameworks */,
@@ -165,6 +164,7 @@
 		B5FDE95B1890C8A100A2AAF7 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				535DD6EC1891E78600D48B95 /* FacebookSDK.framework */,
 				5322D0C91891A8F8009A4023 /* SystemConfiguration.framework */,
 				5322D0C71891A8F0009A4023 /* StoreKit.framework */,
 				5322D0C51891A8EA009A4023 /* Security.framework */,
