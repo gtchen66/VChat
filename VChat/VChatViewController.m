@@ -34,6 +34,12 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Sign Out" style:UIBarButtonItemStylePlain target:self action:@selector(logOutButtonTapAction)];
     
     if (![PFUser currentUser]) { // No user logged in
@@ -55,7 +61,6 @@
         // Present the log in view controller
         [self presentViewController:self.logInViewController animated:YES completion:NULL];
     }
-
 }
 
 
