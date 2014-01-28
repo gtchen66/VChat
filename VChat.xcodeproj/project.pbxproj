@@ -18,6 +18,8 @@
 		5322D0C81891A8F0009A4023 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5322D0C71891A8F0009A4023 /* StoreKit.framework */; };
 		5322D0CA1891A8F8009A4023 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5322D0C91891A8F8009A4023 /* SystemConfiguration.framework */; };
 		535DD6ED1891E78600D48B95 /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 535DD6EC1891E78600D48B95 /* FacebookSDK.framework */; };
+		53F3C17418962E3100422FF2 /* LogInViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 53F3C17318962E3100422FF2 /* LogInViewController.m */; };
+		53F3C1761896575B00422FF2 /* VChatViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 53F3C1751896575B00422FF2 /* VChatViewController.xib */; };
 		B5ECEEBB189100370012F86E /* ChatsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5ECEEB9189100370012F86E /* ChatsTableViewController.m */; };
 		B5ECEEBC189100370012F86E /* ChatsTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B5ECEEBA189100370012F86E /* ChatsTableViewController.xib */; };
 		B5ECEEC0189100530012F86E /* FriendsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5ECEEBE189100530012F86E /* FriendsTableViewController.m */; };
@@ -41,9 +43,7 @@
 		B5FDE9801890C8A100A2AAF7 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B5FDE97E1890C8A100A2AAF7 /* InfoPlist.strings */; };
 		B5FDE9821890C8A100A2AAF7 /* VChatTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FDE9811890C8A100A2AAF7 /* VChatTests.m */; };
 		B5FDE98E1890C9D000A2AAF7 /* VChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FDE98C1890C9D000A2AAF7 /* VChatViewController.m */; };
-		B5FDE98F1890C9D000A2AAF7 /* VChatViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B5FDE98D1890C9D000A2AAF7 /* VChatViewController.xib */; };
 		B5FDE9931890CDC100A2AAF7 /* SignupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5FDE9911890CDC100A2AAF7 /* SignupViewController.m */; };
-		B5FDE9941890CDC100A2AAF7 /* SignupViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B5FDE9921890CDC100A2AAF7 /* SignupViewController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -68,6 +68,9 @@
 		5322D0C71891A8F0009A4023 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		5322D0C91891A8F8009A4023 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		535DD6EC1891E78600D48B95 /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FacebookSDK.framework; sourceTree = "<group>"; };
+		53F3C17218962E3100422FF2 /* LogInViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogInViewController.h; sourceTree = "<group>"; };
+		53F3C17318962E3100422FF2 /* LogInViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogInViewController.m; sourceTree = "<group>"; };
+		53F3C1751896575B00422FF2 /* VChatViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = VChatViewController.xib; sourceTree = SOURCE_ROOT; };
 		B5ECEEB8189100370012F86E /* ChatsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatsTableViewController.h; sourceTree = "<group>"; };
 		B5ECEEB9189100370012F86E /* ChatsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatsTableViewController.m; sourceTree = "<group>"; };
 		B5ECEEBA189100370012F86E /* ChatsTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChatsTableViewController.xib; sourceTree = "<group>"; };
@@ -101,10 +104,8 @@
 		B5FDE9811890C8A100A2AAF7 /* VChatTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VChatTests.m; sourceTree = "<group>"; };
 		B5FDE98B1890C9D000A2AAF7 /* VChatViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VChatViewController.h; sourceTree = "<group>"; };
 		B5FDE98C1890C9D000A2AAF7 /* VChatViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VChatViewController.m; sourceTree = "<group>"; };
-		B5FDE98D1890C9D000A2AAF7 /* VChatViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = VChatViewController.xib; sourceTree = "<group>"; };
 		B5FDE9901890CDC100A2AAF7 /* SignupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignupViewController.h; sourceTree = "<group>"; };
 		B5FDE9911890CDC100A2AAF7 /* SignupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignupViewController.m; sourceTree = "<group>"; };
-		B5FDE9921890CDC100A2AAF7 /* SignupViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SignupViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -192,10 +193,11 @@
 				B5FDE9631890C8A100A2AAF7 /* Supporting Files */,
 				B5FDE98B1890C9D000A2AAF7 /* VChatViewController.h */,
 				B5FDE98C1890C9D000A2AAF7 /* VChatViewController.m */,
-				B5FDE98D1890C9D000A2AAF7 /* VChatViewController.xib */,
+				53F3C1751896575B00422FF2 /* VChatViewController.xib */,
+				53F3C17218962E3100422FF2 /* LogInViewController.h */,
+				53F3C17318962E3100422FF2 /* LogInViewController.m */,
 				B5FDE9901890CDC100A2AAF7 /* SignupViewController.h */,
 				B5FDE9911890CDC100A2AAF7 /* SignupViewController.m */,
-				B5FDE9921890CDC100A2AAF7 /* SignupViewController.xib */,
 				B5ECEEB8189100370012F86E /* ChatsTableViewController.h */,
 				B5ECEEB9189100370012F86E /* ChatsTableViewController.m */,
 				B5ECEEBA189100370012F86E /* ChatsTableViewController.xib */,
@@ -324,10 +326,9 @@
 				B5ECEED0189100980012F86E /* NearbyTableViewController.xib in Resources */,
 				B5ECEECB189100800012F86E /* ProfileViewController.xib in Resources */,
 				B5FDE96F1890C8A100A2AAF7 /* Images.xcassets in Resources */,
+				53F3C1761896575B00422FF2 /* VChatViewController.xib in Resources */,
 				B5ECEEC6189100670012F86E /* ChattingTableViewController.xib in Resources */,
 				B5ECEEC1189100530012F86E /* FriendsTableViewController.xib in Resources */,
-				B5FDE9941890CDC100A2AAF7 /* SignupViewController.xib in Resources */,
-				B5FDE98F1890C9D000A2AAF7 /* VChatViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -348,6 +349,7 @@
 			files = (
 				B5ECEEBB189100370012F86E /* ChatsTableViewController.m in Sources */,
 				B5FDE96D1890C8A100A2AAF7 /* AppDelegate.m in Sources */,
+				53F3C17418962E3100422FF2 /* LogInViewController.m in Sources */,
 				B5ECEECA189100800012F86E /* ProfileViewController.m in Sources */,
 				B5FDE9691890C8A100A2AAF7 /* main.m in Sources */,
 				B5ECEECF189100980012F86E /* NearbyTableViewController.m in Sources */,

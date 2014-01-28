@@ -7,27 +7,19 @@
 //
 
 #import "VChatViewController.h"
-#import "SignupViewController.h"
 #import "ChatsTableViewController.h"
+#import "LogInViewController.h"
+#import "SignupViewController.h"
 
 @interface VChatViewController ()
+
+@property (nonatomic, strong) LogInViewController *logInViewController;
+
+- (void)logOutButtonTapAction;
 
 @end
 
 @implementation VChatViewController
-- (IBAction)onSignupButton:(id)sender {
-    NSLog(@"VChat: Signup pressed");
-    
-    [self.navigationController pushViewController:[[SignupViewController alloc] init] animated:YES];
-    
-}
-
-// purely for debugging and testing.  remove in final
-- (IBAction)onDebugButton:(id)sender {
-    NSLog(@"VChat: Debug pressed");
-    [self.navigationController pushViewController:[[ChatsTableViewController alloc] init] animated:YES];
-    
-}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -42,48 +34,41 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Sign Out" style:UIBarButtonItemStylePlain target:self action:@selector(logOutButtonTapAction)];
     
     if (![PFUser currentUser]) { // No user logged in
         // Create the log in view controller
-        PFLogInViewController *logInViewController = [[PFLogInViewController alloc] init];
-        [logInViewController setDelegate:self]; // Set ourselves as the delegate
-        [logInViewController setFacebookPermissions:[NSArray arrayWithObjects:@"friends_about_me", nil]];
-        [logInViewController setFields:PFLogInFieldsUsernameAndPassword
+        self.logInViewController = [[LogInViewController alloc] init];
+        [self.logInViewController setDelegate:self]; // Set ourselves as the delegate
+        [self.logInViewController setFacebookPermissions:[NSArray arrayWithObjects:@"friends_about_me", nil]];
+        [self.logInViewController setFields:PFLogInFieldsUsernameAndPassword
          | PFLogInFieldsFacebook
-         | PFLogInFieldsSignUpButton
-         | PFLogInFieldsDismissButton];
+         | PFLogInFieldsSignUpButton];
         
         // Create the sign up view controller
-        PFSignUpViewController *signUpViewController = [[PFSignUpViewController alloc] init];
+        SignupViewController *signUpViewController = [[SignupViewController alloc] init];
         [signUpViewController setDelegate:self]; // Set ourselves as the delegate
         
         // Assign our sign up controller to be displayed from the login controller
-        [logInViewController setSignUpController:signUpViewController];
+        [self.logInViewController setSignUpController:signUpViewController];
         
         // Present the log in view controller
-        [self presentViewController:logInViewController animated:YES completion:NULL];
+        [self presentViewController:self.logInViewController animated:YES completion:NULL];
     }
+
 }
 
-/******** LOGIN LOGIC **********/
+
+#pragma mark - PFLogInViewControllerDelegate
 
 // Sent to the delegate to determine whether the log in request should be submitted to the server.
 - (BOOL)logInViewController:(PFLogInViewController *)logInController shouldBeginLogInWithUsername:(NSString *)username password:(NSString *)password {
-    // Check if both fields are completed
-    if (username && password && username.length != 0 && password.length != 0) {
-        return YES; // Begin login process
+    if (username && password && username.length && password.length) {
+        return YES;
     }
     
-    [[[UIAlertView alloc] initWithTitle:@"Missing Information"
-                                message:@"Make sure you fill out all of the information!"
-                               delegate:nil
-                      cancelButtonTitle:@"ok"
-                      otherButtonTitles:nil] show];
-    return NO; // Interrupt login process
+    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Missing Information", nil) message:NSLocalizedString(@"Make sure you fill out all of the information!", nil) delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", nil) otherButtonTitles:nil] show];
+    return NO;
 }
 
 // Sent to the delegate when a PFUser is logged in.
@@ -98,30 +83,26 @@
 
 // Sent to the delegate when the log in screen is dismissed.
 - (void)logInViewControllerDidCancelLogIn:(PFLogInViewController *)logInController {
-    [self.navigationController popViewControllerAnimated:YES];
+    NSLog(@"User dismissed the logInViewController");
+    //[self.navigationController popViewControllerAnimated:YES];
 }
 
-/********** SIGN UP LOGIC ***********/
+
+#pragma mark - PFSignUpViewControllerDelegate
+
 // Sent to the delegate to determine whether the sign up request should be submitted to the server.
 - (BOOL)signUpViewController:(PFSignUpViewController *)signUpController shouldBeginSignUp:(NSDictionary *)info {
     BOOL informationComplete = YES;
-    
-    // loop through all of the submitted data
     for (id key in info) {
         NSString *field = [info objectForKey:key];
-        if (!field || field.length == 0) { // check completion
+        if (!field || field.length == 0) {
             informationComplete = NO;
             break;
         }
     }
     
-    // Display an alert if a field wasn't completed
     if (!informationComplete) {
-        [[[UIAlertView alloc] initWithTitle:@"Missing Information"
-                                    message:@"Make sure you fill out all of the information!"
-                                   delegate:nil
-                          cancelButtonTitle:@"ok"
-                          otherButtonTitles:nil] show];
+        [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Missing Information", nil) message:NSLocalizedString(@"Make sure you fill out all of the information!", nil) delegate:nil cancelButtonTitle:NSLocalizedString(@"OK", nil) otherButtonTitles:nil] show];
     }
     
     return informationComplete;
@@ -129,7 +110,7 @@
 
 // Sent to the delegate when a PFUser is signed up.
 - (void)signUpViewController:(PFSignUpViewController *)signUpController didSignUpUser:(PFUser *)user {
-    [self dismissModalViewControllerAnimated:YES]; // Dismiss the PFSignUpViewController
+    [self dismissViewControllerAnimated:YES completion:NULL];
 }
 
 // Sent to the delegate when the sign up attempt fails.
@@ -148,4 +129,9 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (void)logOutButtonTapAction {
+    NSLog(@"User logged out");
+    [PFUser logOut];
+    [self presentViewController:self.logInViewController animated:YES completion:NULL];
+}
 @end
