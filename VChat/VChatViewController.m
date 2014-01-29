@@ -41,6 +41,8 @@
     [super viewDidAppear:animated];
 
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Sign Out" style:UIBarButtonItemStylePlain target:self action:@selector(logOutButtonTapAction)];
+    self.title = @"Chats";
+    
     
     if (![PFUser currentUser]) { // No user logged in
         // Create the log in view controller

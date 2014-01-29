@@ -551,12 +551,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					/Users/jvlin/Documents/iOS/VChat,
-					/Users/jvlin/Documents/FacebookSDK,
-					"/Users/gtchen/mydir/sw/xcode/iOSClassProject\n/Users/gtchen/mydir/sw/xcode/iOSClassProject/VChat",
-				);
+				FRAMEWORK_SEARCH_PATHS = "${SRCROOT}";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "VChat/VChat-Prefix.pch";
 				INFOPLIST_FILE = "VChat/VChat-Info.plist";
@@ -570,12 +565,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					/Users/jvlin/Documents/iOS/VChat,
-					/Users/jvlin/Documents/FacebookSDK,
-					"/Users/gtchen/mydir/sw/xcode/iOSClassProject\n/Users/gtchen/mydir/sw/xcode/iOSClassProject/VChat",
-				);
+				FRAMEWORK_SEARCH_PATHS = "${SRCROOT}";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "VChat/VChat-Prefix.pch";
 				INFOPLIST_FILE = "VChat/VChat-Info.plist";

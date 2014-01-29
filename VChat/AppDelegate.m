@@ -8,6 +8,10 @@
 
 #import "AppDelegate.h"
 #import "VChatViewController.h"
+#import "NearbyTableViewController.h"
+
+#define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
+
 
 @implementation AppDelegate
 
@@ -29,10 +33,25 @@
 //    [testObject saveInBackground];
     
     VChatViewController *vc = [[VChatViewController alloc] init];
-    UINavigationController *nvc = [[UINavigationController alloc] initWithRootViewController:vc];
-    self.window.rootViewController = nvc;
+    UINavigationController *nvc1 = [[UINavigationController alloc] initWithRootViewController:vc];
     
-    self.window.backgroundColor = [UIColor whiteColor];
+    NearbyTableViewController *nb = [[NearbyTableViewController alloc] init];
+    UINavigationController *nvc2 = [[UINavigationController alloc] initWithRootViewController:nb];
+    
+    UITabBarController *tabBarController = [[UITabBarController alloc] init];
+    tabBarController.viewControllers = @[nvc1, nvc2];
+    UITabBar *tabBar = tabBarController.tabBar;
+    UITabBarItem *tabBarItem1 = [tabBar.items objectAtIndex:0];
+    UITabBarItem *tabBarItem2 = [tabBar.items objectAtIndex:1];
+    tabBarItem1.title = @"Chat";
+    tabBarItem2.title = @"Nearby";
+    tabBarController.tabBar.backgroundColor = UIColorFromRGB(0x4099FF);
+    self.window.rootViewController = tabBarController;
+
+    
+    //self.window.rootViewController = nvc;
+    
+    //self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     
     return YES;
