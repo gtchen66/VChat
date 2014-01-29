@@ -9,6 +9,7 @@
 #import "AppDelegate.h"
 #import "VChatViewController.h"
 #import "NearbyTableViewController.h"
+#import "ProfileViewController.h"
 
 #define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
@@ -35,16 +36,28 @@
     VChatViewController *vc = [[VChatViewController alloc] init];
     UINavigationController *nvc1 = [[UINavigationController alloc] initWithRootViewController:vc];
     
+    
     NearbyTableViewController *nb = [[NearbyTableViewController alloc] init];
     UINavigationController *nvc2 = [[UINavigationController alloc] initWithRootViewController:nb];
     
+    ProfileViewController *pv = [[ProfileViewController alloc] init];
+    UINavigationController *nvc3 = [[UINavigationController alloc] initWithRootViewController:pv];
+    
     UITabBarController *tabBarController = [[UITabBarController alloc] init];
-    tabBarController.viewControllers = @[nvc1, nvc2];
+    tabBarController.viewControllers = @[nvc1, nvc2, nvc3];
     UITabBar *tabBar = tabBarController.tabBar;
     UITabBarItem *tabBarItem1 = [tabBar.items objectAtIndex:0];
     UITabBarItem *tabBarItem2 = [tabBar.items objectAtIndex:1];
+    UITabBarItem *tabBarItem3 = [tabBar.items objectAtIndex:2];
+
     tabBarItem1.title = @"Chat";
     tabBarItem2.title = @"Nearby";
+    tabBarItem3.title = @"Me";
+    
+    tabBarItem1.image = [UIImage imageNamed:@"ChatIcon"];
+    tabBarItem2.image = [UIImage imageNamed:@"NearbyIcon"];
+    tabBarItem3.image = [UIImage imageNamed:@"ProfileIcon"];
+    
     tabBarController.tabBar.backgroundColor = UIColorFromRGB(0x4099FF);
     self.window.rootViewController = tabBarController;
 
