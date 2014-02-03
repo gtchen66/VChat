@@ -37,6 +37,8 @@
 		53F3C1BA1897756C00422FF2 /* SignUpFieldBG.png in Resources */ = {isa = PBXBuildFile; fileRef = 53F3C1A91897756C00422FF2 /* SignUpFieldBG.png */; };
 		53F3C1BB1897756C00422FF2 /* Twitter.png in Resources */ = {isa = PBXBuildFile; fileRef = 53F3C1AA1897756C00422FF2 /* Twitter.png */; };
 		53F3C1BC1897756C00422FF2 /* TwitterDown.png in Resources */ = {isa = PBXBuildFile; fileRef = 53F3C1AB1897756C00422FF2 /* TwitterDown.png */; };
+		53F3C1CB189F525A00422FF2 /* NearbyUserCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 53F3C1CA189F525A00422FF2 /* NearbyUserCell.m */; };
+		53F3C1CD189F527E00422FF2 /* NearbyUserCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 53F3C1CC189F527E00422FF2 /* NearbyUserCell.xib */; };
 		B5ECEEBB189100370012F86E /* ChatsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5ECEEB9189100370012F86E /* ChatsTableViewController.m */; };
 		B5ECEEBC189100370012F86E /* ChatsTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B5ECEEBA189100370012F86E /* ChatsTableViewController.xib */; };
 		B5ECEEC0189100530012F86E /* FriendsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5ECEEBE189100530012F86E /* FriendsTableViewController.m */; };
@@ -46,7 +48,6 @@
 		B5ECEECA189100800012F86E /* ProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5ECEEC8189100800012F86E /* ProfileViewController.m */; };
 		B5ECEECB189100800012F86E /* ProfileViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B5ECEEC9189100800012F86E /* ProfileViewController.xib */; };
 		B5ECEECF189100980012F86E /* NearbyTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5ECEECD189100980012F86E /* NearbyTableViewController.m */; };
-		B5ECEED0189100980012F86E /* NearbyTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B5ECEECE189100980012F86E /* NearbyTableViewController.xib */; };
 		B5FDE95D1890C8A100A2AAF7 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5FDE95C1890C8A100A2AAF7 /* Foundation.framework */; };
 		B5FDE95F1890C8A100A2AAF7 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5FDE95E1890C8A100A2AAF7 /* CoreGraphics.framework */; };
 		B5FDE9611890C8A100A2AAF7 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5FDE9601890C8A100A2AAF7 /* UIKit.framework */; };
@@ -105,6 +106,9 @@
 		53F3C1A91897756C00422FF2 /* SignUpFieldBG.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SignUpFieldBG.png; sourceTree = "<group>"; };
 		53F3C1AA1897756C00422FF2 /* Twitter.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Twitter.png; sourceTree = "<group>"; };
 		53F3C1AB1897756C00422FF2 /* TwitterDown.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TwitterDown.png; sourceTree = "<group>"; };
+		53F3C1C9189F525A00422FF2 /* NearbyUserCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NearbyUserCell.h; sourceTree = "<group>"; };
+		53F3C1CA189F525A00422FF2 /* NearbyUserCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NearbyUserCell.m; sourceTree = "<group>"; };
+		53F3C1CC189F527E00422FF2 /* NearbyUserCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NearbyUserCell.xib; sourceTree = "<group>"; };
 		B5ECEEB8189100370012F86E /* ChatsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatsTableViewController.h; sourceTree = "<group>"; };
 		B5ECEEB9189100370012F86E /* ChatsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatsTableViewController.m; sourceTree = "<group>"; };
 		B5ECEEBA189100370012F86E /* ChatsTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChatsTableViewController.xib; sourceTree = "<group>"; };
@@ -119,7 +123,6 @@
 		B5ECEEC9189100800012F86E /* ProfileViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProfileViewController.xib; sourceTree = "<group>"; };
 		B5ECEECC189100980012F86E /* NearbyTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NearbyTableViewController.h; sourceTree = "<group>"; };
 		B5ECEECD189100980012F86E /* NearbyTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NearbyTableViewController.m; sourceTree = "<group>"; };
-		B5ECEECE189100980012F86E /* NearbyTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NearbyTableViewController.xib; sourceTree = "<group>"; };
 		B5FDE9591890C8A100A2AAF7 /* VChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5FDE95C1890C8A100A2AAF7 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		B5FDE95E1890C8A100A2AAF7 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -201,6 +204,16 @@
 			name = Assets;
 			sourceTree = "<group>";
 		};
+		53F3C1CE189F529800422FF2 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				53F3C1C9189F525A00422FF2 /* NearbyUserCell.h */,
+				53F3C1CA189F525A00422FF2 /* NearbyUserCell.m */,
+				53F3C1CC189F527E00422FF2 /* NearbyUserCell.xib */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
 		B5FDE9501890C8A100A2AAF7 = {
 			isa = PBXGroup;
 			children = (
@@ -246,6 +259,7 @@
 		B5FDE9621890C8A100A2AAF7 /* VChat */ = {
 			isa = PBXGroup;
 			children = (
+				53F3C1CE189F529800422FF2 /* Views */,
 				B5FDE96B1890C8A100A2AAF7 /* AppDelegate.h */,
 				B5FDE96C1890C8A100A2AAF7 /* AppDelegate.m */,
 				B5FDE96E1890C8A100A2AAF7 /* Images.xcassets */,
@@ -271,7 +285,6 @@
 				B5ECEEC9189100800012F86E /* ProfileViewController.xib */,
 				B5ECEECC189100980012F86E /* NearbyTableViewController.h */,
 				B5ECEECD189100980012F86E /* NearbyTableViewController.m */,
-				B5ECEECE189100980012F86E /* NearbyTableViewController.xib */,
 			);
 			path = VChat;
 			sourceTree = "<group>";
@@ -385,12 +398,12 @@
 				B5ECEEBC189100370012F86E /* ChatsTableViewController.xib in Resources */,
 				53F3C1B41897756C00422FF2 /* FacebookDown.png in Resources */,
 				B5FDE9671890C8A100A2AAF7 /* InfoPlist.strings in Resources */,
-				B5ECEED0189100980012F86E /* NearbyTableViewController.xib in Resources */,
 				B5ECEECB189100800012F86E /* ProfileViewController.xib in Resources */,
 				53F3C1B21897756C00422FF2 /* ExitDown.png in Resources */,
 				B5FDE96F1890C8A100A2AAF7 /* Images.xcassets in Resources */,
 				53F3C1BB1897756C00422FF2 /* Twitter.png in Resources */,
 				53F3C1BC1897756C00422FF2 /* TwitterDown.png in Resources */,
+				53F3C1CD189F527E00422FF2 /* NearbyUserCell.xib in Resources */,
 				53F3C1761896575B00422FF2 /* VChatViewController.xib in Resources */,
 				53F3C1B61897756C00422FF2 /* Logo.png in Resources */,
 				53F3C1B31897756C00422FF2 /* Facebook.png in Resources */,
@@ -428,6 +441,7 @@
 				53F3C17418962E3100422FF2 /* LogInViewController.m in Sources */,
 				B5ECEECA189100800012F86E /* ProfileViewController.m in Sources */,
 				B5FDE9691890C8A100A2AAF7 /* main.m in Sources */,
+				53F3C1CB189F525A00422FF2 /* NearbyUserCell.m in Sources */,
 				B5ECEECF189100980012F86E /* NearbyTableViewController.m in Sources */,
 				B5ECEEC0189100530012F86E /* FriendsTableViewController.m in Sources */,
 				B5FDE9931890CDC100A2AAF7 /* SignupViewController.m in Sources */,

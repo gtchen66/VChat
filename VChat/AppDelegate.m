@@ -52,7 +52,7 @@
 
     tabBarItem1.title = @"Chat";
     tabBarItem2.title = @"Nearby";
-    tabBarItem3.title = @"Me";
+    tabBarItem3.title = @"My Profile";
     
     tabBarItem1.image = [UIImage imageNamed:@"ChatIcon"];
     tabBarItem2.image = [UIImage imageNamed:@"NearbyIcon"];

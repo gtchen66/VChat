@@ -16,6 +16,7 @@
 @property (nonatomic, strong) LogInViewController *logInViewController;
 
 - (void)logOutButtonTapAction;
+- (void)initLogInController;
 
 @end
 
@@ -41,27 +42,26 @@
     [super viewDidAppear:animated];
 
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Sign Out" style:UIBarButtonItemStylePlain target:self action:@selector(logOutButtonTapAction)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"PlusIcon"] style:UIBarButtonItemStylePlain target:nil action:nil];
     self.title = @"Chats";
     
+    [self initLogInController];
     
-    if (![PFUser currentUser]) { // No user logged in
-        // Create the log in view controller
-        self.logInViewController = [[LogInViewController alloc] init];
-        [self.logInViewController setDelegate:self]; // Set ourselves as the delegate
-        [self.logInViewController setFacebookPermissions:[NSArray arrayWithObjects:@"friends_about_me", nil]];
-        [self.logInViewController setFields:PFLogInFieldsUsernameAndPassword
-         | PFLogInFieldsFacebook
-         | PFLogInFieldsSignUpButton];
-        
-        // Create the sign up view controller
-        SignupViewController *signUpViewController = [[SignupViewController alloc] init];
-        [signUpViewController setDelegate:self]; // Set ourselves as the delegate
-        
-        // Assign our sign up controller to be displayed from the login controller
-        [self.logInViewController setSignUpController:signUpViewController];
-        
+    PFUser *currentUser = [PFUser currentUser];
+    if (!currentUser) { // No user logged in
         // Present the log in view controller
         [self presentViewController:self.logInViewController animated:YES completion:NULL];
+    } else {
+//        NSLog(@"user logged in");
+        // update user location
+        [PFGeoPoint geoPointForCurrentLocationInBackground:^(PFGeoPoint *geoPoint, NSError *error) {
+            if (!error) {
+                // do something with the new geoPoint
+//                NSLog(@"%f, %f", geoPoint.latitude, geoPoint.longitude);
+                currentUser[@"location"] = geoPoint;
+                [currentUser saveInBackground];
+            }
+        }];
     }
 }
 
@@ -80,6 +80,7 @@
 
 // Sent to the delegate when a PFUser is logged in.
 - (void)logInViewController:(PFLogInViewController *)logInController didLogInUser:(PFUser *)user {
+    NSLog(@"User successfully logs in");
     [self dismissViewControllerAnimated:YES completion:NULL];
 }
 
@@ -136,9 +137,31 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (void)initLogInController {
+    // Create the log in view controller
+    self.logInViewController = [[LogInViewController alloc] init];
+    [self.logInViewController setDelegate:self]; // Set ourselves as the delegate
+    [self.logInViewController setFacebookPermissions:[NSArray arrayWithObjects:@"friends_about_me", nil]];
+    [self.logInViewController setFields:PFLogInFieldsUsernameAndPassword
+     | PFLogInFieldsFacebook
+     | PFLogInFieldsSignUpButton];
+    
+    // Create the sign up view controller
+    SignupViewController *signUpViewController = [[SignupViewController alloc] init];
+    [signUpViewController setDelegate:self]; // Set ourselves as the delegate
+    
+    // Assign our sign up controller to be displayed from the login controller
+    [self.logInViewController setSignUpController:signUpViewController];
+}
+
 - (void)logOutButtonTapAction {
     NSLog(@"User logged out");
     [PFUser logOut];
-    [self presentViewController:self.logInViewController animated:YES completion:NULL];
+    if (self.logInViewController) {
+        [self presentViewController:self.logInViewController animated:YES completion:NULL];
+
+    } else {
+        NSLog(@"loginviewcontroller is nil");
+    }
 }
 @end

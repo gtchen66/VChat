@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface NearbyTableViewController : UITableViewController
+@interface NearbyTableViewController : UITableViewController <UITableViewDelegate, UITableViewDataSource>
 
 @end
