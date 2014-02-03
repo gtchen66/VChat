@@ -13,6 +13,8 @@
 
 @property (nonatomic, strong) NSMutableArray *nearbyUsers;
 
+- (void)loadData;
+
 @end
 
 NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
@@ -30,9 +32,11 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
 
 - (void)viewDidLoad
 {
+//    NSLog(@"calling view did load");
     [super viewDidLoad];
     self.title = @"Nearby";
     self.nearbyUsers = [[NSMutableArray alloc] init];
+    [self loadData];
     
     UINib *customNib = [UINib nibWithNibName:CELL_IDENTIFIER bundle:nil];
     [self.tableView registerNib:customNib forCellReuseIdentifier:CELL_IDENTIFIER];
@@ -47,24 +51,6 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
     
     // obtain list of nearby folks
     // User's location
-    PFUser *currentUser = [PFUser currentUser];
-    PFGeoPoint *userGeoPoint = currentUser[@"location"];
-    // Find users near a given location
-    PFQuery *userQuery = [PFUser query];
-    [userQuery whereKey:@"location"
-           nearGeoPoint:userGeoPoint
-            withinMiles:10.0];
-    userQuery.limit = 10;
-    [userQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-//        NSLog(@"%@", objects);
-        [self.nearbyUsers addObjectsFromArray:objects];
-//        for (PFUser *user in objects) {
-//            NSLog(@"%@", user.username);
-//            [self.nearbyUsers addObject:user];
-//        }
-//        NSLog(@"%@", [[self.nearbyUsers objectAtIndex:1] objectForKey:@"username"]);
-
-    }];
 
 }
 
@@ -78,30 +64,33 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
+//    NSLog(@"calling number of sections");
     // Return the number of sections.
     return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+//    NSLog(@"calling number of rows");
+//    NSLog(@"%lu", (unsigned long)[self.nearbyUsers count]);
     // Return the number of rows in the section.
     return [self.nearbyUsers count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"generating cell");
+//    NSLog(@"generating cell");
     NearbyUserCell *cell = [tableView dequeueReusableCellWithIdentifier:CELL_IDENTIFIER];
     PFUser *user = self.nearbyUsers[indexPath.row];
     cell.userNameLabel.text = user.username;
 
-    NSLog(@"%@", cell.userNameLabel.text);
+//    NSLog(@"%@", cell.userNameLabel.text);
     
     return cell;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 100;
+    return 50;
 }
 
 /*
@@ -160,5 +149,29 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
 }
  
  */
+
+- (void)loadData {
+    PFUser *currentUser = [PFUser currentUser];
+    PFGeoPoint *userGeoPoint = currentUser[@"location"];
+    // Find users near a given location
+    PFQuery *userQuery = [PFUser query];
+    [userQuery whereKey:@"location"
+           nearGeoPoint:userGeoPoint
+            withinMiles:10.0];
+    userQuery.limit = 10;
+    [userQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+//                NSLog(@"%@", objects);
+        NSLog(@"updating nearbyusers");
+        [self.nearbyUsers addObjectsFromArray:objects];
+        NSLog(@"%@", self.nearbyUsers);
+        //        for (PFUser *user in objects) {
+        //            NSLog(@"%@", user.username);
+        //            [self.nearbyUsers addObject:user];
+        //        }
+        //        NSLog(@"%@", [[self.nearbyUsers objectAtIndex:1] objectForKey:@"username"]);
+        [self.tableView reloadData];
+        
+    }];
+}
 
 @end
