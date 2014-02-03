@@ -26,6 +26,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    NSLog(@"ProfileViewController : viewDidLoad");
     
     self.title = @"My Profile";
     // Do any additional setup after loading the view from its nib.
