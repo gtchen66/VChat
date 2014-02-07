@@ -14,5 +14,7 @@
 @property (strong, nonatomic) PFUser *user;
 
 - (IBAction)onClickAddButton:(id)sender;
+- (IBAction)onClickChatButton:(id)sender;
+@property (weak, nonatomic) IBOutlet UIButton *clickChatButton;
 
 @end

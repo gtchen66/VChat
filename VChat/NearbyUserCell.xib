@@ -39,6 +39,9 @@
                         <state key="normal" title="Chat">
                             <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                         </state>
+                        <connections>
+                            <action selector="onClickChatButton:" destination="IC4-Ut-wtD" eventType="touchUpInside" id="Gdb-c1-ViJ"/>
+                        </connections>
                     </button>
                 </subviews>
                 <constraints>
@@ -48,6 +51,7 @@
                 </constraints>
             </tableViewCellContentView>
             <connections>
+                <outlet property="clickChatButton" destination="KBZ-da-RHy" id="NwQ-xL-J1d"/>
                 <outlet property="userNameLabel" destination="ZJH-jk-6tG" id="gOV-Aa-Kp8"/>
             </connections>
         </tableViewCell>

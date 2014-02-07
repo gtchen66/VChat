@@ -8,6 +8,7 @@
 
 #import "NearbyTableViewController.h"
 #import "NearbyUserCell.h"
+#import <objc/runtime.h>
 
 @interface NearbyTableViewController ()
 
@@ -20,6 +21,9 @@
 NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
 
 @implementation NearbyTableViewController
+
+// for use with associatedObjects
+static char indexPathKey;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -83,6 +87,9 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
     NearbyUserCell *cell = [tableView dequeueReusableCellWithIdentifier:CELL_IDENTIFIER];
     PFUser *user = self.nearbyUsers[indexPath.row];
     cell.userNameLabel.text = user.username;
+    cell.clickChatButton.tag = indexPath.row;
+    
+    objc_setAssociatedObject(cell.userNameLabel, &indexPathKey, indexPath, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 
 //    NSLog(@"%@", cell.userNameLabel.text);
     

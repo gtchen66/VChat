@@ -7,8 +7,10 @@
 //
 
 #import "ProfileViewController.h"
+#import "ChattingViewController.h"
 
 @interface ProfileViewController ()
+- (IBAction)onGoToChatButton:(id)sender;
 
 @end
 
@@ -38,4 +40,15 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (IBAction)onGoToChatButton:(id)sender {
+    // putting this here just so I can test things.
+    // this action should be bound to the 'chat' button
+    // inside the NearbyUserCell
+    NSLog(@"ProfileViewController : onGoToChatButton");
+    
+    ChattingViewController *cvc = [[ChattingViewController alloc] init];
+    [self.navigationController pushViewController:cvc animated:YES];
+
+    
+}
 @end

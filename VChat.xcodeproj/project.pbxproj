@@ -39,6 +39,8 @@
 		53F3C1BC1897756C00422FF2 /* TwitterDown.png in Resources */ = {isa = PBXBuildFile; fileRef = 53F3C1AB1897756C00422FF2 /* TwitterDown.png */; };
 		53F3C1CB189F525A00422FF2 /* NearbyUserCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 53F3C1CA189F525A00422FF2 /* NearbyUserCell.m */; };
 		53F3C1CD189F527E00422FF2 /* NearbyUserCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 53F3C1CC189F527E00422FF2 /* NearbyUserCell.xib */; };
+		B507647218A4AE2D00ECE2F5 /* ChattingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B507647018A4AE2D00ECE2F5 /* ChattingViewController.m */; };
+		B507647318A4AE2D00ECE2F5 /* ChattingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B507647118A4AE2D00ECE2F5 /* ChattingViewController.xib */; };
 		B5ECEEBB189100370012F86E /* ChatsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5ECEEB9189100370012F86E /* ChatsTableViewController.m */; };
 		B5ECEEBC189100370012F86E /* ChatsTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B5ECEEBA189100370012F86E /* ChatsTableViewController.xib */; };
 		B5ECEEC0189100530012F86E /* FriendsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5ECEEBE189100530012F86E /* FriendsTableViewController.m */; };
@@ -109,6 +111,9 @@
 		53F3C1C9189F525A00422FF2 /* NearbyUserCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NearbyUserCell.h; sourceTree = "<group>"; };
 		53F3C1CA189F525A00422FF2 /* NearbyUserCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NearbyUserCell.m; sourceTree = "<group>"; };
 		53F3C1CC189F527E00422FF2 /* NearbyUserCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NearbyUserCell.xib; sourceTree = "<group>"; };
+		B507646F18A4AE2D00ECE2F5 /* ChattingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChattingViewController.h; sourceTree = "<group>"; };
+		B507647018A4AE2D00ECE2F5 /* ChattingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChattingViewController.m; sourceTree = "<group>"; };
+		B507647118A4AE2D00ECE2F5 /* ChattingViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChattingViewController.xib; sourceTree = "<group>"; };
 		B5ECEEB8189100370012F86E /* ChatsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatsTableViewController.h; sourceTree = "<group>"; };
 		B5ECEEB9189100370012F86E /* ChatsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatsTableViewController.m; sourceTree = "<group>"; };
 		B5ECEEBA189100370012F86E /* ChatsTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChatsTableViewController.xib; sourceTree = "<group>"; };
@@ -285,6 +290,9 @@
 				B5ECEEC9189100800012F86E /* ProfileViewController.xib */,
 				B5ECEECC189100980012F86E /* NearbyTableViewController.h */,
 				B5ECEECD189100980012F86E /* NearbyTableViewController.m */,
+				B507646F18A4AE2D00ECE2F5 /* ChattingViewController.h */,
+				B507647018A4AE2D00ECE2F5 /* ChattingViewController.m */,
+				B507647118A4AE2D00ECE2F5 /* ChattingViewController.xib */,
 			);
 			path = VChat;
 			sourceTree = "<group>";
@@ -399,6 +407,7 @@
 				53F3C1B41897756C00422FF2 /* FacebookDown.png in Resources */,
 				B5FDE9671890C8A100A2AAF7 /* InfoPlist.strings in Resources */,
 				B5ECEECB189100800012F86E /* ProfileViewController.xib in Resources */,
+				B507647318A4AE2D00ECE2F5 /* ChattingViewController.xib in Resources */,
 				53F3C1B21897756C00422FF2 /* ExitDown.png in Resources */,
 				B5FDE96F1890C8A100A2AAF7 /* Images.xcassets in Resources */,
 				53F3C1BB1897756C00422FF2 /* Twitter.png in Resources */,
@@ -440,6 +449,7 @@
 				B5FDE96D1890C8A100A2AAF7 /* AppDelegate.m in Sources */,
 				53F3C17418962E3100422FF2 /* LogInViewController.m in Sources */,
 				B5ECEECA189100800012F86E /* ProfileViewController.m in Sources */,
+				B507647218A4AE2D00ECE2F5 /* ChattingViewController.m in Sources */,
 				B5FDE9691890C8A100A2AAF7 /* main.m in Sources */,
 				53F3C1CB189F525A00422FF2 /* NearbyUserCell.m in Sources */,
 				B5ECEECF189100980012F86E /* NearbyTableViewController.m in Sources */,

@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "NearbyUserCell.h"
 
 @interface NearbyTableViewController : UITableViewController <UITableViewDelegate, UITableViewDataSource>
 

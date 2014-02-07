@@ -7,6 +7,7 @@
 //
 
 #import "NearbyUserCell.h"
+#import "ChattingViewController.h"
 
 @implementation NearbyUserCell
 
@@ -27,5 +28,14 @@
 }
 
 - (IBAction)onClickAddButton:(id)sender {
+    NSLog(@"NearbyUserCell : onClickAddButton");
+}
+
+- (IBAction)onClickChatButton:(id)sender {
+    NSLog(@"NearbyUserCell : onClickChatbutton");
+    NSLog(@"This is row %d",((UIButton *)sender).tag);
+    
+    // go to chatting window
+    //[self.navigationController pushViewController:[[ChattingViewController alloc] init] animated:YES];
 }
 @end
