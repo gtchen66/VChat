@@ -30,7 +30,9 @@
     if (self) {
         // Custom initialization
         NSLog(@"ChattingViewController : initWithNibName");
-        self.user = [[PFUser alloc]init];
+//        self.localUser = [[PFUser alloc]init];
+        self.localUser = [PFUser currentUser];
+        self.remoteUser = [[PFUser alloc]init];
     }
     return self;
 }
@@ -46,8 +48,8 @@
     NSArray *dirPaths;
     NSString *docsDir;
     
-    NSLog(@"chatting with user %@",self.user.username);
-    self.title = self.user.username;
+    NSLog(@"chatting between local %@ and remote %@",self.localUser.username, self.remoteUser.username);
+    self.title = self.remoteUser.username;
     
 //    dirPaths = NSSearchPathForDirectoriesInDomains(NSDocumentationDirectory, NSUserDomainMask, YES);
     dirPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -108,10 +110,35 @@
 - (IBAction)onSendButton:(id)sender {
     // Okay to send...
     NSLog(@"Sending to Parse... but first convert to base64");
-    NSData *nsdata = [[NSData alloc] initWithContentsOfURL:audioRecorder.url];
-    NSLog(@"length of data is %d",nsdata.length);
-    NSString *encodedString = [nsdata base64EncodedStringWithOptions:0];
-    NSLog(@"length of encoded string is %d",[encodedString length]);
+    NSData *recordingData = [[NSData alloc] initWithContentsOfURL:audioRecorder.url];
+    NSLog(@"length of data is %d",recordingData.length);
+
+    // Seems that parse can handle binary data.  That's good because
+    // the data would be smaller then.
+//    NSString *encodedString = [nsdata base64EncodedStringWithOptions:0];
+//    NSLog(@"length of encoded string is %d",[encodedString length]);
+
+    NSString *recordingName = [[NSString alloc] initWithFormat:@"%@_%@_%.2f",self.localUser.username, self.remoteUser.username, self.startRecordingTime];
+    NSLog(@"recording name is %@",recordingName);
+    PFFile *newFile = [PFFile fileWithName:recordingName data:recordingData];
+    
+    [newFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (!error) {
+            NSLog(@"Completed saving of %@",recordingName);
+            NSLog(@"Some meta data:\n");
+            NSLog(@"is Data Available: %hhd",newFile.isDataAvailable);
+            NSLog(@"is Dirty: %hhd", newFile.isDirty);
+            NSLog(@"name: %@",newFile.name);
+            NSLog(@"url: %@",newFile.url);
+            
+        }
+        else {
+            NSLog(@"Error during save: %@ %@", error, [error userInfo]);
+        }
+    }];
+    
+    
+    
     
 }
 

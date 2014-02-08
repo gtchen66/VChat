@@ -9,7 +9,7 @@
 #import "NearbyTableViewController.h"
 #import "NearbyUserCell.h"
 #import "ChattingViewController.h"
-#import <objc/runtime.h>
+// #import <objc/runtime.h>
 
 @interface NearbyTableViewController ()
 
@@ -90,7 +90,7 @@ static char indexPathKey;
     cell.userNameLabel.text = user.username;
 //    cell.clickChatButton.tag = indexPath.row;
     
-    objc_setAssociatedObject(cell.userNameLabel, &indexPathKey, indexPath, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+//    objc_setAssociatedObject(cell.userNameLabel, &indexPathKey, indexPath, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 
 //    NSLog(@"%@", cell.userNameLabel.text);
     
@@ -112,7 +112,7 @@ static char indexPathKey;
     
     // open the chat window.
     ChattingViewController *cvc = [[ChattingViewController alloc] init];
-    cvc.user = user;
+    cvc.remoteUser = user;
     
     [self.navigationController pushViewController:cvc animated:YES];
 
@@ -175,6 +175,10 @@ static char indexPathKey;
  
  */
 
+//
+// This code needs to be updated to NOT include the current user
+//
+
 - (void)loadData {
     PFUser *currentUser = [PFUser currentUser];
     PFGeoPoint *userGeoPoint = currentUser[@"location"];
@@ -186,8 +190,17 @@ static char indexPathKey;
     userQuery.limit = 10;
     [userQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
 //                NSLog(@"%@", objects);
-        NSLog(@"updating nearbyusers");
-        [self.nearbyUsers addObjectsFromArray:objects];
+        NSLog(@"updating nearbyusers.  returned objects has %d entries",objects.count);
+        
+        // the first user is always the current user ??
+        // should be, because of the sort-by-distance ordering
+        
+        NSMutableArray *objToAdd = [[NSMutableArray alloc] initWithArray:objects];
+        [objToAdd removeObject:[objToAdd objectAtIndex:0]];
+        NSLog(@"the objToAdd array has %d elements",objToAdd.count);
+        
+//        [self.nearbyUsers addObjectsFromArray:objects];
+        [self.nearbyUsers addObjectsFromArray:objToAdd];
         NSLog(@"%@", self.nearbyUsers);
         //        for (PFUser *user in objects) {
         //            NSLog(@"%@", user.username);
