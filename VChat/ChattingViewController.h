@@ -14,4 +14,6 @@
     AVAudioPlayer *audioPlayer;
 }
 
+@property (nonatomic, strong) PFUser *user;
+
 @end

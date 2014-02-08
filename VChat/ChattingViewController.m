@@ -14,6 +14,8 @@
 @property float startRecordingTime;
 @property float endRecordingTime;
 
+// @property (nonatomic, strong) PFUser *user;
+
 - (IBAction)onDownPushToTalk:(id)sender;
 - (IBAction)onUpPushToTalk:(id)sender;
 - (IBAction)onPlayButton:(id)sender;
@@ -27,6 +29,8 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
+        NSLog(@"ChattingViewController : initWithNibName");
+        self.user = [[PFUser alloc]init];
     }
     return self;
 }
@@ -34,12 +38,16 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    NSLog(@"ChattingViewController : viewDidLoad");
     // Do any additional setup after loading the view from its nib.
     
     // configue the audio system
     
     NSArray *dirPaths;
     NSString *docsDir;
+    
+    NSLog(@"chatting with user %@",self.user.username);
+    self.title = self.user.username;
     
 //    dirPaths = NSSearchPathForDirectoriesInDomains(NSDocumentationDirectory, NSUserDomainMask, YES);
     dirPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -60,6 +68,11 @@
     
     audioRecorder = [[AVAudioRecorder alloc] initWithURL:soundFileURL settings:recordSettings error:&error];
     
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    NSLog(@"ChattingViewController : viewWillAppear");
+
 }
 
 - (void)didReceiveMemoryWarning
@@ -101,6 +114,12 @@
     NSLog(@"length of encoded string is %d",[encodedString length]);
     
 }
+
+//
+// This file should be refactored to use a class that deals with recordings
+// and sending the recording to/from Parse.
+// 
+
 
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
     NSLog(@"Playback completed");

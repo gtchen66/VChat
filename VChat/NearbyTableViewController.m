@@ -8,6 +8,7 @@
 
 #import "NearbyTableViewController.h"
 #import "NearbyUserCell.h"
+#import "ChattingViewController.h"
 #import <objc/runtime.h>
 
 @interface NearbyTableViewController ()
@@ -87,17 +88,34 @@ static char indexPathKey;
     NearbyUserCell *cell = [tableView dequeueReusableCellWithIdentifier:CELL_IDENTIFIER];
     PFUser *user = self.nearbyUsers[indexPath.row];
     cell.userNameLabel.text = user.username;
-    cell.clickChatButton.tag = indexPath.row;
+//    cell.clickChatButton.tag = indexPath.row;
     
     objc_setAssociatedObject(cell.userNameLabel, &indexPathKey, indexPath, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 
 //    NSLog(@"%@", cell.userNameLabel.text);
     
+    cell.delegate = self;
     return cell;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return 50;
+}
+
+#pragma mark Nearby User Cell delegate
+-(void)onClickChatButton:(id)sender {
+    NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
+    NSLog(@"NearbyTableViewController : onClickChatButton - index is %d",indexPath.row);
+    
+    PFUser *user = self.nearbyUsers[indexPath.row];
+    NSLog(@"Open conversation with %@",user.username);
+    
+    // open the chat window.
+    ChattingViewController *cvc = [[ChattingViewController alloc] init];
+    cvc.user = user;
+    
+    [self.navigationController pushViewController:cvc animated:YES];
+
 }
 
 /*

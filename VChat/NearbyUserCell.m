@@ -31,11 +31,18 @@
     NSLog(@"NearbyUserCell : onClickAddButton");
 }
 
+//- (IBAction)onClickChatButton:(id)sender {
+//    NSLog(@"NearbyUserCell : onClickChatbutton");
+//    NSLog(@"This is row %d",((UIButton *)sender).tag);
+//    
+//    // go to chatting window
+//    //[self.navigationController pushViewController:[[ChattingViewController alloc] init] animated:YES];
+//}
+
 - (IBAction)onClickChatButton:(id)sender {
-    NSLog(@"NearbyUserCell : onClickChatbutton");
-    NSLog(@"This is row %d",((UIButton *)sender).tag);
+    NSLog(@"NearbyUserCell : onClickChatButton");
     
-    // go to chatting window
-    //[self.navigationController pushViewController:[[ChattingViewController alloc] init] animated:YES];
+    [self.delegate onClickChatButton:self];
+    
 }
 @end
