@@ -6,6 +6,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ChattingViewController">
             <connections>
+                <outlet property="myChattingTable" destination="Ops-ZC-M1N" id="nY9-5w-By6"/>
                 <outlet property="pushToRecordButton" destination="tX5-0u-NGh" id="uqk-t9-CEE"/>
                 <outlet property="view" destination="1" id="3"/>
             </connections>

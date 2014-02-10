@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
 
-@interface ChattingViewController : UIViewController <AVAudioRecorderDelegate, AVAudioPlayerDelegate> {
+@interface ChattingViewController : UIViewController <AVAudioRecorderDelegate, AVAudioPlayerDelegate, UITableViewDelegate, UITableViewDataSource> {
     AVAudioRecorder *audioRecorder;
     AVAudioPlayer *audioPlayer;
 }

@@ -14,6 +14,7 @@
 
 @property (weak, nonatomic) IBOutlet UIButton *pushToRecordButton;
 @property (nonatomic, strong) NSMutableArray *latestRecordingArray;
+@property (weak, nonatomic) IBOutlet UITableView *myChattingTable;
 
 @property float startRecordingTime;
 @property float endRecordingTime;
@@ -56,6 +57,10 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
     NSLog(@"ChattingViewController : viewDidLoad");
     // Do any additional setup after loading the view from its nib.
     
+    // Hook up table view
+    self.myChattingTable.delegate = self;
+    self.myChattingTable.dataSource = self;
+    
     // configue the audio system
     
     NSArray *dirPaths;
@@ -90,7 +95,12 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
 
 - (void)viewWillAppear:(BOOL)animated {
     NSLog(@"ChattingViewController : viewWillAppear");
+}
 
+- (void)viewDidAppear:(BOOL)animated {
+    NSLog(@"ChattingViewController : viewDidAppear");
+    [self.myChattingTable setContentOffset:CGPointMake(0, self.myChattingTable.contentSize.height - self.myChattingTable.frame.size.height)];
+    
 }
 
 - (void)didReceiveMemoryWarning
@@ -98,6 +108,30 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+#pragma mark TableView Section
+
+-(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return 10;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
+    if (cell == nil) {
+        NSLog(@"cell was nil, getting a real one");
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
+    }
+    cell.textLabel.text = [NSString stringWithFormat:@"hello %d",indexPath.row];
+
+    return cell;
+
+}
+
+#pragma mark Audio Section
 
 - (IBAction)onDownPushToTalk:(id)sender {
     // Started holding button
