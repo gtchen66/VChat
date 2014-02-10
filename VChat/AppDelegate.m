@@ -9,7 +9,7 @@
 #import "AppDelegate.h"
 #import "VChatViewController.h"
 #import "NearbyTableViewController.h"
-#import "ProfileViewController.h"
+#import "MyProfileViewController.h"
 
 #define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
@@ -40,7 +40,7 @@
     NearbyTableViewController *nb = [[NearbyTableViewController alloc] init];
     UINavigationController *nvc2 = [[UINavigationController alloc] initWithRootViewController:nb];
     
-    ProfileViewController *pv = [[ProfileViewController alloc] init];
+    MyProfileViewController *pv = [[MyProfileViewController alloc] init];
     UINavigationController *nvc3 = [[UINavigationController alloc] initWithRootViewController:pv];
     
     UITabBarController *tabBarController = [[UITabBarController alloc] init];

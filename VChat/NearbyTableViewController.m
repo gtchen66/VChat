@@ -24,7 +24,7 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
 @implementation NearbyTableViewController
 
 // for use with associatedObjects
-static char indexPathKey;
+//static char indexPathKey;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
