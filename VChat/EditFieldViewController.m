@@ -34,6 +34,7 @@
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Save" style:UIBarButtonItemStylePlain target:self action:@selector(onSaveButton)];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Cancel" style:UIBarButtonItemStylePlain target:self action:@selector(onCancelButton)];
     self.title = [self.fieldName capitalizedString];
+    self.fieldValueTextField.backgroundColor = [UIColor whiteColor];
     self.fieldValueTextField.text = self.fieldValue;
     NSString *version = [[UIDevice currentDevice] systemVersion];
     NSComparisonResult verComparison = [version compare:@"7.0"];
