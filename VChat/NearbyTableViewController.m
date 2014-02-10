@@ -88,6 +88,11 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
     NearbyUserCell *cell = [tableView dequeueReusableCellWithIdentifier:CELL_IDENTIFIER];
     PFUser *user = self.nearbyUsers[indexPath.row];
     cell.userNameLabel.text = user.username;
+    cell.affiliationLabel.text = user[@"affiliation"];
+    cell.positionLabel.text = user[@"position"];
+    if (!user[@"profileImage"]) {
+        [cell.profileImageView setImage:[UIImage imageNamed:@"DefaultProfileIcon"]];
+    }
 //    cell.clickChatButton.tag = indexPath.row;
     
 //    objc_setAssociatedObject(cell.userNameLabel, &indexPathKey, indexPath, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
@@ -99,7 +104,7 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 50;
+    return 72;
 }
 
 #pragma mark Nearby User Cell delegate

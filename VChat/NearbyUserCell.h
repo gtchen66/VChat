@@ -16,6 +16,9 @@
 
 @interface NearbyUserCell : UITableViewCell
 
+@property (weak, nonatomic) IBOutlet UILabel *affiliationLabel;
+@property (weak, nonatomic) IBOutlet UILabel *positionLabel;
+@property (weak, nonatomic) IBOutlet UIImageView *profileImageView;
 @property (weak, nonatomic) IBOutlet UILabel *userNameLabel;
 @property (strong, nonatomic) PFUser *user;
 
