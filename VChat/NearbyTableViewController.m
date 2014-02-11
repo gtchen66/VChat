@@ -192,7 +192,7 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
     
     /****** SHOULD PROBABLY QUERY FOR LOCATION AGAIN INSTEAD OF READING USER OBJECT *********/
     PFGeoPoint *userGeoPoint = currentUser[@"location"];
-    NSLog(@"%@", userGeoPoint);
+//    NSLog(@"%@", userGeoPoint);
     // Find users near a given location
     PFQuery *userQuery = [PFUser query];
     [userQuery whereKey:@"location"
@@ -206,10 +206,24 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
         // should be, because of the sort-by-distance ordering
         
         NSMutableArray *objToAdd = [[NSMutableArray alloc] initWithArray:objects];
-//        [objToAdd removeObject:[objToAdd objectAtIndex:0]];
+        int indexToRemove = 0;
+        bool duplicateFound = false;
+        for (PFUser *user in objToAdd) {
+            if ([user.objectId isEqualToString:currentUser.objectId]) {
+                duplicateFound = true;
+                break;
+            }
+            indexToRemove++;
+        }
+        if (duplicateFound) {
+            NSLog(@"duplicate found at position: %i", duplicateFound);
+            [objToAdd removeObject:[objToAdd objectAtIndex:indexToRemove]];
+        }
+        
+//        NSLog(@"%@", objToAdd);
         NSLog(@"the objToAdd array has %d elements",objToAdd.count);
                 [self.nearbyUsers addObjectsFromArray:objToAdd];
-        NSLog(@"%@", self.nearbyUsers);
+//        NSLog(@"%@", self.nearbyUsers);
         [self.tableView reloadData];
         
     }];
