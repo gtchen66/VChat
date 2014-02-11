@@ -87,7 +87,8 @@
 //    NSLog(@"MyProfileView: cellForRowAtIndexPath");
     MyProfileCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MyProfileCell"];
     
-    if (indexPath.section != 0) {
+    // make user name cell unclickable
+    if (!(indexPath.section == 0 && indexPath.row == 0)) {
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
     
@@ -97,7 +98,13 @@
 //    NSLog(@"profileField: %@", profileField);
     NSArray *keyValue = [profileField componentsSeparatedByString:@":"];
 //    NSLog(@"keyValue: %@", keyValue);
-    cell.fieldNameLabel.text = [keyValue[0] capitalizedString];
+    if ([keyValue[0] isEqualToString:@"displayName"]) {
+        cell.fieldNameLabel.text = @"Display Name";
+    } else if ([keyValue[0] isEqualToString:@"username"]) {
+        cell.fieldNameLabel.text = @"User Name";
+    }   else {
+        cell.fieldNameLabel.text = [keyValue[0] capitalizedString];
+    }
     cell.fieldValueLabel.text = keyValue[1];
     return cell;
 }
@@ -175,7 +182,7 @@ accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath{
 {
     NSLog(@"MyProfileView: didSelectRowAtIndexPath");
     NSLog(@"indexPath.section: %i", indexPath.section);
-    if (indexPath.section != 0) {
+    if (!(indexPath.section == 0 && indexPath.row == 0)) {
         NSMutableArray *profileSection = [self.profileInfo objectAtIndex:indexPath.section];
         NSString *profileField = [profileSection objectAtIndex:indexPath.row];
         //    NSLog(@"profileField: %@", profileField);
@@ -186,6 +193,9 @@ accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath{
         EditFieldViewController *efvc = [[EditFieldViewController alloc] init];
         efvc.fieldName = fieldName;
         efvc.fieldValue = fieldValue;
+        if ([fieldName isEqualToString:@"displayName"]) {
+            efvc.title = @"Display Name";
+        }
         UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:efvc];
         [self.navigationController presentViewController:navController animated:YES completion:nil];
     } else {
@@ -201,7 +211,10 @@ accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath{
     self.profileInfo = [[NSMutableArray alloc] init];
     NSMutableArray *basicInfoFields = [[NSMutableArray alloc] init];
     NSString *userName = [NSString stringWithFormat:@"%@", [currentUser objectForKey:@"username"]];
+    NSString *displayName = [NSString stringWithFormat:@"%@",[currentUser objectForKey:@"displayName"] ? [currentUser objectForKey:@"displayName"] : @""];
+
     [basicInfoFields addObject:[NSString stringWithFormat:@"username:%@", userName]];
+    [basicInfoFields addObject:[NSString stringWithFormat:@"displayName:%@", displayName]];
     [self.profileInfo addObject:basicInfoFields];
     
     NSMutableArray *affiliationInfoFields = [[NSMutableArray alloc] init];

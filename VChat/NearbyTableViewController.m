@@ -88,7 +88,7 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
 //    NSLog(@"generating cell");
     NearbyUserCell *cell = [tableView dequeueReusableCellWithIdentifier:CELL_IDENTIFIER];
     PFUser *user = self.nearbyUsers[indexPath.row];
-    cell.userNameLabel.text = user.username;
+    cell.userNameLabel.text = (user[@"displayName"] && ![user[@"displayName"] isEqual: @""]) ? user[@"displayName"] : user.username;
     cell.affiliationLabel.text = user[@"affiliation"];
     cell.positionLabel.text = user[@"position"];
     if (!user[@"profileImage"]) {
@@ -205,6 +205,7 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
         // the first user is always the current user ??
         // should be, because of the sort-by-distance ordering
         
+        // remove current user from list of nearby users
         NSMutableArray *objToAdd = [[NSMutableArray alloc] initWithArray:objects];
         int indexToRemove = 0;
         bool duplicateFound = false;

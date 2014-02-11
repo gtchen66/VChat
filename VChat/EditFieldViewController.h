@@ -12,5 +12,6 @@
 
 @property (nonatomic, strong) NSString *fieldName;
 @property (nonatomic, strong) NSString *fieldValue;
+@property (nonatomic, strong) NSString *navTitle;
 
 @end
