@@ -92,6 +92,8 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
     cell.positionLabel.text = user[@"position"];
     if (!user[@"profileImage"]) {
         [cell.profileImageView setImage:[UIImage imageNamed:@"DefaultProfileIcon"]];
+    } else {
+//        [cell.profileImageView setImageWithU]
     }
 //    cell.clickChatButton.tag = indexPath.row;
     

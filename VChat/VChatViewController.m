@@ -40,7 +40,7 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    NSLog(@"VChatViewController : viewDidAppear");
+//    NSLog(@"VChatViewController : viewDidAppear");
 
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Sign Out" style:UIBarButtonItemStylePlain target:self action:@selector(logOutButtonTapAction)];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"PlusIcon"] style:UIBarButtonItemStylePlain target:nil action:nil];
@@ -54,6 +54,42 @@
         [self presentViewController:self.logInViewController animated:YES completion:NULL];
     } else {
 //        NSLog(@"user logged in");
+        
+        FBRequest *request = [FBRequest requestForMe];
+        
+        // Send request to Facebook
+        [request startWithCompletionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+            if (!error) {
+                // result is a dictionary with the user's Facebook data
+                NSDictionary *userData = (NSDictionary *)result;
+                BOOL missingData = NO;
+                
+                NSString *facebookID = userData[@"id"];
+                if (!currentUser[@"displayName"]) {
+                    NSString *name = userData[@"name"];
+                    currentUser[@"name"] = name;
+//                    NSLog(@"name: %@", name);
+                    missingData = YES;
+                }
+                if (!currentUser[@"profileImage"]) {
+                    NSString * pictureString = [NSString stringWithFormat:@"https://graph.facebook.com/%@/picture?type=large&return_ssl_resources=1", facebookID];
+                    NSURL *pictureURL = [NSURL URLWithString:pictureString];
+//                    NSLog(@"pictureURL: %@", pictureURL);
+                    missingData = YES;
+                    currentUser[@"profileImage"] = pictureString;
+                }
+                NSLog(@"%@", currentUser);
+                NSLog(@"displaying missingdata");
+                NSLog(@"missingData: %d", missingData);
+                if (missingData) {
+                    NSLog(@"updating facebook data for user");
+                    [currentUser saveInBackground];
+                }
+                
+                // Now add the data to the UI elements
+                // ...
+            }
+        }];
         // update user location
         [PFGeoPoint geoPointForCurrentLocationInBackground:^(PFGeoPoint *geoPoint, NSError *error) {
             if (!error) {
