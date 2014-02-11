@@ -54,6 +54,16 @@
         [self presentViewController:self.logInViewController animated:YES completion:NULL];
     } else {
 //        NSLog(@"user logged in");
+        // update user location
+        [PFGeoPoint geoPointForCurrentLocationInBackground:^(PFGeoPoint *geoPoint, NSError *error) {
+            if (!error) {
+                // do something with the new geoPoint
+                //                NSLog(@"%f, %f", geoPoint.latitude, geoPoint.longitude);
+                NSLog(@"VChatViewController: update location");
+                currentUser[@"location"] = geoPoint;
+                [currentUser saveInBackground];
+            } 
+        }];
         
         FBRequest *request = [FBRequest requestForMe];
         
@@ -66,37 +76,24 @@
                 
                 NSString *facebookID = userData[@"id"];
                 if (!currentUser[@"displayName"]) {
+                    NSLog(@"display name missing");
                     NSString *name = userData[@"name"];
-                    currentUser[@"name"] = name;
+                    currentUser[@"displayName"] = name;
 //                    NSLog(@"name: %@", name);
                     missingData = YES;
                 }
                 if (!currentUser[@"profileImage"]) {
+                    NSLog(@"profile image missing");
                     NSString * pictureString = [NSString stringWithFormat:@"https://graph.facebook.com/%@/picture?type=large&return_ssl_resources=1", facebookID];
-                    NSURL *pictureURL = [NSURL URLWithString:pictureString];
 //                    NSLog(@"pictureURL: %@", pictureURL);
                     missingData = YES;
                     currentUser[@"profileImage"] = pictureString;
                 }
-                NSLog(@"%@", currentUser);
-                NSLog(@"displaying missingdata");
-                NSLog(@"missingData: %d", missingData);
+//                NSLog(@"%@", currentUser);
                 if (missingData) {
                     NSLog(@"updating facebook data for user");
                     [currentUser saveInBackground];
                 }
-                
-                // Now add the data to the UI elements
-                // ...
-            }
-        }];
-        // update user location
-        [PFGeoPoint geoPointForCurrentLocationInBackground:^(PFGeoPoint *geoPoint, NSError *error) {
-            if (!error) {
-                // do something with the new geoPoint
-//                NSLog(@"%f, %f", geoPoint.latitude, geoPoint.longitude);
-                currentUser[@"location"] = geoPoint;
-                [currentUser saveInBackground];
             }
         }];
     }

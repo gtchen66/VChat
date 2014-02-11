@@ -9,6 +9,7 @@
 #import "NearbyTableViewController.h"
 #import "NearbyUserCell.h"
 #import "ChattingViewController.h"
+#import "UIImageView+AFNetworking.h"
 // #import <objc/runtime.h>
 
 @interface NearbyTableViewController ()
@@ -93,7 +94,7 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
     if (!user[@"profileImage"]) {
         [cell.profileImageView setImage:[UIImage imageNamed:@"DefaultProfileIcon"]];
     } else {
-//        [cell.profileImageView setImageWithU]
+        [cell.profileImageView setImageWithURL:[NSURL URLWithString:user[@"profileImage"]]];
     }
 //    cell.clickChatButton.tag = indexPath.row;
     
@@ -188,7 +189,10 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
 
 - (void)loadData {
     PFUser *currentUser = [PFUser currentUser];
+    
+    /****** SHOULD PROBABLY QUERY FOR LOCATION AGAIN INSTEAD OF READING USER OBJECT *********/
     PFGeoPoint *userGeoPoint = currentUser[@"location"];
+    NSLog(@"%@", userGeoPoint);
     // Find users near a given location
     PFQuery *userQuery = [PFUser query];
     [userQuery whereKey:@"location"
@@ -196,24 +200,16 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
             withinMiles:10.0];
     userQuery.limit = 10;
     [userQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-//                NSLog(@"%@", objects);
         NSLog(@"updating nearbyusers.  returned objects has %d entries",objects.count);
         
         // the first user is always the current user ??
         // should be, because of the sort-by-distance ordering
         
         NSMutableArray *objToAdd = [[NSMutableArray alloc] initWithArray:objects];
-        [objToAdd removeObject:[objToAdd objectAtIndex:0]];
+//        [objToAdd removeObject:[objToAdd objectAtIndex:0]];
         NSLog(@"the objToAdd array has %d elements",objToAdd.count);
-        
-//        [self.nearbyUsers addObjectsFromArray:objects];
-        [self.nearbyUsers addObjectsFromArray:objToAdd];
+                [self.nearbyUsers addObjectsFromArray:objToAdd];
         NSLog(@"%@", self.nearbyUsers);
-        //        for (PFUser *user in objects) {
-        //            NSLog(@"%@", user.username);
-        //            [self.nearbyUsers addObject:user];
-        //        }
-        //        NSLog(@"%@", [[self.nearbyUsers objectAtIndex:1] objectForKey:@"username"]);
         [self.tableView reloadData];
         
     }];
