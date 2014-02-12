@@ -210,7 +210,7 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
     
     // Test to see all users:
     PFQuery *userQuery = [PFUser query];
-    userQuery.limit = 10;
+    userQuery.limit = 20;
     [userQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         NSLog(@"Found %d nearby users",objects.count);
         

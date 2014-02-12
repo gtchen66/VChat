@@ -14,11 +14,22 @@
 @interface VChatViewController ()
 
 @property (nonatomic, strong) LogInViewController *logInViewController;
+@property (strong, nonatomic) IBOutlet UITableView *myVChatTableView;
+
+@property (strong, nonatomic) NSMutableArray *latestToUserArray;
+@property (strong, nonatomic) NSMutableArray *latestFromUserArray;
+
+@property (strong, nonatomic) NSString *pathLocalToFile;
+@property (strong, nonatomic) NSString *pathLocalFromFile;
 
 - (void)logOutButtonTapAction;
 - (void)initLogInController;
 
 @end
+
+// this should be in one location, and this should use the same value.
+// for now, comment it out and use it explicitly
+// NSString* const RECORDING_CLASSNAME = @"UserRecording";
 
 @implementation VChatViewController
 
@@ -35,6 +46,12 @@
 {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+    
+    self.myVChatTableView.delegate = self;
+    self.myVChatTableView.dataSource = self;
+    
+    self.pathLocalToFile = @"/tmp/localFile1.plist";
+    self.pathLocalFromFile = @"/tmp/localFile2";
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -96,8 +113,127 @@
                 }
             }
         }];
+        
+        // initialize the chat table w/ recent chats
+        [self loadChattingDataFromRepository];
     }
 }
+
+#pragma mark - TableView Source
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    NSLog(@"VChatViewController : numberOfSectionsInTableView");
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    NSLog(@"VChatViewController : numberOfRowsInSection");
+    return 5;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"chatViewCell"];
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"chatViewCell"];
+    }
+    cell.textLabel.text = [NSString stringWithFormat:@"chat with %d",indexPath.row];
+    
+    return cell;
+}
+
+// Pulls chatting data from repository, appends to local-data
+- (void) loadChattingDataFromRepository {
+    
+    // Parse implementation.
+    PFQuery *query = [PFQuery queryWithClassName:@"UserRecording"];
+    PFUser *user = [PFUser currentUser];
+    NSDate *lastRetrieved = user[@"lastRetrieved"];
+    NSDate *currentDate = [[NSDate alloc] init];
+    
+    NSString *docsDir = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
+    self.pathLocalToFile = [docsDir stringByAppendingPathComponent:@"localToFile.plist"];
+    self.pathLocalFromFile = [docsDir stringByAppendingPathComponent:@"localFromFile.plist"];
+    
+//    if (lastRetrieved == nil) {
+        lastRetrieved = [[NSDate alloc] initWithTimeIntervalSince1970:0];
+//    }
+    
+    [query whereKey:@"toUser" equalTo:user.username];
+    [query whereKey:@"timestamp" greaterThan:lastRetrieved];
+    
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        self.latestToUserArray = [NSMutableArray array];
+        if (objects.count > 0) {
+            for (PFObject *eachObject in objects) {
+                NSMutableDictionary *vchat = [[NSMutableDictionary alloc] init];
+
+                [vchat setValue:[eachObject objectForKey:@"toUser"] forKey:@"toUser"];
+                [vchat setValue:[eachObject objectForKey:@"fromUser"] forKey:@"fromUser"];
+                [vchat setValue:[eachObject objectForKey:@"timestamp"] forKey:@"timestamp"];
+
+                // recording...
+                PFFile *thisFile = [eachObject objectForKey:@"recording"];
+                [vchat setValue:thisFile.url forKey:@"recordingURL"];
+
+                [self.latestToUserArray addObject:vchat];
+            }
+            NSLog(@"Found %d new messages to this user", self.latestToUserArray.count);
+            BOOL result = [self.latestToUserArray writeToFile:self.pathLocalToFile atomically:YES];
+            NSLog(@"Result of write is %hhd",result);
+            NSLog(@"Wrote to %@",self.pathLocalToFile);
+            NSLog(@"To data is %@",self.latestToUserArray);
+            
+        }
+        else {
+            NSLog(@"Found no new messages to this user");
+            return;
+        }
+    }];
+    
+    // Do I need to do this to reset the query
+    query = [PFQuery queryWithClassName:@"UserRecording"];
+    
+    [query whereKey:@"fromUser" equalTo:user.username];
+    [query whereKey:@"timestamp" greaterThan:lastRetrieved];
+    
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        self.latestFromUserArray = [NSMutableArray array];
+        if (objects.count > 0) {
+            for (PFObject *eachObject in objects) {
+                NSMutableDictionary *vchat = [[NSMutableDictionary alloc] init];
+                
+                [vchat setValue:[eachObject objectForKey:@"toUser"] forKey:@"toUser"];
+                [vchat setValue:[eachObject objectForKey:@"fromUser"] forKey:@"fromUser"];
+                [vchat setValue:[eachObject objectForKey:@"timestamp"] forKey:@"timestamp"];
+                
+                PFFile *thisFile = [eachObject objectForKey:@"recording"];
+                [vchat setValue:thisFile.url forKey:@"recordingURL"];
+                [self.latestFromUserArray addObject:vchat];
+            }
+            NSLog(@"Found %d new messages from this user", self.latestFromUserArray.count);
+            BOOL result = [self.latestFromUserArray writeToFile:self.pathLocalFromFile atomically:YES];
+            NSLog(@"Result of from_write is %hhd",result);
+            NSLog(@"from_Wrote to %@",self.pathLocalFromFile);
+            NSLog(@"From data is %@",self.latestFromUserArray);
+        }
+        else {
+            NSLog(@"Found no new messages from this user");
+            return;
+        }
+    }];
+    
+    // Update user's lastRetrieved date
+    user[@"lastRetrieved"] = currentDate;
+    [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (!error) {
+            NSLog(@"Updated user with lastRetrieved timestamp of %@",currentDate);
+        } else {
+            NSLog(@"Error while updating user: %@",error);
+        }
+    }];
+    
+}
+
+// Build displayable list of chats
 
 
 #pragma mark - PFLogInViewControllerDelegate

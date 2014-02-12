@@ -205,26 +205,36 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
         // the first user is always the current user ??
         // should be, because of the sort-by-distance ordering
         
-        // remove current user from list of nearby users
-        NSMutableArray *objToAdd = [[NSMutableArray alloc] initWithArray:objects];
-        int indexToRemove = 0;
-        bool duplicateFound = false;
-        for (PFUser *user in objToAdd) {
-            if ([user.objectId isEqualToString:currentUser.objectId]) {
-                duplicateFound = true;
-                break;
+        for (PFUser *eachUser in objects) {
+//            NSLog(@"Checking %@ (%@) against %@ (%@)",eachUser.objectId, eachUser.username, currentUser.objectId, currentUser.username);
+            if ([eachUser.objectId isEqualToString:currentUser.objectId] == YES) {
+                NSLog(@"Skipping %@",eachUser.username);
+            } else {
+                [self.nearbyUsers addObject:eachUser];
             }
-            indexToRemove++;
         }
-        if (duplicateFound) {
-            NSLog(@"duplicate found at position: %i", duplicateFound);
-            [objToAdd removeObject:[objToAdd objectAtIndex:indexToRemove]];
-        }
-        
-//        NSLog(@"%@", objToAdd);
-        NSLog(@"the objToAdd array has %d elements",objToAdd.count);
-                [self.nearbyUsers addObjectsFromArray:objToAdd];
-//        NSLog(@"%@", self.nearbyUsers);
+
+//        // remove current user from list of nearby users
+//        NSMutableArray *objToAdd = [[NSMutableArray alloc] initWithArray:objects];
+//        int indexToRemove = 0;
+//        bool duplicateFound = false;
+//        for (PFUser *user in objToAdd) {
+//            if ([user.objectId isEqualToString:currentUser.objectId]) {
+//                duplicateFound = true;
+//                break;
+//            }
+//            indexToRemove++;
+//        }
+//        if (duplicateFound) {
+//            NSLog(@"duplicate found at position: %i", duplicateFound);
+//            [objToAdd removeObject:[objToAdd objectAtIndex:indexToRemove]];
+//        }
+//        
+////        NSLog(@"%@", objToAdd);
+//        NSLog(@"the objToAdd array has %d elements",objToAdd.count);
+//                [self.nearbyUsers addObjectsFromArray:objToAdd];
+////        NSLog(@"%@", self.nearbyUsers);
+
         [self.tableView reloadData];
         
     }];

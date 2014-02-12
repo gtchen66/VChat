@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface VChatViewController : UIViewController <PFLogInViewControllerDelegate, PFSignUpViewControllerDelegate>
+@interface VChatViewController : UIViewController <PFLogInViewControllerDelegate, PFSignUpViewControllerDelegate, UITableViewDelegate, UITableViewDataSource>
 
 @end
