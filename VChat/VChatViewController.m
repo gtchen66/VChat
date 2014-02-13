@@ -19,13 +19,20 @@
 @property (strong, nonatomic) NSMutableArray *latestToUserArray;
 @property (strong, nonatomic) NSMutableArray *latestFromUserArray;
 
+@property (strong, nonatomic) NSMutableArray *allChatArray;
+
 @property (strong, nonatomic) NSString *pathLocalToFile;
 @property (strong, nonatomic) NSString *pathLocalFromFile;
+
+@property (strong, nonatomic) NSIndexPath *playingIndexPath;
+@property BOOL isPlaying;
 
 - (void)logOutButtonTapAction;
 - (void)initLogInController;
 
 @end
+
+// AVAudioPlayer *audioPlayer;
 
 // this should be in one location, and this should use the same value.
 // for now, comment it out and use it explicitly
@@ -50,8 +57,17 @@
     self.myVChatTableView.delegate = self;
     self.myVChatTableView.dataSource = self;
     
-    self.pathLocalToFile = @"/tmp/localFile1.plist";
+    self.pathLocalToFile = @"/tmp/sound.caf";
     self.pathLocalFromFile = @"/tmp/localFile2";
+    
+    self.allChatArray = [[NSMutableArray alloc] init];
+    
+//    audioPlayer = [[AVAudioPlayer alloc]initWithContentsOfURL:[NSURL fileURLWithPath:self.pathLocalToFile] error:nil];
+//    audioPlayer.delegate = self;
+    
+//    audioPlayer.delegate = self;
+    self.isPlaying = NO;
+
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -116,6 +132,7 @@
         
         // initialize the chat table w/ recent chats
         [self loadChattingDataFromRepository];
+        self.title = currentUser.username;
     }
 }
 
@@ -126,8 +143,8 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    NSLog(@"VChatViewController : numberOfRowsInSection");
-    return 5;
+    NSLog(@"VChatViewController : numberOfRowsInSection = %d",self.allChatArray.count);
+    return self.allChatArray.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -135,9 +152,73 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"chatViewCell"];
     }
-    cell.textLabel.text = [NSString stringWithFormat:@"chat with %d",indexPath.row];
+    
+    NSDictionary *chat = [self.allChatArray objectAtIndex:indexPath.row];
+
+    NSString *leftUser = [[NSString alloc] init];
+    NSString *rightUser = [[NSString alloc] init];
+    NSString *cellString = [[NSString alloc] init];
+    // is this a from or a to
+    if ([[chat objectForKey:@"fromUser"] isEqualToString:[PFUser currentUser].username]) {
+        // I sent this chat.  show who I sent it to.
+        rightUser = [chat objectForKey:@"toUser"];
+        cellString = [NSString stringWithFormat:@" me    ---->    %@",rightUser];
+    } else {
+        // I got this chat.  tell me who-sent-it.
+        leftUser = [chat objectForKey:@"fromUser"];
+        cellString = [NSString stringWithFormat:@"%@   ----->  me",leftUser];
+    }
+    
+    cell.textLabel.text = cellString;
+    
+// [NSString stringWithFormat:@"chat with %d",indexPath.row];
     
     return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSLog(@"VChatViewController : didSelectRowAtIndexPath (%d)", indexPath.row);
+    
+    // playback message.  if currently playing a message, then immediately ignore.
+    if (self.isPlaying == YES) {
+        NSLog(@"currently playing.  skipping");
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+        return;
+    }
+    
+    NSLog(@"Playback message");
+    NSDictionary *chat = [self.allChatArray objectAtIndex:indexPath.row];
+    NSURL *chatURL = [chat objectForKey:@"recordingURL"];
+    
+    NSLog(@"chat url is %@",chatURL);
+
+    // THIS CODE DOES NOT WORK.
+    
+//    NSError *outError;
+//    NSURL *tempURL = [NSURL fileURLWithPath:@"/tmp/sound.caf"];
+//    
+//    AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithContentsOfURL:tempURL error:&outError];
+//    NSLog(@"Error - %@",outError);
+//    
+//    player.delegate = self;
+//    if (player == nil) {
+//        NSLog(@"Error trying to play %@.",chatURL);
+//    } else {
+//        self.playingIndexPath = indexPath;
+//        NSLog(@"Playing returned %d",[player play]);
+//    }
+    
+    // now deselect this row.
+    // [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+}
+
+-(void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
+    NSLog(@"Playback finished");
+    [self.myVChatTableView deselectRowAtIndexPath:self.playingIndexPath animated:YES];
+    self.playingIndexPath = 0;
+    self.isPlaying = NO;
+    
 }
 
 // Pulls chatting data from repository, appends to local-data
@@ -157,6 +238,9 @@
         lastRetrieved = [[NSDate alloc] initWithTimeIntervalSince1970:0];
 //    }
     
+    [self.allChatArray removeAllObjects];
+    
+    // find recordings send to me
     [query whereKey:@"toUser" equalTo:user.username];
     [query whereKey:@"timestamp" greaterThan:lastRetrieved];
     
@@ -182,12 +266,18 @@
             NSLog(@"Wrote to %@",self.pathLocalToFile);
             NSLog(@"To data is %@",self.latestToUserArray);
             
+            [self.allChatArray addObjectsFromArray:self.latestToUserArray];
+            [self.myVChatTableView reloadData];
+            [self arrangeData];
         }
         else {
             NSLog(@"Found no new messages to this user");
             return;
         }
     }];
+    
+    // find recordings sent by me -- this should not be necessary, but should
+    // be kept local.  for now, this just makes the code easier.
     
     // Do I need to do this to reset the query
     query = [PFQuery queryWithClassName:@"UserRecording"];
@@ -214,6 +304,11 @@
             NSLog(@"Result of from_write is %hhd",result);
             NSLog(@"from_Wrote to %@",self.pathLocalFromFile);
             NSLog(@"From data is %@",self.latestFromUserArray);
+            
+            [self.allChatArray addObjectsFromArray:self.latestFromUserArray];
+            [self.myVChatTableView reloadData];
+            [self arrangeData];
+
         }
         else {
             NSLog(@"Found no new messages from this user");
@@ -234,6 +329,29 @@
 }
 
 // Build displayable list of chats
+-(void) arrangeData {
+    // sort the data from oldest to newest.
+    
+    NSLog(@"Presort:");
+    // before sort
+    for (NSDictionary *eachObj in self.allChatArray) {
+        NSLog(@"time: %@",[eachObj objectForKey:@"timestamp"]);
+    }
+    
+    [self.allChatArray sortUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        // each object is a NSDictionary with a timestamp value
+        NSDate *date1 = [obj1 objectForKey:@"timestamp"];
+        NSDate *date2 = [obj2 objectForKey:@"timestamp"];
+        return (NSComparisonResult)[date1 compare:date2];
+    }];
+    
+    NSLog(@"Post sort:");
+    // before sort
+    for (NSDictionary *eachObj in self.allChatArray) {
+        NSLog(@"time: %@",[eachObj objectForKey:@"timestamp"]);
+    }
+
+}
 
 
 #pragma mark - PFLogInViewControllerDelegate
