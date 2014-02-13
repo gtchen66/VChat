@@ -242,20 +242,29 @@
     // Parse implementation.
     PFQuery *query = [PFQuery queryWithClassName:@"UserRecording"];
     PFUser *user = [PFUser currentUser];
+    
     NSDate *lastRetrieved = user[@"lastRetrieved"];
     NSDate *currentDate = [[NSDate alloc] init];
     
     NSString *docsDir = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
-    self.pathLocalToFile = [docsDir stringByAppendingPathComponent:@"localToFile.plist"];
-    self.pathLocalFromFile = [docsDir stringByAppendingPathComponent:@"localFromFile.plist"];
-    
-//    if (lastRetrieved == nil) {
+//    self.pathLocalToFile = [docsDir stringByAppendingPathComponent:@"localToFile.plist"];
+//    self.pathLocalFromFile = [docsDir stringByAppendingPathComponent:@"localFromFile.plist"];
+    self.pathLocalStorage = [docsDir stringByAppendingPathComponent:[NSString stringWithFormat:@"localStorage.%@.plist",user.username]];
+
+    if (lastRetrieved == nil) {
         lastRetrieved = [[NSDate alloc] initWithTimeIntervalSince1970:0];
-//    }
+    }
     
-    [self.allChatArray removeAllObjects];
+//    [self.allChatArray removeAllObjects];
+    self.allChatArray = [[NSMutableArray alloc] initWithContentsOfFile:self.pathLocalStorage];
+    NSLog(@"allChatArray now contains %d rows",self.allChatArray.count);
+
+    if (self.allChatArray == nil) {
+        NSLog(@"allChatArray is nil");
+        self.allChatArray = [[NSMutableArray alloc] init];
+    }
     
-    // find recordings send to me
+    // find recordings sent to me
     [query whereKey:@"toUser" equalTo:user.username];
     [query whereKey:@"timestamp" greaterThan:lastRetrieved];
     
@@ -345,6 +354,7 @@
             NSLog(@"Error while updating user: %@",error);
         }
     }];
+    [self.myVChatTableView reloadData];
     
 }
 
