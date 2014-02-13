@@ -11,7 +11,9 @@
 #import "LogInViewController.h"
 #import "SignupViewController.h"
 
-@interface VChatViewController ()
+@interface VChatViewController () {
+    dispatch_queue_t myQueue;
+}
 
 @property (nonatomic, strong) LogInViewController *logInViewController;
 @property (strong, nonatomic) IBOutlet UITableView *myVChatTableView;
@@ -23,6 +25,7 @@
 
 @property (strong, nonatomic) NSString *pathLocalToFile;
 @property (strong, nonatomic) NSString *pathLocalFromFile;
+@property (strong, nonatomic) NSString *pathLocalStorage;
 
 @property (strong, nonatomic) NSIndexPath *playingIndexPath;
 @property BOOL isPlaying;
@@ -60,6 +63,11 @@
     self.pathLocalToFile = @"/tmp/sound.caf";
     self.pathLocalFromFile = @"/tmp/localFile2";
     
+    NSString *docsDir = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
+    self.pathLocalToFile = [docsDir stringByAppendingPathComponent:@"localToFile.plist"];
+    self.pathLocalFromFile = [docsDir stringByAppendingPathComponent:@"localFromFile.plist"];
+    self.pathLocalStorage = [docsDir stringByAppendingPathComponent:@"localStorage.plist"];
+
     self.allChatArray = [[NSMutableArray alloc] init];
     
 //    audioPlayer = [[AVAudioPlayer alloc]initWithContentsOfURL:[NSURL fileURLWithPath:self.pathLocalToFile] error:nil];
@@ -158,17 +166,24 @@
     NSString *leftUser = [[NSString alloc] init];
     NSString *rightUser = [[NSString alloc] init];
     NSString *cellString = [[NSString alloc] init];
+    NSDate *timestamp = [chat objectForKey:@"timestamp"];
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"MM/dd HH:mm"];
+    NSString *shortTime = [dateFormatter stringFromDate:timestamp];
+    
     // is this a from or a to
     if ([[chat objectForKey:@"fromUser"] isEqualToString:[PFUser currentUser].username]) {
         // I sent this chat.  show who I sent it to.
         rightUser = [chat objectForKey:@"toUser"];
-        cellString = [NSString stringWithFormat:@" me    ---->    %@",rightUser];
+        cellString = [NSString stringWithFormat:@" me    ---->    %@  %@",rightUser,shortTime];
     } else {
         // I got this chat.  tell me who-sent-it.
         leftUser = [chat objectForKey:@"fromUser"];
-        cellString = [NSString stringWithFormat:@"%@   ----->  me",leftUser];
+        cellString = [NSString stringWithFormat:@"%@   ----->  me   %@",leftUser,shortTime];
     }
     
+    cell.textLabel.font = [UIFont fontWithName:@"Times" size:14];
     cell.textLabel.text = cellString;
     
 // [NSString stringWithFormat:@"chat with %d",indexPath.row];
@@ -188,25 +203,25 @@
     
     NSLog(@"Playback message");
     NSDictionary *chat = [self.allChatArray objectAtIndex:indexPath.row];
-    NSURL *chatURL = [chat objectForKey:@"recordingURL"];
-    
-    NSLog(@"chat url is %@",chatURL);
+//    NSURL *chatURL = [chat objectForKey:@"recordingURL"];    
+//    NSLog(@"chat url is %@",chatURL);
 
-    // THIS CODE DOES NOT WORK.
-    
-//    NSError *outError;
+    NSData *soundData = [chat objectForKey:@"sound"];
+    NSError *outError;
 //    NSURL *tempURL = [NSURL fileURLWithPath:@"/tmp/sound.caf"];
-//    
-//    AVAudioPlayer *player = [[AVAudioPlayer alloc] initWithContentsOfURL:tempURL error:&outError];
+    
+//    [vchat setValue:playData forKey:@"sound"];
+
+    chatPlayer = [[AVAudioPlayer alloc] initWithData:soundData error:&outError];
 //    NSLog(@"Error - %@",outError);
-//    
-//    player.delegate = self;
-//    if (player == nil) {
-//        NSLog(@"Error trying to play %@.",chatURL);
-//    } else {
-//        self.playingIndexPath = indexPath;
-//        NSLog(@"Playing returned %d",[player play]);
-//    }
+    
+    if (chatPlayer == nil) {
+        NSLog(@"Error trying to play %@.",[chat objectForKey:@"timestamp"]);
+    } else {
+        chatPlayer.delegate = self;
+        self.playingIndexPath = indexPath;
+        NSLog(@"Playing returned %d",[chatPlayer play]);
+    }
     
     // now deselect this row.
     // [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -254,21 +269,19 @@
                 [vchat setValue:[eachObject objectForKey:@"fromUser"] forKey:@"fromUser"];
                 [vchat setValue:[eachObject objectForKey:@"timestamp"] forKey:@"timestamp"];
 
-                // recording...
-                PFFile *thisFile = [eachObject objectForKey:@"recording"];
-                [vchat setValue:thisFile.url forKey:@"recordingURL"];
+                // link to recording...
+                [vchat setValue:[eachObject objectForKey:@"recording"] forKey:@"thisFile"];
+                [vchat setValue:@"NO" forKey:@"readyToPlay"];
 
                 [self.latestToUserArray addObject:vchat];
             }
             NSLog(@"Found %d new messages to this user", self.latestToUserArray.count);
-            BOOL result = [self.latestToUserArray writeToFile:self.pathLocalToFile atomically:YES];
-            NSLog(@"Result of write is %hhd",result);
-            NSLog(@"Wrote to %@",self.pathLocalToFile);
-            NSLog(@"To data is %@",self.latestToUserArray);
             
             [self.allChatArray addObjectsFromArray:self.latestToUserArray];
-            [self.myVChatTableView reloadData];
             [self arrangeData];
+            [self backgroundOperation];
+            [self.myVChatTableView reloadData];
+
         }
         else {
             NSLog(@"Found no new messages to this user");
@@ -289,25 +302,32 @@
         self.latestFromUserArray = [NSMutableArray array];
         if (objects.count > 0) {
             for (PFObject *eachObject in objects) {
+                
+                // TODO. Change this to a custom model.
+                
                 NSMutableDictionary *vchat = [[NSMutableDictionary alloc] init];
                 
                 [vchat setValue:[eachObject objectForKey:@"toUser"] forKey:@"toUser"];
                 [vchat setValue:[eachObject objectForKey:@"fromUser"] forKey:@"fromUser"];
                 [vchat setValue:[eachObject objectForKey:@"timestamp"] forKey:@"timestamp"];
                 
+                
                 PFFile *thisFile = [eachObject objectForKey:@"recording"];
-                [vchat setValue:thisFile.url forKey:@"recordingURL"];
+//                [vchat setValue:thisFile.url forKey:@"recordingURL"];
+                [vchat setValue:thisFile forKey:@"thisFile"];
+                [vchat setValue:@"NO" forKey:@"readyToPlay"];
+
                 [self.latestFromUserArray addObject:vchat];
             }
             NSLog(@"Found %d new messages from this user", self.latestFromUserArray.count);
-            BOOL result = [self.latestFromUserArray writeToFile:self.pathLocalFromFile atomically:YES];
-            NSLog(@"Result of from_write is %hhd",result);
-            NSLog(@"from_Wrote to %@",self.pathLocalFromFile);
-            NSLog(@"From data is %@",self.latestFromUserArray);
             
+            // start background operation
             [self.allChatArray addObjectsFromArray:self.latestFromUserArray];
-            [self.myVChatTableView reloadData];
             [self arrangeData];
+            [self backgroundOperation];
+            // this will load the view.  actual data will still be unavailable until
+            // download finish.
+            [self.myVChatTableView reloadData];
 
         }
         else {
@@ -325,6 +345,38 @@
             NSLog(@"Error while updating user: %@",error);
         }
     }];
+    
+}
+
+- (void) backgroundOperation {
+    if (!myQueue) {
+        myQueue = dispatch_queue_create("load.parse.data", NULL);
+    }
+    dispatch_async(myQueue, ^{[self downloadData];});
+    NSLog(@"started downloadData");
+}
+
+- (void) downloadData {
+    // go through the latestFromUserArray and fix things.
+    for (NSMutableDictionary *vchat in self.allChatArray) {
+
+        if ([[vchat objectForKey:@"readyToPlay"] isEqualToString:@"NO"]) {
+            // need to download
+
+            PFFile *thisFile = [vchat objectForKey:@"thisFile"];
+            NSData *playData = [thisFile getData];
+            [vchat setValue:playData forKey:@"sound"];
+        
+            // this allows the file to be written.
+            [vchat setValue:NULL forKey:@"thisFile"];
+            [vchat setValue:@"YES" forKey:@"readyToPlay"];
+            NSLog(@"finished downloading %@ msg",[vchat objectForKey:@"timestamp"]);
+        } else {
+            NSLog(@"already downloaded %@ msg",[vchat objectForKey:@"timestamp"]);
+        }
+    }
+    [self.allChatArray writeToFile:self.pathLocalStorage atomically:YES];
+    NSLog(@"saved downloaded to %@",self.pathLocalStorage);
     
 }
 
