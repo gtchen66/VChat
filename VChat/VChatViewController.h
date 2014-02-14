@@ -10,6 +10,8 @@
 #import <AVFoundation/AVFoundation.h>
 
 
-@interface VChatViewController : UIViewController <PFLogInViewControllerDelegate, PFSignUpViewControllerDelegate, UITableViewDelegate, UITableViewDataSource, AVAudioPlayerDelegate>
+@interface VChatViewController : UIViewController <PFLogInViewControllerDelegate, PFSignUpViewControllerDelegate, UITableViewDelegate, UITableViewDataSource, AVAudioPlayerDelegate> {
+    AVAudioPlayer *chatPlayer;
+}
 
 @end

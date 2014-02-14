@@ -40,7 +40,7 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
 
 - (void)viewDidLoad
 {
-//    NSLog(@"calling view did load");
+    NSLog(@"NearbyTableViewController : viewDidLoad");
     [super viewDidLoad];
     self.title = @"Nearby";
     self.nearbyUsers = [[NSMutableArray alloc] init];
