@@ -11,11 +11,13 @@
 @protocol NearbyUserCellDelegate
 @optional
 - (void)onClickChatButton:(id)sender;
+- (void)onClickAddButton:(id)sender;
 
 @end
 
 @interface NearbyUserCell : UITableViewCell
 
+@property (weak, nonatomic) IBOutlet UIButton *addButton;
 @property (weak, nonatomic) IBOutlet UILabel *affiliationLabel;
 @property (weak, nonatomic) IBOutlet UILabel *positionLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *profileImageView;

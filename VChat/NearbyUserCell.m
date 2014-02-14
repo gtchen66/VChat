@@ -29,6 +29,8 @@
 
 - (IBAction)onClickAddButton:(id)sender {
     NSLog(@"NearbyUserCell : onClickAddButton");
+    
+    [self.delegate onClickAddButton:self];
 }
 
 //- (IBAction)onClickChatButton:(id)sender {

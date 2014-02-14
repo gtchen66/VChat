@@ -21,6 +21,8 @@
 		532568C318A855C400A59E35 /* EditFieldViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 532568C118A855C400A59E35 /* EditFieldViewController.m */; };
 		532568C418A855C400A59E35 /* EditFieldViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 532568C218A855C400A59E35 /* EditFieldViewController.xib */; };
 		535DD6ED1891E78600D48B95 /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 535DD6EC1891E78600D48B95 /* FacebookSDK.framework */; };
+		5377656418ADFD6D00DC8E4E /* ContactsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5377656218ADFD6D00DC8E4E /* ContactsViewController.m */; };
+		5377656518ADFD6D00DC8E4E /* ContactsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5377656318ADFD6D00DC8E4E /* ContactsViewController.xib */; };
 		53BA251818A73F4900C328E8 /* MyProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 53BA251618A73F4900C328E8 /* MyProfileViewController.m */; };
 		53BA251918A73F4900C328E8 /* MyProfileViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 53BA251718A73F4900C328E8 /* MyProfileViewController.xib */; };
 		53BA251C18A7819100C328E8 /* MyProfileCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 53BA251B18A7819100C328E8 /* MyProfileCell.m */; };
@@ -99,6 +101,9 @@
 		532568C118A855C400A59E35 /* EditFieldViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditFieldViewController.m; sourceTree = "<group>"; };
 		532568C218A855C400A59E35 /* EditFieldViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EditFieldViewController.xib; sourceTree = "<group>"; };
 		535DD6EC1891E78600D48B95 /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FacebookSDK.framework; sourceTree = "<group>"; };
+		5377656118ADFD6D00DC8E4E /* ContactsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ContactsViewController.h; path = VChat/ContactsViewController.h; sourceTree = "<group>"; };
+		5377656218ADFD6D00DC8E4E /* ContactsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ContactsViewController.m; path = VChat/ContactsViewController.m; sourceTree = "<group>"; };
+		5377656318ADFD6D00DC8E4E /* ContactsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = ContactsViewController.xib; path = VChat/ContactsViewController.xib; sourceTree = "<group>"; };
 		53BA251518A73F4900C328E8 /* MyProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyProfileViewController.h; sourceTree = "<group>"; };
 		53BA251618A73F4900C328E8 /* MyProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyProfileViewController.m; sourceTree = "<group>"; };
 		53BA251718A73F4900C328E8 /* MyProfileViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MyProfileViewController.xib; sourceTree = "<group>"; };
@@ -220,6 +225,17 @@
 			name = "Profile and Settings";
 			sourceTree = "<group>";
 		};
+		5377656618ADFD8300DC8E4E /* Contacts */ = {
+			isa = PBXGroup;
+			children = (
+				5377656118ADFD6D00DC8E4E /* ContactsViewController.h */,
+				5377656218ADFD6D00DC8E4E /* ContactsViewController.m */,
+				5377656318ADFD6D00DC8E4E /* ContactsViewController.xib */,
+			);
+			name = Contacts;
+			path = ..;
+			sourceTree = "<group>";
+		};
 		53F3C19A1897755F00422FF2 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
@@ -304,6 +320,7 @@
 		B5FDE9621890C8A100A2AAF7 /* VChat */ = {
 			isa = PBXGroup;
 			children = (
+				5377656618ADFD8300DC8E4E /* Contacts */,
 				532568BA18A8536F00A59E35 /* Profile and Settings */,
 				53F3C1CE189F529800422FF2 /* Views */,
 				B5FDE96B1890C8A100A2AAF7 /* AppDelegate.h */,
@@ -460,6 +477,7 @@
 				53F3C1B61897756C00422FF2 /* Logo.png in Resources */,
 				53F3C1B31897756C00422FF2 /* Facebook.png in Resources */,
 				53F3C1B81897756C00422FF2 /* SignUp.png in Resources */,
+				5377656518ADFD6D00DC8E4E /* ContactsViewController.xib in Resources */,
 				B5ECEEC6189100670012F86E /* ChattingTableViewController.xib in Resources */,
 				53F3C1B11897756C00422FF2 /* Exit.png in Resources */,
 				53F3C1B01897756C00422FF2 /* Default-568h@2x.png in Resources */,
@@ -522,6 +540,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B5ECEEBB189100370012F86E /* ChatsTableViewController.m in Sources */,
+				5377656418ADFD6D00DC8E4E /* ContactsViewController.m in Sources */,
 				532568C318A855C400A59E35 /* EditFieldViewController.m in Sources */,
 				53BA251C18A7819100C328E8 /* MyProfileCell.m in Sources */,
 				B5FDE96D1890C8A100A2AAF7 /* AppDelegate.m in Sources */,

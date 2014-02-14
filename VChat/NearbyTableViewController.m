@@ -15,8 +15,10 @@
 @interface NearbyTableViewController ()
 
 @property (nonatomic, strong) NSMutableArray *nearbyUsers;
+@property (nonatomic, strong) NSMutableArray *friends;
 
 - (void)loadData;
+- (void)modifyAddButton:(NSString *)title;
 
 @end
 
@@ -96,6 +98,26 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
     } else {
         [cell.profileImageView setImageWithURL:[NSURL URLWithString:user[@"profileImage"]]];
     }
+    
+    NSLog(@"looping through friends");
+    // Update the Add button to the appropriate status if there is already a friend relations
+    // perhaps find a better way to find user in the array than to loop through every friend
+    for (PFObject *friend in self.friends) {
+        NSLog(@"%@", friend);
+        PFUser *to = [friend objectForKey:@"to"];
+        PFUser *from = [friend objectForKey:@"from"];
+        if ([user.objectId isEqualToString:from.objectId] || [user.objectId isEqualToString:to.objectId]) {
+            NSLog(@"friend found");
+            // if user is not blocked, display either "Pending" or "Friends"
+            if ([friend[@"status"] isEqualToString:@"blocked"] == NO) {
+                cell.addButton.backgroundColor = [UIColor whiteColor];
+                [cell.addButton setEnabled:NO];
+                [cell.addButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+                [cell.addButton setTitle:friend[@"status"] forState:UIControlStateNormal];
+            }
+        }
+    }
+    
 //    cell.clickChatButton.tag = indexPath.row;
     
 //    objc_setAssociatedObject(cell.userNameLabel, &indexPathKey, indexPath, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
@@ -126,44 +148,33 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
 
 }
 
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
+- (void)onClickAddButton:(id)sender {
+    // TODO - present friend request text
+    
+    /* Create a relationship record with status pending */
+    
+    //
+    NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
+    PFUser *userToAdd = self.nearbyUsers[indexPath.row];
+    
+    PFObject *friend = [PFObject objectWithClassName:@"Friend"];
+    [friend setObject:[PFUser currentUser] forKey:@"from"];
+    [friend setObject:userToAdd forKey:@"to"];
+    [friend setObject:@"pending" forKey:@"status"];
+    [friend saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        NSLog(@"friend request sent");
+        
+        // fade Add button and show "friends" instead
+        UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section]];
+        NearbyUserCell *nearbyCell = (NearbyUserCell* )((id)cell);
+        nearbyCell.addButton.backgroundColor = [UIColor whiteColor];
+        [nearbyCell.addButton setEnabled:NO];
+        [nearbyCell.addButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        [nearbyCell.addButton setTitle:@"Pending" forState:UIControlStateNormal];
+        
+    }];
 }
-*/
 
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    }   
-    else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
 
 /*
 #pragma mark - Table view delegate
@@ -183,16 +194,26 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
  
  */
 
-//
-// This code needs to be updated to NOT include the current user
-//
 
 - (void)loadData {
     PFUser *currentUser = [PFUser currentUser];
     
+    // populate friends list so we can determine whether to show the Add button or not later on
+    PFQuery *fromQuery = [PFQuery queryWithClassName:@"Friend"];
+    [fromQuery whereKey:@"from" equalTo:currentUser];
+    
+    PFQuery *toQuery = [PFQuery queryWithClassName:@"Friend"];
+    [toQuery whereKey:@"to" equalTo:currentUser];
+    
+    PFQuery *friendQuery = [PFQuery orQueryWithSubqueries:@[fromQuery, toQuery]];
+    [friendQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        self.friends = [[NSMutableArray alloc] initWithArray:objects];
+        //NSLog(@"%@", self.friends);
+    }];
+
+    
     /****** SHOULD PROBABLY QUERY FOR LOCATION AGAIN INSTEAD OF READING USER OBJECT *********/
     PFGeoPoint *userGeoPoint = currentUser[@"location"];
-//    NSLog(@"%@", userGeoPoint);
     // Find users near a given location
     PFQuery *userQuery = [PFUser query];
     [userQuery whereKey:@"location"
@@ -200,11 +221,10 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
             withinMiles:10.0];
     userQuery.limit = 10;
     [userQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        NSLog(@"updating nearbyusers.  returned objects has %d entries",objects.count);
+//        NSLog(@"updating nearbyusers.  returned objects has %d entries",objects.count);
         
-        // the first user is always the current user ??
-        // should be, because of the sort-by-distance ordering
-        
+        // Remove current user from user list
+        // TODO - remove blocked users from showing up
         for (PFUser *eachUser in objects) {
 //            NSLog(@"Checking %@ (%@) against %@ (%@)",eachUser.objectId, eachUser.username, currentUser.objectId, currentUser.username);
             if ([eachUser.objectId isEqualToString:currentUser.objectId] == YES) {
@@ -214,30 +234,13 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
             }
         }
 
-//        // remove current user from list of nearby users
-//        NSMutableArray *objToAdd = [[NSMutableArray alloc] initWithArray:objects];
-//        int indexToRemove = 0;
-//        bool duplicateFound = false;
-//        for (PFUser *user in objToAdd) {
-//            if ([user.objectId isEqualToString:currentUser.objectId]) {
-//                duplicateFound = true;
-//                break;
-//            }
-//            indexToRemove++;
-//        }
-//        if (duplicateFound) {
-//            NSLog(@"duplicate found at position: %i", duplicateFound);
-//            [objToAdd removeObject:[objToAdd objectAtIndex:indexToRemove]];
-//        }
-//        
-////        NSLog(@"%@", objToAdd);
-//        NSLog(@"the objToAdd array has %d elements",objToAdd.count);
-//                [self.nearbyUsers addObjectsFromArray:objToAdd];
-////        NSLog(@"%@", self.nearbyUsers);
-
         [self.tableView reloadData];
         
     }];
+}
+
+- (void)modifyAddButton:(NSString *)title {
+    
 }
 
 @end

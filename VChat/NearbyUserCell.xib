@@ -68,6 +68,7 @@
                 </subviews>
             </tableViewCellContentView>
             <connections>
+                <outlet property="addButton" destination="D8l-Fo-0Ql" id="qW5-fk-KZA"/>
                 <outlet property="affiliationLabel" destination="Nzd-nF-zOx" id="BBU-3d-sIV"/>
                 <outlet property="positionLabel" destination="ITb-ax-2JX" id="XnF-rw-WwW"/>
                 <outlet property="profileImageView" destination="8wE-FM-YsH" id="5RZ-gf-6Ec"/>

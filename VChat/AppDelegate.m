@@ -10,6 +10,7 @@
 #import "VChatViewController.h"
 #import "NearbyTableViewController.h"
 #import "MyProfileViewController.h"
+#import "ContactsViewController.h"
 
 #define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
@@ -36,27 +37,32 @@
     VChatViewController *vc = [[VChatViewController alloc] init];
     UINavigationController *nvc1 = [[UINavigationController alloc] initWithRootViewController:vc];
     
+    ContactsViewController *cc = [[ContactsViewController alloc] init];
+    UINavigationController *nvc2 = [[UINavigationController alloc] initWithRootViewController:cc];
     
     NearbyTableViewController *nb = [[NearbyTableViewController alloc] init];
-    UINavigationController *nvc2 = [[UINavigationController alloc] initWithRootViewController:nb];
+    UINavigationController *nvc3 = [[UINavigationController alloc] initWithRootViewController:nb];
     
     MyProfileViewController *pv = [[MyProfileViewController alloc] init];
-    UINavigationController *nvc3 = [[UINavigationController alloc] initWithRootViewController:pv];
+    UINavigationController *nvc4 = [[UINavigationController alloc] initWithRootViewController:pv];
     
     UITabBarController *tabBarController = [[UITabBarController alloc] init];
-    tabBarController.viewControllers = @[nvc1, nvc2, nvc3];
+    tabBarController.viewControllers = @[nvc1, nvc2, nvc3, nvc4];
     UITabBar *tabBar = tabBarController.tabBar;
     UITabBarItem *tabBarItem1 = [tabBar.items objectAtIndex:0];
     UITabBarItem *tabBarItem2 = [tabBar.items objectAtIndex:1];
     UITabBarItem *tabBarItem3 = [tabBar.items objectAtIndex:2];
+    UITabBarItem *tabBarItem4 = [tabBar.items objectAtIndex:3];
 
     tabBarItem1.title = @"Chat";
-    tabBarItem2.title = @"Nearby";
-    tabBarItem3.title = @"My Profile";
+    tabBarItem2.title = @"Contacts";
+    tabBarItem3.title = @"Nearby";
+    tabBarItem4.title = @"My Profile";
     
     tabBarItem1.image = [UIImage imageNamed:@"ChatIcon"];
-    tabBarItem2.image = [UIImage imageNamed:@"NearbyIcon"];
-    tabBarItem3.image = [UIImage imageNamed:@"ProfileIcon"];
+    tabBarItem2.image = [UIImage imageNamed:@"ContactsIcon"];
+    tabBarItem3.image = [UIImage imageNamed:@"NearbyIcon"];
+    tabBarItem4.image = [UIImage imageNamed:@"ProfileIcon"];
     
     tabBarController.tabBar.backgroundColor = UIColorFromRGB(0x4099FF);
     self.window.rootViewController = tabBarController;
