@@ -8,7 +8,8 @@
 
 #import <UIKit/UIKit.h>
 #import "NearbyUserCell.h"
+#import "MBProgressHUD.h"
 
-@interface NearbyTableViewController : UITableViewController <UITableViewDelegate, UITableViewDataSource, NearbyUserCellDelegate>
+@interface NearbyTableViewController : UITableViewController <UITableViewDelegate, UITableViewDataSource, NearbyUserCellDelegate, MBProgressHUDDelegate>
 
 @end

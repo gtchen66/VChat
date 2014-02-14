@@ -21,6 +21,9 @@
                     <color key="backgroundColor" red="0.97150857604035423" green="0.97311463647959184" blue="0.95440667230620291" alpha="1" colorSpace="calibratedRGB"/>
                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                     <textInputTraits key="textInputTraits" returnKeyType="done"/>
+                    <connections>
+                        <outlet property="delegate" destination="-1" id="ddH-CG-GAM"/>
+                    </connections>
                 </textField>
             </subviews>
             <color key="backgroundColor" red="0.95590050373900004" green="0.95587324046317934" blue="0.97311463647959184" alpha="1" colorSpace="calibratedRGB"/>

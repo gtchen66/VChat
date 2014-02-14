@@ -54,6 +54,13 @@
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    NSLog(@"textFiedShouldReturn");
+    [self onSaveButton];
+    [textField resignFirstResponder];
+    return YES;
+}
+
 - (void)onSaveButton {
     // Update user information
     PFUser *currentUser = [PFUser currentUser];
