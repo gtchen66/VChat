@@ -10,6 +10,7 @@
 #import "ChatsTableViewController.h"
 #import "LogInViewController.h"
 #import "SignupViewController.h"
+#import "VChatCell.h"
 
 @interface VChatViewController () {
     dispatch_queue_t myQueue;
@@ -28,6 +29,7 @@
 @property (strong, nonatomic) NSString *pathLocalStorage;
 
 @property (strong, nonatomic) NSIndexPath *playingIndexPath;
+@property NSInteger rowIsPlaying;
 @property BOOL isPlaying;
 
 - (void)logOutButtonTapAction;
@@ -57,6 +59,9 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     
+    UINib *customNib = [UINib nibWithNibName:@"VChatCell" bundle:nil];
+    [self.myVChatTableView registerNib:customNib forCellReuseIdentifier:@"VChatCell"];
+    
     self.myVChatTableView.delegate = self;
     self.myVChatTableView.dataSource = self;
     
@@ -75,6 +80,7 @@
     
 //    audioPlayer.delegate = self;
     self.isPlaying = NO;
+    self.rowIsPlaying = -1;
 
 }
 
@@ -156,10 +162,19 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"chatViewCell"];
-    if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"chatViewCell"];
+
+    static NSString *vChatCellIdentifier = @"VChatCell";
+    
+    VChatCell *vcell = [tableView dequeueReusableCellWithIdentifier:vChatCellIdentifier];
+    if (vcell == nil) {
+        NSLog(@"WARNING - vcell was nil");
+        vcell = [[VChatCell alloc] init];
     }
+    
+//    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:vChatCellIdentifier];
+//    if (cell == nil) {
+//        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"chatViewCell"];
+//    }
     
     NSDictionary *chat = [self.allChatArray objectAtIndex:indexPath.row];
 
@@ -176,41 +191,52 @@
     if ([[chat objectForKey:@"fromUser"] isEqualToString:[PFUser currentUser].username]) {
         // I sent this chat.  show who I sent it to.
         rightUser = [chat objectForKey:@"toUser"];
-        cellString = [NSString stringWithFormat:@" me    ---->    %@  %@",rightUser,shortTime];
+        cellString = [NSString stringWithFormat:@" me    ---->    %@",rightUser];
     } else {
         // I got this chat.  tell me who-sent-it.
         leftUser = [chat objectForKey:@"fromUser"];
-        cellString = [NSString stringWithFormat:@"%@   ----->  me   %@",leftUser,shortTime];
+        cellString = [NSString stringWithFormat:@"%@   ----->  me",leftUser];
     }
     
-    cell.textLabel.font = [UIFont fontWithName:@"Times" size:14];
-    cell.textLabel.text = cellString;
+//    cell.textLabel.font = [UIFont fontWithName:@"Times" size:14];
+    vcell.myVChatCellLabel.text = cellString;
+    vcell.myVChatCellTimeLabel.text = shortTime;
+//    cell.textLabel.text = cellString;
     
 // [NSString stringWithFormat:@"chat with %d",indexPath.row];
+    return vcell;
     
-    return cell;
+//    return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     NSLog(@"VChatViewController : didSelectRowAtIndexPath (%d)", indexPath.row);
     
     // playback message.  if currently playing a message, then immediately ignore.
-    if (self.isPlaying == YES) {
-        NSLog(@"currently playing.  skipping");
-        [tableView deselectRowAtIndexPath:indexPath animated:YES];
-        return;
+    if (self.rowIsPlaying > -1) {
+        // playback is occurring.
+        if (self.rowIsPlaying == indexPath.row) {
+            // stop current playback.
+            // TODO - enable a method for pausing playback, not just stopping.
+
+            [chatPlayer stop];
+            [tableView deselectRowAtIndexPath:indexPath animated:YES];
+            self.rowIsPlaying = -1;
+            return;
+        }
     }
+    
+//    if (self.isPlaying == YES) {
+//        NSLog(@"currently playing.  skipping");
+//        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+//        return;
+//    }
     
     NSLog(@"Playback message");
     NSDictionary *chat = [self.allChatArray objectAtIndex:indexPath.row];
-//    NSURL *chatURL = [chat objectForKey:@"recordingURL"];    
-//    NSLog(@"chat url is %@",chatURL);
 
     NSData *soundData = [chat objectForKey:@"sound"];
     NSError *outError;
-//    NSURL *tempURL = [NSURL fileURLWithPath:@"/tmp/sound.caf"];
-    
-//    [vchat setValue:playData forKey:@"sound"];
 
     chatPlayer = [[AVAudioPlayer alloc] initWithData:soundData error:&outError];
 //    NSLog(@"Error - %@",outError);
@@ -221,11 +247,15 @@
         chatPlayer.delegate = self;
         self.playingIndexPath = indexPath;
         NSLog(@"Playing returned %d",[chatPlayer play]);
+        self.rowIsPlaying = indexPath.row;
     }
     
     // now deselect this row.
     // [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
+}
+- (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSLog(@"VChatViewController : didDeselectRowAtIndexPath (%d)",indexPath.row);
 }
 
 -(void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
@@ -233,7 +263,7 @@
     [self.myVChatTableView deselectRowAtIndexPath:self.playingIndexPath animated:YES];
     self.playingIndexPath = 0;
     self.isPlaying = NO;
-    
+    self.rowIsPlaying = -1;
 }
 
 // Pulls chatting data from repository, appends to local-data
@@ -356,6 +386,8 @@
     }];
     [self.myVChatTableView reloadData];
     
+    [self.myVChatTableView setContentOffset:CGPointMake(0, self.myVChatTableView.contentSize.height - self.myVChatTableView.frame.size.height)];
+
 }
 
 - (void) backgroundOperation {
