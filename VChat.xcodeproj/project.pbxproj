@@ -50,6 +50,9 @@
 		53F3C1CD189F527E00422FF2 /* NearbyUserCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 53F3C1CC189F527E00422FF2 /* NearbyUserCell.xib */; };
 		B507647218A4AE2D00ECE2F5 /* ChattingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B507647018A4AE2D00ECE2F5 /* ChattingViewController.m */; };
 		B507647318A4AE2D00ECE2F5 /* ChattingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B507647118A4AE2D00ECE2F5 /* ChattingViewController.xib */; };
+		B527184118AEEA8E007C6E5E /* VChatCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B527184018AEEA8E007C6E5E /* VChatCell.m */; };
+		B527184318AEEAA2007C6E5E /* VChatCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B527184218AEEAA2007C6E5E /* VChatCell.xib */; };
+		B527191418B1C702007C6E5E /* VChatDrawingView.m in Sources */ = {isa = PBXBuildFile; fileRef = B527191318B1C702007C6E5E /* VChatDrawingView.m */; };
 		B5ECEEBB189100370012F86E /* ChatsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5ECEEB9189100370012F86E /* ChatsTableViewController.m */; };
 		B5ECEEBC189100370012F86E /* ChatsTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B5ECEEBA189100370012F86E /* ChatsTableViewController.xib */; };
 		B5ECEEC0189100530012F86E /* FriendsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5ECEEBE189100530012F86E /* FriendsTableViewController.m */; };
@@ -136,6 +139,11 @@
 		B507646F18A4AE2D00ECE2F5 /* ChattingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChattingViewController.h; sourceTree = "<group>"; };
 		B507647018A4AE2D00ECE2F5 /* ChattingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChattingViewController.m; sourceTree = "<group>"; };
 		B507647118A4AE2D00ECE2F5 /* ChattingViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChattingViewController.xib; sourceTree = "<group>"; };
+		B527183F18AEEA8E007C6E5E /* VChatCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VChatCell.h; sourceTree = "<group>"; };
+		B527184018AEEA8E007C6E5E /* VChatCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VChatCell.m; sourceTree = "<group>"; };
+		B527184218AEEAA2007C6E5E /* VChatCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = VChatCell.xib; sourceTree = "<group>"; };
+		B527191218B1C702007C6E5E /* VChatDrawingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VChatDrawingView.h; sourceTree = "<group>"; };
+		B527191318B1C702007C6E5E /* VChatDrawingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VChatDrawingView.m; sourceTree = "<group>"; };
 		B5ECEEB8189100370012F86E /* ChatsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatsTableViewController.h; sourceTree = "<group>"; };
 		B5ECEEB9189100370012F86E /* ChatsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatsTableViewController.m; sourceTree = "<group>"; };
 		B5ECEEBA189100370012F86E /* ChatsTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChatsTableViewController.xib; sourceTree = "<group>"; };
@@ -273,6 +281,21 @@
 			name = Views;
 			sourceTree = "<group>";
 		};
+		B527183E18AEE907007C6E5E /* VChatVC */ = {
+			isa = PBXGroup;
+			children = (
+				B5FDE98B1890C9D000A2AAF7 /* VChatViewController.h */,
+				B5FDE98C1890C9D000A2AAF7 /* VChatViewController.m */,
+				53F3C1751896575B00422FF2 /* VChatViewController.xib */,
+				B527183F18AEEA8E007C6E5E /* VChatCell.h */,
+				B527184018AEEA8E007C6E5E /* VChatCell.m */,
+				B527184218AEEAA2007C6E5E /* VChatCell.xib */,
+				B527191218B1C702007C6E5E /* VChatDrawingView.h */,
+				B527191318B1C702007C6E5E /* VChatDrawingView.m */,
+			);
+			name = VChatVC;
+			sourceTree = "<group>";
+		};
 		B5FDE9501890C8A100A2AAF7 = {
 			isa = PBXGroup;
 			children = (
@@ -320,6 +343,7 @@
 		B5FDE9621890C8A100A2AAF7 /* VChat */ = {
 			isa = PBXGroup;
 			children = (
+				B527183E18AEE907007C6E5E /* VChatVC */,
 				5377656618ADFD8300DC8E4E /* Contacts */,
 				532568BA18A8536F00A59E35 /* Profile and Settings */,
 				53F3C1CE189F529800422FF2 /* Views */,
@@ -327,9 +351,6 @@
 				B5FDE96C1890C8A100A2AAF7 /* AppDelegate.m */,
 				B5FDE96E1890C8A100A2AAF7 /* Images.xcassets */,
 				B5FDE9631890C8A100A2AAF7 /* Supporting Files */,
-				B5FDE98B1890C9D000A2AAF7 /* VChatViewController.h */,
-				B5FDE98C1890C9D000A2AAF7 /* VChatViewController.m */,
-				53F3C1751896575B00422FF2 /* VChatViewController.xib */,
 				53F3C17218962E3100422FF2 /* LogInViewController.h */,
 				53F3C17318962E3100422FF2 /* LogInViewController.m */,
 				B5FDE9901890CDC100A2AAF7 /* SignupViewController.h */,
@@ -472,6 +493,7 @@
 				53BA251918A73F4900C328E8 /* MyProfileViewController.xib in Resources */,
 				53F3C1BB1897756C00422FF2 /* Twitter.png in Resources */,
 				53F3C1BC1897756C00422FF2 /* TwitterDown.png in Resources */,
+				B527184318AEEAA2007C6E5E /* VChatCell.xib in Resources */,
 				53F3C1CD189F527E00422FF2 /* NearbyUserCell.xib in Resources */,
 				53F3C1761896575B00422FF2 /* VChatViewController.xib in Resources */,
 				53F3C1B61897756C00422FF2 /* Logo.png in Resources */,
@@ -543,6 +565,7 @@
 				5377656418ADFD6D00DC8E4E /* ContactsViewController.m in Sources */,
 				532568C318A855C400A59E35 /* EditFieldViewController.m in Sources */,
 				53BA251C18A7819100C328E8 /* MyProfileCell.m in Sources */,
+				B527191418B1C702007C6E5E /* VChatDrawingView.m in Sources */,
 				B5FDE96D1890C8A100A2AAF7 /* AppDelegate.m in Sources */,
 				53BA251818A73F4900C328E8 /* MyProfileViewController.m in Sources */,
 				53F3C17418962E3100422FF2 /* LogInViewController.m in Sources */,
@@ -553,6 +576,7 @@
 				B5ECEECF189100980012F86E /* NearbyTableViewController.m in Sources */,
 				B5ECEEC0189100530012F86E /* FriendsTableViewController.m in Sources */,
 				B5FDE9931890CDC100A2AAF7 /* SignupViewController.m in Sources */,
+				B527184118AEEA8E007C6E5E /* VChatCell.m in Sources */,
 				B5FDE98E1890C9D000A2AAF7 /* VChatViewController.m in Sources */,
 				B5ECEEC5189100670012F86E /* ChattingTableViewController.m in Sources */,
 			);

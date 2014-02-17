@@ -19,6 +19,7 @@
 @property float startRecordingTime;
 @property float endRecordingTime;
 @property int indexForPlayback;
+@property NSTimeInterval durationRecording;
 
 // @property (nonatomic, strong) PFUser *user;
 
@@ -146,7 +147,10 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
     // Stopped holding button
     [audioRecorder stop];
     self.endRecordingTime = [audioRecorder deviceCurrentTime];
-    NSLog(@"Recording finished at %.2f, delta is %.2f",self.endRecordingTime,(self.endRecordingTime - self.startRecordingTime));
+    // get duration
+    self.durationRecording = self.endRecordingTime - self.startRecordingTime;
+    
+    NSLog(@"Recording finished at %.2f, delta is %.2f",self.endRecordingTime,self.durationRecording);
     
 }
 
@@ -189,6 +193,7 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
             
             NSDate *currentTime = [[NSDate alloc]init];
             [newRecording setObject:currentTime forKey:@"timestamp"];
+            [newRecording setObject:@(self.durationRecording) forKey:@"duration"];
 
             [newRecording saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                 if (!error) {
