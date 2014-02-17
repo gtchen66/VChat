@@ -30,7 +30,7 @@
 
 @property (strong, nonatomic) NSIndexPath *playingIndexPath;
 @property NSInteger rowIsPlaying;
-@property BOOL isPlaying;
+// @property BOOL isPlaying;
 
 - (void)logOutButtonTapAction;
 - (void)initLogInController;
@@ -79,7 +79,7 @@
 //    audioPlayer.delegate = self;
     
 //    audioPlayer.delegate = self;
-    self.isPlaying = NO;
+//    self.isPlaying = NO;
     self.rowIsPlaying = -1;
 
 }
@@ -295,7 +295,7 @@
     NSLog(@"Playback finished");
     [self.myVChatTableView deselectRowAtIndexPath:self.playingIndexPath animated:YES];
     self.playingIndexPath = 0;
-    self.isPlaying = NO;
+//    self.isPlaying = NO;
     self.rowIsPlaying = -1;
 }
 
@@ -307,15 +307,13 @@
 - (void) loadChattingDataFromRepository {
     
     // Parse implementation.
-    PFQuery *query = [PFQuery queryWithClassName:@"UserRecording"];
+//    PFQuery *query = [PFQuery queryWithClassName:@"UserRecording"];
     PFUser *user = [PFUser currentUser];
     
     NSDate *lastRetrieved = user[@"lastRetrieved"];
     NSDate *currentDate = [[NSDate alloc] init];
     
     NSString *docsDir = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
-//    self.pathLocalToFile = [docsDir stringByAppendingPathComponent:@"localToFile.plist"];
-//    self.pathLocalFromFile = [docsDir stringByAppendingPathComponent:@"localFromFile.plist"];
     self.pathLocalStorage = [docsDir stringByAppendingPathComponent:[NSString stringWithFormat:@"localStorage.%@.plist",user.username]];
 
     if (lastRetrieved == nil) {
@@ -334,8 +332,14 @@
         self.allChatArray = [[NSMutableArray alloc] init];
     }
     
-    // find recordings sent to me
-    [query whereKey:@"toUser" equalTo:user.username];
+    // find recordings sent to me OR sent by me.
+    
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(toUser = %@) OR (fromUser = %@)",user.username,user.username];
+    NSLog(@"Predicate %@",predicate);
+    
+    PFQuery *query = [PFQuery queryWithClassName:@"UserRecording" predicate:predicate];
+    
+//    [query whereKey:@"toUser" equalTo:user.username];
     [query whereKey:@"timestamp" greaterThan:lastRetrieved];
     
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
@@ -354,6 +358,8 @@
                 
                 [vchat setValue:[eachObject objectForKey:@"duration"] forKey:@"duration"];
 
+                NSLog(@"msg: from %@ to %@ at %@",vchat[@"fromUser"],vchat[@"toUser"],vchat[@"timestamp"]);
+                
                 [self.latestToUserArray addObject:vchat];
             }
             NSLog(@"Found %d new messages to this user", self.latestToUserArray.count);
@@ -370,54 +376,6 @@
         }
     }];
     
-    // find recordings sent by me -- this should not be necessary, but should
-    // be kept local.  for now, this just makes the code easier.
-    
-    // Do I need to do this to reset the query
-    query = [PFQuery queryWithClassName:@"UserRecording"];
-    
-    [query whereKey:@"fromUser" equalTo:user.username];
-    [query whereKey:@"timestamp" greaterThan:lastRetrieved];
-    
-    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        self.latestFromUserArray = [NSMutableArray array];
-        if (objects.count > 0) {
-            for (PFObject *eachObject in objects) {
-                
-                // TODO. Change this to a custom model.
-                
-                NSMutableDictionary *vchat = [[NSMutableDictionary alloc] init];
-                
-                [vchat setValue:[eachObject objectForKey:@"toUser"] forKey:@"toUser"];
-                [vchat setValue:[eachObject objectForKey:@"fromUser"] forKey:@"fromUser"];
-                [vchat setValue:[eachObject objectForKey:@"timestamp"] forKey:@"timestamp"];
-                
-                
-                PFFile *thisFile = [eachObject objectForKey:@"recording"];
-//                [vchat setValue:thisFile.url forKey:@"recordingURL"];
-                [vchat setValue:thisFile forKey:@"thisFile"];
-                [vchat setValue:@"NO" forKey:@"readyToPlay"];
-                
-                [vchat setValue:[eachObject objectForKey:@"duration"] forKey:@"duration"];
-
-                [self.latestFromUserArray addObject:vchat];
-            }
-            NSLog(@"Found %d new messages from this user", self.latestFromUserArray.count);
-            
-            // start background operation
-            [self.allChatArray addObjectsFromArray:self.latestFromUserArray];
-            [self arrangeData];
-            [self backgroundOperation];
-            // this will load the view.  actual data will still be unavailable until
-            // download finish.
-            [self.myVChatTableView reloadData];
-
-        }
-        else {
-            NSLog(@"Found no new messages from this user");
-            return;
-        }
-    }];
     
     // Update user's lastRetrieved date
     user[@"lastRetrieved"] = currentDate;
@@ -430,7 +388,8 @@
     }];
     [self.myVChatTableView reloadData];
     
-    [self.myVChatTableView setContentOffset:CGPointMake(0, self.myVChatTableView.contentSize.height - self.myVChatTableView.frame.size.height)];
+    [self.myVChatTableView setContentOffset:CGPointMake(0, self.myVChatTableView.contentSize.height - self.myVChatTableView.frame.size.height+50)];
+//    NSLog(@"%@",[self.myVChatTableView contentOffset]);
 
 }
 

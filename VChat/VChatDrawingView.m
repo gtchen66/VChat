@@ -50,13 +50,13 @@
     // 120 seconds is the full duration.
     if (self.duration > 0) {
         // left side
-        leftX = thickness;
+        leftX = thickness+1;
         rightX = MIN(self.duration*(width/120) + leftX, width-thickness);
 
     } else {
         // right side.  duration is negative.
         rightX = width - thickness;
-        leftX = MAX(width + self.duration*(width/120) - thickness, thickness);
+        leftX = MAX(width + self.duration*(width/120) - thickness, thickness+1);
     }
     
     CGFloat purple[4] = {1.0f, 0.0f, 1.0f, 1.0f};

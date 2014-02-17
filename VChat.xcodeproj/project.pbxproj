@@ -53,6 +53,8 @@
 		B527184118AEEA8E007C6E5E /* VChatCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B527184018AEEA8E007C6E5E /* VChatCell.m */; };
 		B527184318AEEAA2007C6E5E /* VChatCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B527184218AEEAA2007C6E5E /* VChatCell.xib */; };
 		B527191418B1C702007C6E5E /* VChatDrawingView.m in Sources */ = {isa = PBXBuildFile; fileRef = B527191318B1C702007C6E5E /* VChatDrawingView.m */; };
+		B527191818B20EA3007C6E5E /* ChattingViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B527191718B20EA3007C6E5E /* ChattingViewCell.m */; };
+		B527191A18B20EBC007C6E5E /* ChattingViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B527191918B20EBC007C6E5E /* ChattingViewCell.xib */; };
 		B5ECEEBB189100370012F86E /* ChatsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5ECEEB9189100370012F86E /* ChatsTableViewController.m */; };
 		B5ECEEBC189100370012F86E /* ChatsTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B5ECEEBA189100370012F86E /* ChatsTableViewController.xib */; };
 		B5ECEEC0189100530012F86E /* FriendsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5ECEEBE189100530012F86E /* FriendsTableViewController.m */; };
@@ -144,6 +146,9 @@
 		B527184218AEEAA2007C6E5E /* VChatCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = VChatCell.xib; sourceTree = "<group>"; };
 		B527191218B1C702007C6E5E /* VChatDrawingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VChatDrawingView.h; sourceTree = "<group>"; };
 		B527191318B1C702007C6E5E /* VChatDrawingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VChatDrawingView.m; sourceTree = "<group>"; };
+		B527191618B20EA3007C6E5E /* ChattingViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChattingViewCell.h; sourceTree = "<group>"; };
+		B527191718B20EA3007C6E5E /* ChattingViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChattingViewCell.m; sourceTree = "<group>"; };
+		B527191918B20EBC007C6E5E /* ChattingViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChattingViewCell.xib; sourceTree = "<group>"; };
 		B5ECEEB8189100370012F86E /* ChatsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatsTableViewController.h; sourceTree = "<group>"; };
 		B5ECEEB9189100370012F86E /* ChatsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatsTableViewController.m; sourceTree = "<group>"; };
 		B5ECEEBA189100370012F86E /* ChatsTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChatsTableViewController.xib; sourceTree = "<group>"; };
@@ -296,6 +301,19 @@
 			name = VChatVC;
 			sourceTree = "<group>";
 		};
+		B527191518B20E3B007C6E5E /* ChattingVC */ = {
+			isa = PBXGroup;
+			children = (
+				B507646F18A4AE2D00ECE2F5 /* ChattingViewController.h */,
+				B507647018A4AE2D00ECE2F5 /* ChattingViewController.m */,
+				B507647118A4AE2D00ECE2F5 /* ChattingViewController.xib */,
+				B527191618B20EA3007C6E5E /* ChattingViewCell.h */,
+				B527191718B20EA3007C6E5E /* ChattingViewCell.m */,
+				B527191918B20EBC007C6E5E /* ChattingViewCell.xib */,
+			);
+			name = ChattingVC;
+			sourceTree = "<group>";
+		};
 		B5FDE9501890C8A100A2AAF7 = {
 			isa = PBXGroup;
 			children = (
@@ -343,6 +361,7 @@
 		B5FDE9621890C8A100A2AAF7 /* VChat */ = {
 			isa = PBXGroup;
 			children = (
+				B527191518B20E3B007C6E5E /* ChattingVC */,
 				B527183E18AEE907007C6E5E /* VChatVC */,
 				5377656618ADFD8300DC8E4E /* Contacts */,
 				532568BA18A8536F00A59E35 /* Profile and Settings */,
@@ -366,9 +385,6 @@
 				B5ECEEC4189100670012F86E /* ChattingTableViewController.xib */,
 				B5ECEECC189100980012F86E /* NearbyTableViewController.h */,
 				B5ECEECD189100980012F86E /* NearbyTableViewController.m */,
-				B507646F18A4AE2D00ECE2F5 /* ChattingViewController.h */,
-				B507647018A4AE2D00ECE2F5 /* ChattingViewController.m */,
-				B507647118A4AE2D00ECE2F5 /* ChattingViewController.xib */,
 			);
 			path = VChat;
 			sourceTree = "<group>";
@@ -497,6 +513,7 @@
 				53F3C1CD189F527E00422FF2 /* NearbyUserCell.xib in Resources */,
 				53F3C1761896575B00422FF2 /* VChatViewController.xib in Resources */,
 				53F3C1B61897756C00422FF2 /* Logo.png in Resources */,
+				B527191A18B20EBC007C6E5E /* ChattingViewCell.xib in Resources */,
 				53F3C1B31897756C00422FF2 /* Facebook.png in Resources */,
 				53F3C1B81897756C00422FF2 /* SignUp.png in Resources */,
 				5377656518ADFD6D00DC8E4E /* ContactsViewController.xib in Resources */,
@@ -568,6 +585,7 @@
 				B527191418B1C702007C6E5E /* VChatDrawingView.m in Sources */,
 				B5FDE96D1890C8A100A2AAF7 /* AppDelegate.m in Sources */,
 				53BA251818A73F4900C328E8 /* MyProfileViewController.m in Sources */,
+				B527191818B20EA3007C6E5E /* ChattingViewCell.m in Sources */,
 				53F3C17418962E3100422FF2 /* LogInViewController.m in Sources */,
 				B5ECEECA189100800012F86E /* ProfileViewController.m in Sources */,
 				B507647218A4AE2D00ECE2F5 /* ChattingViewController.m in Sources */,
