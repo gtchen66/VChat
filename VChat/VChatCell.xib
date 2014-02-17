@@ -20,13 +20,17 @@
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="2/10 14:45" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="30" translatesAutoresizingMaskIntoConstraints="NO" id="khi-c4-eNt">
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="12/30 14:45" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="30" translatesAutoresizingMaskIntoConstraints="NO" id="khi-c4-eNt">
                         <rect key="frame" x="252" y="5" width="30" height="33"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <fontDescription key="fontDescription" type="system" pointSize="10"/>
                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                         <nil key="highlightedColor"/>
                     </label>
+                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ygD-7r-hJf" customClass="VChatDrawingView">
+                        <rect key="frame" x="5" y="5" width="239" height="33"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    </view>
                 </subviews>
                 <constraints>
                     <constraint firstItem="Qan-sk-HFM" firstAttribute="top" secondItem="nFp-bp-YiW" secondAttribute="top" constant="5" id="BJb-uW-LJS"/>
@@ -41,6 +45,8 @@
             <connections>
                 <outlet property="myVChatCellLabel" destination="Qan-sk-HFM" id="R12-0U-hDj"/>
                 <outlet property="myVChatCellTimeLabel" destination="khi-c4-eNt" id="Q7l-7r-h3M"/>
+                <outlet property="myVChatCellView" destination="ygD-7r-hJf" id="SZC-oa-xdX"/>
+                <outlet property="myVChatDrawingView" destination="ygD-7r-hJf" id="CWf-PS-d8f"/>
             </connections>
         </tableViewCell>
     </objects>

@@ -164,6 +164,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 
     static NSString *vChatCellIdentifier = @"VChatCell";
+    int messageDuration;
     
     VChatCell *vcell = [tableView dequeueReusableCellWithIdentifier:vChatCellIdentifier];
     if (vcell == nil) {
@@ -187,23 +188,52 @@
     [dateFormatter setDateFormat:@"MM/dd HH:mm"];
     NSString *shortTime = [dateFormatter stringFromDate:timestamp];
     
+//    NSObject *testObj = [chat objectForKey:@"duration"];
+//    NSLog(@"obj is %@",testObj);
+//    float a1 = [[chat objectForKey:@"duration"] floatValue];
+    messageDuration = round([[chat objectForKey:@"duration"] floatValue]);
+    if (messageDuration == 0) {
+        NSData *soundData = [chat objectForKey:@"sound"];
+        
+        // recording is done at 8000 x 16bit x 2channels.
+        messageDuration = soundData.length/32000.0;
+        
+        // TODO:  this duration should be pushed back to Parse, as this data wasn't in the original
+        // code.  however, eventually this will not be necessary, so this is a low priority
+        // for now.
+        
+    }
+//    NSData *soundData = [chat objectForKey:@"sound"];
+//    NSLog(@"sounddata says %d, %.2f",soundData.length, soundData.length/8000.0f);
+
+    
     // is this a from or a to
     if ([[chat objectForKey:@"fromUser"] isEqualToString:[PFUser currentUser].username]) {
         // I sent this chat.  show who I sent it to.
         rightUser = [chat objectForKey:@"toUser"];
-        cellString = [NSString stringWithFormat:@" me    ---->    %@",rightUser];
+//        cellString = [NSString stringWithFormat:@" me    -%d->    %@",indexPath.row,rightUser];
+        cellString = rightUser;
+        messageDuration = -messageDuration;
     } else {
         // I got this chat.  tell me who-sent-it.
         leftUser = [chat objectForKey:@"fromUser"];
-        cellString = [NSString stringWithFormat:@"%@   ----->  me",leftUser];
+//        cellString = [NSString stringWithFormat:@"%@   -%d->  me",leftUser,indexPath.row];
+        cellString = leftUser;
     }
+    
     
 //    cell.textLabel.font = [UIFont fontWithName:@"Times" size:14];
     vcell.myVChatCellLabel.text = cellString;
     vcell.myVChatCellTimeLabel.text = shortTime;
+    vcell.duration = messageDuration;
 //    cell.textLabel.text = cellString;
     
 // [NSString stringWithFormat:@"chat with %d",indexPath.row];
+    
+//    NSLog(@"message index %d is %d seconds",indexPath.row,messageDuration);
+    
+    [vcell redisplay];
+    
     return vcell;
     
 //    return cell;
@@ -253,6 +283,9 @@
     // now deselect this row.
     // [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
+    // TODO: Playback did start.  Update Cloud DB with playback.  Should identify if this
+    // is the recipient or the sender.
+    
 }
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath {
     NSLog(@"VChatViewController : didDeselectRowAtIndexPath (%d)",indexPath.row);
@@ -264,6 +297,10 @@
     self.playingIndexPath = 0;
     self.isPlaying = NO;
     self.rowIsPlaying = -1;
+}
+
+- (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath {
+    NSLog(@"VChatViewController : accessoryButtonTappedForRowWithIndexPath (%d)",indexPath.row);
 }
 
 // Pulls chatting data from repository, appends to local-data
@@ -284,7 +321,10 @@
     if (lastRetrieved == nil) {
         lastRetrieved = [[NSDate alloc] initWithTimeIntervalSince1970:0];
     }
-    
+
+    NSLog(@"path: %@",self.pathLocalStorage);
+    NSLog(@"last retrieved: %@",lastRetrieved);
+
 //    [self.allChatArray removeAllObjects];
     self.allChatArray = [[NSMutableArray alloc] initWithContentsOfFile:self.pathLocalStorage];
     NSLog(@"allChatArray now contains %d rows",self.allChatArray.count);
@@ -311,6 +351,8 @@
                 // link to recording...
                 [vchat setValue:[eachObject objectForKey:@"recording"] forKey:@"thisFile"];
                 [vchat setValue:@"NO" forKey:@"readyToPlay"];
+                
+                [vchat setValue:[eachObject objectForKey:@"duration"] forKey:@"duration"];
 
                 [self.latestToUserArray addObject:vchat];
             }
@@ -355,6 +397,8 @@
 //                [vchat setValue:thisFile.url forKey:@"recordingURL"];
                 [vchat setValue:thisFile forKey:@"thisFile"];
                 [vchat setValue:@"NO" forKey:@"readyToPlay"];
+                
+                [vchat setValue:[eachObject objectForKey:@"duration"] forKey:@"duration"];
 
                 [self.latestFromUserArray addObject:vchat];
             }
@@ -427,10 +471,10 @@
     // sort the data from oldest to newest.
     
     NSLog(@"Presort:");
-    // before sort
-    for (NSDictionary *eachObj in self.allChatArray) {
-        NSLog(@"time: %@",[eachObj objectForKey:@"timestamp"]);
-    }
+//    // before sort
+//    for (NSDictionary *eachObj in self.allChatArray) {
+//        NSLog(@"time: %@",[eachObj objectForKey:@"timestamp"]);
+//    }
     
     [self.allChatArray sortUsingComparator:^NSComparisonResult(id obj1, id obj2) {
         // each object is a NSDictionary with a timestamp value
@@ -440,10 +484,10 @@
     }];
     
     NSLog(@"Post sort:");
-    // before sort
-    for (NSDictionary *eachObj in self.allChatArray) {
-        NSLog(@"time: %@",[eachObj objectForKey:@"timestamp"]);
-    }
+//    // before sort
+//    for (NSDictionary *eachObj in self.allChatArray) {
+//        NSLog(@"time: %@",[eachObj objectForKey:@"timestamp"]);
+//    }
 
 }
 

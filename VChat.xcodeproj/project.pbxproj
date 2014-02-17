@@ -52,6 +52,7 @@
 		B507647318A4AE2D00ECE2F5 /* ChattingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B507647118A4AE2D00ECE2F5 /* ChattingViewController.xib */; };
 		B527184118AEEA8E007C6E5E /* VChatCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B527184018AEEA8E007C6E5E /* VChatCell.m */; };
 		B527184318AEEAA2007C6E5E /* VChatCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B527184218AEEAA2007C6E5E /* VChatCell.xib */; };
+		B527191418B1C702007C6E5E /* VChatDrawingView.m in Sources */ = {isa = PBXBuildFile; fileRef = B527191318B1C702007C6E5E /* VChatDrawingView.m */; };
 		B5ECEEBB189100370012F86E /* ChatsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5ECEEB9189100370012F86E /* ChatsTableViewController.m */; };
 		B5ECEEBC189100370012F86E /* ChatsTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B5ECEEBA189100370012F86E /* ChatsTableViewController.xib */; };
 		B5ECEEC0189100530012F86E /* FriendsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5ECEEBE189100530012F86E /* FriendsTableViewController.m */; };
@@ -141,6 +142,8 @@
 		B527183F18AEEA8E007C6E5E /* VChatCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VChatCell.h; sourceTree = "<group>"; };
 		B527184018AEEA8E007C6E5E /* VChatCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VChatCell.m; sourceTree = "<group>"; };
 		B527184218AEEAA2007C6E5E /* VChatCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = VChatCell.xib; sourceTree = "<group>"; };
+		B527191218B1C702007C6E5E /* VChatDrawingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VChatDrawingView.h; sourceTree = "<group>"; };
+		B527191318B1C702007C6E5E /* VChatDrawingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VChatDrawingView.m; sourceTree = "<group>"; };
 		B5ECEEB8189100370012F86E /* ChatsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatsTableViewController.h; sourceTree = "<group>"; };
 		B5ECEEB9189100370012F86E /* ChatsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatsTableViewController.m; sourceTree = "<group>"; };
 		B5ECEEBA189100370012F86E /* ChatsTableViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ChatsTableViewController.xib; sourceTree = "<group>"; };
@@ -287,6 +290,8 @@
 				B527183F18AEEA8E007C6E5E /* VChatCell.h */,
 				B527184018AEEA8E007C6E5E /* VChatCell.m */,
 				B527184218AEEAA2007C6E5E /* VChatCell.xib */,
+				B527191218B1C702007C6E5E /* VChatDrawingView.h */,
+				B527191318B1C702007C6E5E /* VChatDrawingView.m */,
 			);
 			name = VChatVC;
 			sourceTree = "<group>";
@@ -560,6 +565,7 @@
 				5377656418ADFD6D00DC8E4E /* ContactsViewController.m in Sources */,
 				532568C318A855C400A59E35 /* EditFieldViewController.m in Sources */,
 				53BA251C18A7819100C328E8 /* MyProfileCell.m in Sources */,
+				B527191418B1C702007C6E5E /* VChatDrawingView.m in Sources */,
 				B5FDE96D1890C8A100A2AAF7 /* AppDelegate.m in Sources */,
 				53BA251818A73F4900C328E8 /* MyProfileViewController.m in Sources */,
 				53F3C17418962E3100422FF2 /* LogInViewController.m in Sources */,
