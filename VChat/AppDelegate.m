@@ -54,7 +54,7 @@
     UITabBarItem *tabBarItem3 = [tabBar.items objectAtIndex:2];
     UITabBarItem *tabBarItem4 = [tabBar.items objectAtIndex:3];
 
-    tabBarItem1.title = @"Chat";
+    tabBarItem1.title = @"Recent";
     tabBarItem2.title = @"Contacts";
     tabBarItem3.title = @"Nearby";
     tabBarItem4.title = @"My Profile";
