@@ -10,7 +10,7 @@
 #import "VChatViewController.h"
 #import "NearbyTableViewController.h"
 #import "MyProfileViewController.h"
-#import "ContactsViewController.h"
+#import "ContactsTableViewController.h"
 
 #define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
@@ -37,7 +37,7 @@
     VChatViewController *vc = [[VChatViewController alloc] init];
     UINavigationController *nvc1 = [[UINavigationController alloc] initWithRootViewController:vc];
     
-    ContactsViewController *cc = [[ContactsViewController alloc] init];
+    ContactsTableViewController *cc = [[ContactsTableViewController alloc] init];
     UINavigationController *nvc2 = [[UINavigationController alloc] initWithRootViewController:cc];
     
     NearbyTableViewController *nb = [[NearbyTableViewController alloc] init];

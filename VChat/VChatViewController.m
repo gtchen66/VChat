@@ -34,6 +34,7 @@
 
 - (void)logOutButtonTapAction;
 - (void)initLogInController;
+- (void)updateContacts;
 
 @end
 
@@ -81,6 +82,9 @@
 //    audioPlayer.delegate = self;
     self.isPlaying = NO;
     self.rowIsPlaying = -1;
+    
+    // Check and update contacts (This should be refactored out of this controller so things aren't so cluttered!)
+    
 
 }
 
@@ -590,4 +594,9 @@
         NSLog(@"loginviewcontroller is nil");
     }
 }
+
+- (void)updateContacts {
+    
+}
+
 @end
