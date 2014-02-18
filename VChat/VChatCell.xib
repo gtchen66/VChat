@@ -27,14 +27,18 @@
                         <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ygD-7r-hJf" customClass="VChatDrawingView">
-                        <rect key="frame" x="5" y="5" width="239" height="33"/>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ygD-7r-hJf" customClass="VChatDrawingView">
+                        <rect key="frame" x="5" y="5" width="242" height="33"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     </view>
                 </subviews>
                 <constraints>
+                    <constraint firstItem="ygD-7r-hJf" firstAttribute="top" secondItem="nFp-bp-YiW" secondAttribute="top" constant="5" id="3vS-61-ydA"/>
+                    <constraint firstItem="khi-c4-eNt" firstAttribute="leading" secondItem="ygD-7r-hJf" secondAttribute="trailing" constant="5" id="4eZ-fX-UW2"/>
+                    <constraint firstItem="ygD-7r-hJf" firstAttribute="leading" secondItem="nFp-bp-YiW" secondAttribute="leading" constant="5" id="9BM-XJ-z0l"/>
                     <constraint firstItem="Qan-sk-HFM" firstAttribute="top" secondItem="nFp-bp-YiW" secondAttribute="top" constant="5" id="BJb-uW-LJS"/>
                     <constraint firstItem="Qan-sk-HFM" firstAttribute="leading" secondItem="nFp-bp-YiW" secondAttribute="leading" constant="5" id="FyZ-mj-AHX"/>
+                    <constraint firstAttribute="bottom" secondItem="ygD-7r-hJf" secondAttribute="bottom" constant="5" id="L2O-0B-72t"/>
                     <constraint firstItem="khi-c4-eNt" firstAttribute="leading" secondItem="Qan-sk-HFM" secondAttribute="trailing" constant="20" id="XDu-RC-Ulc"/>
                     <constraint firstAttribute="bottom" secondItem="khi-c4-eNt" secondAttribute="bottom" constant="5" id="aR2-PY-N3u"/>
                     <constraint firstItem="khi-c4-eNt" firstAttribute="top" secondItem="nFp-bp-YiW" secondAttribute="top" constant="5" id="b5v-If-UPW"/>
@@ -45,7 +49,6 @@
             <connections>
                 <outlet property="myVChatCellLabel" destination="Qan-sk-HFM" id="R12-0U-hDj"/>
                 <outlet property="myVChatCellTimeLabel" destination="khi-c4-eNt" id="Q7l-7r-h3M"/>
-                <outlet property="myVChatCellView" destination="ygD-7r-hJf" id="SZC-oa-xdX"/>
                 <outlet property="myVChatDrawingView" destination="ygD-7r-hJf" id="CWf-PS-d8f"/>
             </connections>
         </tableViewCell>

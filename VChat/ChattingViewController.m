@@ -7,6 +7,7 @@
 //
 
 #import "ChattingViewController.h"
+#import "ChattingViewCell.h"
 
 @interface ChattingViewController () {
     dispatch_queue_t myQueue;
@@ -16,10 +17,17 @@
 @property (nonatomic, strong) NSMutableArray *latestRecordingArray;
 @property (weak, nonatomic) IBOutlet UITableView *myChattingTable;
 
+@property (nonatomic, strong) NSMutableArray *allChatArray;
+@property (nonatomic, strong) NSMutableArray *userChatArray;
+
+@property (nonatomic, strong) NSString *pathLocalStorage;
+
 @property float startRecordingTime;
 @property float endRecordingTime;
 @property int indexForPlayback;
 @property NSTimeInterval durationRecording;
+@property NSInteger rowIsPlaying;
+@property (nonatomic, strong) NSIndexPath *playingIndexPath;
 
 // @property (nonatomic, strong) PFUser *user;
 
@@ -58,21 +66,28 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
     NSLog(@"ChattingViewController : viewDidLoad");
     // Do any additional setup after loading the view from its nib.
     
+    UINib *customNib = [UINib nibWithNibName:@"ChattingViewCell" bundle:nil];
+    [self.myChattingTable registerNib:customNib forCellReuseIdentifier:@"ChattingViewCell"];
+    
     // Hook up table view
     self.myChattingTable.delegate = self;
     self.myChattingTable.dataSource = self;
     
     // configue the audio system
     
-    NSArray *dirPaths;
-    NSString *docsDir;
+//    NSArray *dirPaths;
+//    NSString *docsDir;
     
     NSLog(@"chatting between local %@ and remote %@",self.localUser.username, self.remoteUser.username);
     self.title = self.remoteUser.username;
     
+    NSString *docsDir = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
+    self.pathLocalStorage = [docsDir stringByAppendingPathComponent:[NSString stringWithFormat:@"localStorage.%@.plist",self.localUser.username]];
+
+    
 //    dirPaths = NSSearchPathForDirectoriesInDomains(NSDocumentationDirectory, NSUserDomainMask, YES);
-    dirPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    docsDir = [dirPaths objectAtIndex:0];
+//    dirPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+//    docsDir = [dirPaths objectAtIndex:0];
     NSString *soundFilePath = [docsDir stringByAppendingPathComponent:@"sound.caf"];
     
     NSURL *soundFileURL = [NSURL fileURLWithPath:soundFilePath];
@@ -92,6 +107,8 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
     [self.pushToRecordButton setTitle:@"Release to Stop" forState:UIControlStateHighlighted];
     [self.pushToRecordButton setTitle:@"Hold to Record" forState:UIControlStateNormal];
     
+    self.userChatArray = [[NSMutableArray alloc] init];
+    [self loadChatBetweenUsers];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -116,20 +133,105 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 10;
+    return self.userChatArray.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
+    ChattingViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ChattingViewCell"];
+//    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
     if (cell == nil) {
         NSLog(@"cell was nil, getting a real one");
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
+        cell = [[ChattingViewCell alloc] init];
+//        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"cell"];
     }
-    cell.textLabel.text = [NSString stringWithFormat:@"hello %d",indexPath.row];
+    
+    NSDictionary *chat = [self.userChatArray objectAtIndex:indexPath.row];
+    
+    NSDate *timestamp = [chat objectForKey:@"timestamp"];
 
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"MM/dd HH:mm"];
+    NSString *shortTime = [dateFormatter stringFromDate:timestamp];
+
+    
+    
+    cell.myChattingViewCellTimeLabel.text = shortTime;
+    
+    int messageDuration = round([[chat objectForKey:@"duration"] floatValue]);
+    if (messageDuration == 0) {
+        NSData *soundData = [chat objectForKey:@"sound"];
+        messageDuration = soundData.length/32000.0;
+        // TODO.  Clean up duration in parse.
+    }
+
+    if ([[chat objectForKey:@"fromUser"] isEqualToString:self.localUser.username]) {
+        // message from me.  right side.
+        messageDuration = -messageDuration;
+    }
+    cell.myChattingViewCellDrawing.duration = messageDuration;
+    [cell redisplay];
+    
     return cell;
+}
 
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (self.rowIsPlaying > -1) {
+        // playback is occurring.
+        if (self.rowIsPlaying == indexPath.row) {
+            // stop current playback.
+            // TODO - enable a method for pausing playback, not just stopping.
+            
+            [audioPlayer stop];
+            [tableView deselectRowAtIndexPath:indexPath animated:YES];
+            self.rowIsPlaying = -1;
+            return;
+        }
+    }
+    
+    NSDictionary *chat = [self.userChatArray objectAtIndex:indexPath.row];
+    NSData *soundData = [chat objectForKey:@"sound"];
+    NSError *outError;
+    
+    audioPlayer = [[AVAudioPlayer alloc] initWithData:soundData error:&outError];
+    
+    if (audioPlayer == nil) {
+        NSLog(@"Error trying to play %@.",[chat objectForKey:@"timestamp"]);
+    } else {
+        audioPlayer.delegate = self;
+        self.playingIndexPath = indexPath;
+        NSLog(@"Playing returned %d",[audioPlayer play]);
+        self.rowIsPlaying = indexPath.row;
+    }
+}
+
+-(void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
+    NSLog(@"Playback finished");
+    if (self.rowIsPlaying > -1) {
+        [self.myChattingTable deselectRowAtIndexPath:self.playingIndexPath animated:YES];
+    }
+    self.playingIndexPath = 0;
+    self.rowIsPlaying = -1;
+}
+
+//
+// load conversation between these two users
+//
+-(void) loadChatBetweenUsers {
+    self.allChatArray = [[NSMutableArray alloc] initWithContentsOfFile:self.pathLocalStorage];
+    
+    for (NSDictionary *entry in self.allChatArray) {
+        NSString *fromUser = entry[@"fromUser"];
+        NSString *toUser = entry[@"toUser"];
+        if ((([fromUser isEqualToString:self.remoteUser.username] == YES) && ([toUser isEqualToString:self.localUser.username] == YES)) ||
+            (([fromUser isEqualToString:self.localUser.username] == YES) && ([toUser isEqualToString:self.remoteUser.username]))) {
+
+            [self.userChatArray addObject:entry];
+        }
+    }
+    
+    // TODO: add more users directly from Parse....
+    
 }
 
 #pragma mark Audio Section
@@ -282,10 +384,10 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
 // 
 
 
-- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
-    NSLog(@"Playback completed");
-    [self playNext];
-}
+//- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
+//    NSLog(@"Playback completed");
+//    [self playNext];
+//}
 
 
 @end

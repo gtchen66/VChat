@@ -12,11 +12,11 @@
 @interface VChatCell : UITableViewCell
 @property (weak, nonatomic) IBOutlet UILabel *myVChatCellLabel;
 @property (weak, nonatomic) IBOutlet UILabel *myVChatCellTimeLabel;
-@property (weak, nonatomic) IBOutlet UIView *myVChatCellView;
+// @property (weak, nonatomic) IBOutlet UIView *myVChatCellView;
 @property (weak, nonatomic) IBOutlet VChatDrawingView *myVChatDrawingView;
 
 @property (nonatomic, assign) int duration;
-@property (nonatomic, assign) BOOL received;
+// @property (nonatomic, assign) BOOL received;
 
 -(void)redisplay;
 
