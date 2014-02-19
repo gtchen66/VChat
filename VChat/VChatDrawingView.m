@@ -38,73 +38,30 @@
 - (void)drawRect:(CGRect)rect
 {
     float height = self.frame.size.height;
-    float width = self.frame.size.width - 3;
-    float leftX = 2.0;
+    float width = self.frame.size.width - 1;
+    float leftX = 1.0;
     float rightX = 4*self.duration;
     CGContextRef context = UIGraphicsGetCurrentContext();
 
-    // countdown = 4+ - solid, 0% green
-    // countdown = 3 - thick outline, 50% green
-    // countdown = 2 - thick outline, 75% green
-    // countdown = 1 - thick outline, empty
-    // countdown = 0 - thin outline
     
-//    CGFloat purple[4] = {1.0f, 0.0f, 1.0f, 1.0f};
-    
-    CGFloat leftColor[4] = {1.0f, 0.0f, 1.0f, 1.0f};     // full color
-    CGFloat leftColor1[4] = {1.0f, 0.5f, 1.0f, 1.0f};    // getting lighter
-    CGFloat leftColor2[4] = {1.0f, 0.75f, 1.0f, 1.0f};   // light color
-    
-    CGFloat rightColor[4] = {0.0f, 1.0f, 0.0f, 1.0f};
-    CGFloat rightColor1[4] = {0.5f, 1.0f, 0.5f, 1.0f};
-    CGFloat rightColor2[4] = {0.75f, 1.0f, 0.75f, 1.0f};
-    
-    if (self.duration < 0) {
-        CGContextSetStrokeColor(context, rightColor);
-        if (self.countdown == 2) {
-            CGContextSetFillColor(context, rightColor2);
-        } else if (self.countdown == 3) {
-            CGContextSetFillColor(context, rightColor1);
-        } else {
-            CGContextSetFillColor(context, rightColor);
-        }
-    } else {
-        CGContextSetStrokeColor(context, leftColor);
-        if (self.countdown == 2) {
-            CGContextSetFillColor(context, leftColor2);
-        } else if (self.countdown == 3) {
-            CGContextSetFillColor(context, leftColor1);
-        } else {
-            CGContextSetFillColor(context, leftColor);
-        }
-    }
+    float thickness = 0.35*height;             // radius, as fraction of frame height.
+    float thickrem = (height*0.5 - thickness);
+        
+    // 120 seconds is the full duration.
+    if (self.duration > 0) {
+        // left side
+        leftX = thickness+1;
+        rightX = MIN(self.duration*(width/120) + leftX, width-thickness);
 
-    if (self.countdown >= 1) {
-        CGContextSetLineWidth(context, 2.0f);
     } else {
-        CGContextSetLineWidth(context, 1.0f);
+        // right side.  duration is negative.
+        rightX = width - thickness;
+        leftX = MAX(width + self.duration*(width/120) - thickness, thickness+1);
     }
     
-    if (NO) {
-        
-        
-        float thickness = 0.35*height;             // radius, as fraction of frame height.
-        float thickrem = (height*0.5 - thickness);
-        
-        // 120 seconds is the full duration.
-        if (self.duration > 0) {
-            // left side
-            leftX = thickness+2;
-            rightX = MIN(self.duration*(width/120) + leftX, width-thickness);
-            
-        } else {
-            // right side.  duration is negative.
-            rightX = width - thickness;
-            leftX = MAX(width + self.duration*(width/120) - thickness, thickness+2);
-        }
-
-        
-        // circle method
+    CGFloat purple[4] = {1.0f, 0.0f, 1.0f, 1.0f};
+    CGContextSetStrokeColor(context, purple);
+    CGContextSetFillColor(context, purple);
     CGContextBeginPath(context);
 
     // start straight path, from left corner.
@@ -119,64 +76,9 @@
     // CGContextAddLineToPoint(context, leftX, (0.5+thickness)*height);
     CGContextAddArc(context, leftX, 0.5*height, thickness, M_PI_2, -(M_PI_2), 0);
     
+    // CGContextFillPath(context);
     CGContextStrokePath(context);
-    
-    // Repeat, for fillin.
-    
-    if (self.countdown >= 2) {
-        CGContextBeginPath(context);
-        CGContextMoveToPoint(context, leftX, thickrem);
-        CGContextAddLineToPoint(context, rightX, thickrem);
-        CGContextAddArc(context, rightX, 0.5*height, thickness, -(M_PI_2), M_PI_2, 0);
-        CGContextAddLineToPoint(context, leftX, height-thickrem);
-        CGContextAddArc(context, leftX, 0.5*height, thickness, M_PI_2, -(M_PI_2), 0);
-        CGContextFillPath(context);
-    }
-    } else {
-        // rounded rectangle
-        
-        float thick1 = 0.1*height;
-        float thick2 = 0.2*height;
-        
-        // 120 seconds is the full duration.
-        if (self.duration > 0) {
-            // left side
-            leftX = thick1 + thick2 + 2;
-            rightX = MIN(self.duration*(width/120) + leftX, width-thick1-thick2-2);
-            
-        } else {
-            // right side.  duration is negative.
-            rightX = width - thick1-thick2-2;
-            leftX = MAX(width + self.duration*(width/120) - thick2, thick1+thick2+2);
-        }
-        
-        CGContextBeginPath(context);
-        CGContextMoveToPoint(context, leftX, thick1);
-        CGContextAddLineToPoint(context, rightX, thick1);
-        CGContextAddArc(context, rightX, thick1+thick2, thick2, -(M_PI_2), 0, 0);
-        CGContextAddLineToPoint(context, rightX+thick2, height-thick1-thick2);
-        CGContextAddArc(context, rightX, height-thick1-thick2, thick2, 0, M_PI_2,0);
-        CGContextAddLineToPoint(context, leftX, height-thick1);
-        CGContextAddArc(context, leftX, height-thick1-thick2, thick2, M_PI_2, M_PI, 0);
-        CGContextAddLineToPoint(context,leftX-thick2,thick1+thick2);
-        CGContextAddArc(context, leftX, thick1+thick2, thick2, M_PI, M_PI*1.5, 0);
-        CGContextStrokePath(context);
-
-        if (self.countdown >= 2) {
-            CGContextBeginPath(context);
-            CGContextMoveToPoint(context, leftX, thick1);
-            CGContextAddLineToPoint(context, rightX, thick1);
-            CGContextAddArc(context, rightX, thick1+thick2, thick2, -(M_PI_2), 0, 0);
-            CGContextAddLineToPoint(context, rightX+thick2, height-thick1-thick2);
-            CGContextAddArc(context, rightX, height-thick1-thick2, thick2, 0, M_PI_2,0);
-            CGContextAddLineToPoint(context, leftX, height-thick1);
-            CGContextAddArc(context, leftX, height-thick1-thick2, thick2, M_PI_2, M_PI, 0);
-            CGContextAddLineToPoint(context,leftX-thick2,thick1+thick2);
-            CGContextAddArc(context, leftX, thick1+thick2, thick2, M_PI, M_PI*1.5, 0);
-            CGContextFillPath(context);
-        }
-    }
-//    NSLog(@"VChatDrawingView : drawRect - from %.0f to %.0f",leftX,rightX);
+    NSLog(@"VChatDrawingView : drawRect - from %.0f to %.0f",leftX,rightX);
 
 }
 

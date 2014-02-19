@@ -26,11 +26,6 @@
     // Configure the view for the selected state
 }
 
-- (void) setCountdown:(int)countdown {
-    _countdown = countdown;
-    self.myChattingViewCellDrawing.countdown = countdown;
-}
-
 - (void) setDuration:(int)duration {
     _duration = duration;
     self.myChattingViewCellDrawing.duration = duration;

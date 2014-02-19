@@ -7,7 +7,6 @@
 //
 
 #import "VChatCell.h"
-#import "VChatViewController.h"
 
 //
 // in-line a uiview to have a drawing
@@ -72,11 +71,23 @@
     [super setSelected:selected animated:animated];
     NSLog(@"VChatCell : setSelected");
 
-}
-
-- (void) setCountdown:(int)countdown {
-    _countdown = countdown;
-    self.myVChatDrawingView.countdown = countdown;
+//    int precount = self.subviews.count;
+//    float labelsize = self.myVChatCellLabel.frame.size.width;
+//    
+//    SimpleBlock *simpleView = [[SimpleBlock alloc] initWithFrame:CGRectMake(180, 8, labelsize-180, 28)];
+//    simpleView.simpleDuration = self.duration;
+//    [self addSubview:simpleView];
+//    SimpleBlock *leftBlock = [[SimpleBlock alloc] initWithFrame:CGRectMake(0, 12, labelsize, 20)];
+//    [self addSubview:leftBlock];
+//    
+//    NSLog(@"size of label is %.0f, from %d to %d subviews",labelsize, precount, self.subviews.count);
+//    // Configure the view for the selected state
+//    
+//    NSLog(@"There are %d subviews",self.subviews.count);
+//    int i;
+//    for (i=0; i<self.subviews.count; i++) {
+//        NSLog(@"%d: %@",i,self.subviews[i]);
+//    }
 }
 
 - (void) setDuration:(int)duration {
@@ -86,13 +97,6 @@
     self.myVChatDrawingView.duration = duration;
     
     [self setNeedsDisplay];
-}
-
-- (IBAction)onVChatCellButton:(id)sender {
-    NSLog(@"VChatCell : onVChatCellButton");
-    
-    [self.delegate onVChatCellButton:self];
-   
 }
 
 - (void) redisplay {

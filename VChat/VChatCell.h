@@ -9,12 +9,6 @@
 #import <UIKit/UIKit.h>
 #import "VChatDrawingView.h"
 
-@protocol VChatCellDelegate
-@optional
-- (void) onVChatCellButton:(id)sender;
-
-@end
-
 @interface VChatCell : UITableViewCell
 @property (weak, nonatomic) IBOutlet UILabel *myVChatCellLabel;
 @property (weak, nonatomic) IBOutlet UILabel *myVChatCellTimeLabel;
@@ -23,9 +17,8 @@
 
 @property (nonatomic, assign) int duration;
 @property (nonatomic, assign) int countdown;
+// @property (nonatomic, assign) BOOL received;
 
 -(void)redisplay;
-
-@property (nonatomic, strong) id delegate;
 
 @end
