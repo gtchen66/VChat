@@ -8,9 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
+#import "VChatCell.h"
 
-
-@interface VChatViewController : UIViewController <PFLogInViewControllerDelegate, PFSignUpViewControllerDelegate, UITableViewDelegate, UITableViewDataSource, AVAudioPlayerDelegate> {
+@interface VChatViewController : UIViewController <PFLogInViewControllerDelegate, PFSignUpViewControllerDelegate, UITableViewDelegate, UITableViewDataSource, AVAudioPlayerDelegate, VChatCellDelegate> {
     AVAudioPlayer *chatPlayer;
 }
 

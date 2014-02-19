@@ -6,11 +6,11 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" id="54R-tB-Kjm" customClass="VChatCell">
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="54R-tB-Kjm" customClass="VChatCell">
             <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="54R-tB-Kjm" id="nFp-bp-YiW">
-                <rect key="frame" x="0.0" y="0.0" width="287" height="43"/>
+                <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="Username" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Qan-sk-HFM">
@@ -31,6 +31,19 @@
                         <rect key="frame" x="5" y="5" width="242" height="33"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     </view>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CpJ-JN-dff">
+                        <rect key="frame" x="290" y="5" width="30" height="33"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="30" id="Z8O-R1-XIN"/>
+                        </constraints>
+                        <state key="normal" title=">">
+                            <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                        </state>
+                        <connections>
+                            <action selector="onVChatCellButton:" destination="54R-tB-Kjm" eventType="touchUpInside" id="CXC-MU-xHr"/>
+                        </connections>
+                    </button>
                 </subviews>
                 <constraints>
                     <constraint firstItem="ygD-7r-hJf" firstAttribute="top" secondItem="nFp-bp-YiW" secondAttribute="top" constant="5" id="3vS-61-ydA"/>
@@ -38,12 +51,15 @@
                     <constraint firstItem="ygD-7r-hJf" firstAttribute="leading" secondItem="nFp-bp-YiW" secondAttribute="leading" constant="5" id="9BM-XJ-z0l"/>
                     <constraint firstItem="Qan-sk-HFM" firstAttribute="top" secondItem="nFp-bp-YiW" secondAttribute="top" constant="5" id="BJb-uW-LJS"/>
                     <constraint firstItem="Qan-sk-HFM" firstAttribute="leading" secondItem="nFp-bp-YiW" secondAttribute="leading" constant="5" id="FyZ-mj-AHX"/>
+                    <constraint firstItem="CpJ-JN-dff" firstAttribute="top" secondItem="nFp-bp-YiW" secondAttribute="top" constant="5" id="Goi-xU-wnY"/>
+                    <constraint firstAttribute="trailing" secondItem="CpJ-JN-dff" secondAttribute="trailing" id="Hla-mE-r2l"/>
                     <constraint firstAttribute="bottom" secondItem="ygD-7r-hJf" secondAttribute="bottom" constant="5" id="L2O-0B-72t"/>
+                    <constraint firstAttribute="bottom" secondItem="CpJ-JN-dff" secondAttribute="bottom" constant="5" id="OjT-gU-ygu"/>
+                    <constraint firstItem="CpJ-JN-dff" firstAttribute="leading" secondItem="khi-c4-eNt" secondAttribute="trailing" constant="8" id="RQz-bh-wsH"/>
                     <constraint firstItem="khi-c4-eNt" firstAttribute="leading" secondItem="Qan-sk-HFM" secondAttribute="trailing" constant="20" id="XDu-RC-Ulc"/>
                     <constraint firstAttribute="bottom" secondItem="khi-c4-eNt" secondAttribute="bottom" constant="5" id="aR2-PY-N3u"/>
                     <constraint firstItem="khi-c4-eNt" firstAttribute="top" secondItem="nFp-bp-YiW" secondAttribute="top" constant="5" id="b5v-If-UPW"/>
                     <constraint firstAttribute="bottom" secondItem="Qan-sk-HFM" secondAttribute="bottom" constant="5" id="baM-KW-IgK"/>
-                    <constraint firstAttribute="trailing" secondItem="khi-c4-eNt" secondAttribute="trailing" constant="5" id="nnQ-lj-KnG"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
