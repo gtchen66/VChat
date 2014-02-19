@@ -113,10 +113,13 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
 //    NSLog(@"looping through friends");
     // Update the Add button to the appropriate status if there is already a friend relations
     // perhaps find a better way to find user in the array than to loop through every friend
+    // predicate as a possible solution ???
     for (PFObject *friend in self.friends) {
 //        NSLog(@"%@", friend);
         PFUser *to = [friend objectForKey:@"to"];
         PFUser *from = [friend objectForKey:@"from"];
+//        NSLog(@"to user");
+//        NSLog(@"%@", to);
         if ([user.objectId isEqualToString:from.objectId] || [user.objectId isEqualToString:to.objectId]) {
             NSLog(@"friend found");
             // if user is not blocked, display either "Pending" or "Friends"
@@ -257,12 +260,10 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
             withinMiles:10.0];
     userQuery.limit = 10;
     [userQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-//        NSLog(@"updating nearbyusers.  returned objects has %d entries",objects.count);
-        
         // Remove current user from user list
         // TODO - remove blocked users from showing up
         for (PFUser *eachUser in objects) {
-//            NSLog(@"Checking %@ (%@) against %@ (%@)",eachUser.objectId, eachUser.username, currentUser.objectId, currentUser.username);
+            NSLog(@"%@", eachUser);
             if ([eachUser.objectId isEqualToString:currentUser.objectId] == YES) {
 //                NSLog(@"Skipping %@",eachUser.username);
             } else {
