@@ -314,6 +314,19 @@
 			name = ChattingVC;
 			sourceTree = "<group>";
 		};
+		B527191B18B32285007C6E5E /* ToBeRemoved */ = {
+			isa = PBXGroup;
+			children = (
+				B5ECEEB8189100370012F86E /* ChatsTableViewController.h */,
+				B5ECEEB9189100370012F86E /* ChatsTableViewController.m */,
+				B5ECEEBA189100370012F86E /* ChatsTableViewController.xib */,
+				B5ECEEC2189100670012F86E /* ChattingTableViewController.h */,
+				B5ECEEC3189100670012F86E /* ChattingTableViewController.m */,
+				B5ECEEC4189100670012F86E /* ChattingTableViewController.xib */,
+			);
+			name = ToBeRemoved;
+			sourceTree = "<group>";
+		};
 		B5FDE9501890C8A100A2AAF7 = {
 			isa = PBXGroup;
 			children = (
@@ -361,6 +374,7 @@
 		B5FDE9621890C8A100A2AAF7 /* VChat */ = {
 			isa = PBXGroup;
 			children = (
+				B527191B18B32285007C6E5E /* ToBeRemoved */,
 				B527191518B20E3B007C6E5E /* ChattingVC */,
 				B527183E18AEE907007C6E5E /* VChatVC */,
 				5377656618ADFD8300DC8E4E /* Contacts */,
@@ -374,15 +388,9 @@
 				53F3C17318962E3100422FF2 /* LogInViewController.m */,
 				B5FDE9901890CDC100A2AAF7 /* SignupViewController.h */,
 				B5FDE9911890CDC100A2AAF7 /* SignupViewController.m */,
-				B5ECEEB8189100370012F86E /* ChatsTableViewController.h */,
-				B5ECEEB9189100370012F86E /* ChatsTableViewController.m */,
-				B5ECEEBA189100370012F86E /* ChatsTableViewController.xib */,
 				B5ECEEBD189100530012F86E /* FriendsTableViewController.h */,
 				B5ECEEBE189100530012F86E /* FriendsTableViewController.m */,
 				B5ECEEBF189100530012F86E /* FriendsTableViewController.xib */,
-				B5ECEEC2189100670012F86E /* ChattingTableViewController.h */,
-				B5ECEEC3189100670012F86E /* ChattingTableViewController.m */,
-				B5ECEEC4189100670012F86E /* ChattingTableViewController.xib */,
 				B5ECEECC189100980012F86E /* NearbyTableViewController.h */,
 				B5ECEECD189100980012F86E /* NearbyTableViewController.m */,
 			);

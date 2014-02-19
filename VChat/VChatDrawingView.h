@@ -10,7 +10,10 @@
 
 @interface VChatDrawingView : UIView
 
+// abs(duration) is message in seconds.  negative is self-generated
 @property (nonatomic, assign) int duration;
-@property (nonatomic, assign) int direction;
+
+// indicates color/thickness.
+@property (nonatomic, assign) int countdown;
 
 @end

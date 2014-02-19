@@ -186,6 +186,9 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
     }];
 }
 
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSLog(@"NearbyTableViewController : didSelectRowAtIndexPath (%d)",indexPath.row);
+}
 
 /*
 #pragma mark - Table view delegate

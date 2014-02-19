@@ -14,6 +14,7 @@
 @property (weak, nonatomic) IBOutlet VChatDrawingView *myChattingViewCellDrawing;
 
 @property (nonatomic, assign) int duration;
+@property (nonatomic, assign) int countdown;
 
 -(void) redisplay;
 

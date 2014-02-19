@@ -11,6 +11,7 @@
 
 @interface ChattingViewController () {
     dispatch_queue_t myQueue;
+    dispatch_queue_t myQueueDataload;
 }
 
 @property (weak, nonatomic) IBOutlet UIButton *pushToRecordButton;
@@ -74,20 +75,14 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
     self.myChattingTable.dataSource = self;
     
     // configue the audio system
-    
-//    NSArray *dirPaths;
-//    NSString *docsDir;
-    
+        
     NSLog(@"chatting between local %@ and remote %@",self.localUser.username, self.remoteUser.username);
+    NSLog(@"chatting object Id is %@ and %@", self.localUser.objectId, self.remoteUser.objectId);
     self.title = self.remoteUser.username;
     
     NSString *docsDir = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
     self.pathLocalStorage = [docsDir stringByAppendingPathComponent:[NSString stringWithFormat:@"localStorage.%@.plist",self.localUser.username]];
 
-    
-//    dirPaths = NSSearchPathForDirectoriesInDomains(NSDocumentationDirectory, NSUserDomainMask, YES);
-//    dirPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-//    docsDir = [dirPaths objectAtIndex:0];
     NSString *soundFilePath = [docsDir stringByAppendingPathComponent:@"sound.caf"];
     
     NSURL *soundFileURL = [NSURL fileURLWithPath:soundFilePath];
@@ -169,6 +164,7 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
         // message from me.  right side.
         messageDuration = -messageDuration;
     }
+    cell.myChattingViewCellDrawing.countdown = 4 - [chat[@"listenCount"] integerValue];
     cell.myChattingViewCellDrawing.duration = messageDuration;
     [cell redisplay];
     
@@ -202,7 +198,24 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
         self.playingIndexPath = indexPath;
         NSLog(@"Playing returned %d",[audioPlayer play]);
         self.rowIsPlaying = indexPath.row;
+        [self incrementUserListenCountForIndexPath:indexPath];
+        
     }
+}
+
+- (void)incrementUserListenCountForIndexPath:(NSIndexPath *)indexPath {
+    NSMutableDictionary *chat = [self.userChatArray objectAtIndex:indexPath.row];
+    int listenCount = [chat[@"listenCount"] integerValue];
+    listenCount++;
+    chat[@"listenCount"] = @(listenCount);
+    NSLog(@"Updating listenCount to %d",listenCount);
+    
+    PFQuery *query = [PFQuery queryWithClassName:@"UserRecording"];
+    [query getObjectInBackgroundWithId:chat[@"objectId"] block:^(PFObject *object, NSError *error) {
+        object[@"listenCount"] = @(listenCount);
+        [object saveInBackground];
+    }];
+    [self.myChattingTable reloadData];
 }
 
 -(void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
@@ -218,20 +231,120 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
 // load conversation between these two users
 //
 -(void) loadChatBetweenUsers {
+    NSLog(@"ChattingViewController : loadChatBetweenUsers");
+    
     self.allChatArray = [[NSMutableArray alloc] initWithContentsOfFile:self.pathLocalStorage];
+    
+    NSDate *latest_timestamp;
+    latest_timestamp = [[NSDate alloc] initWithTimeIntervalSince1970:0];
     
     for (NSDictionary *entry in self.allChatArray) {
         NSString *fromUser = entry[@"fromUser"];
         NSString *toUser = entry[@"toUser"];
-        if ((([fromUser isEqualToString:self.remoteUser.username] == YES) && ([toUser isEqualToString:self.localUser.username] == YES)) ||
-            (([fromUser isEqualToString:self.localUser.username] == YES) && ([toUser isEqualToString:self.remoteUser.username]))) {
+        if ([fromUser isEqualToString:self.remoteUser.username] ||
+            [toUser isEqualToString:self.remoteUser.username]) {
 
             [self.userChatArray addObject:entry];
+            NSDate *timestamp = entry[@"timestamp"];
+            if ([timestamp laterDate:latest_timestamp]) {
+                latest_timestamp = timestamp;
+            }
+        }
+    }
+    NSMutableDictionary *dictToArrayIndex = [[NSMutableDictionary alloc] init];
+    if (self.userChatArray.count > 0) {
+        int i;
+        for (i=0; i<self.userChatArray.count; i++) {
+            NSDictionary *dict = [self.userChatArray objectAtIndex:i];
+            [dictToArrayIndex setValue:@(i) forKey:dict[@"objectId"]];
         }
     }
     
     // TODO: add more users directly from Parse....
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"((fromUser = %@) AND (toUser = %@)) OR ((fromUser = %@) AND (toUser = %@))",self.localUser.username,self.remoteUser.username,self.remoteUser.username,self.localUser.username];
+    NSLog(@"Predicate (chatting) %@",predicate);
+    NSLog(@"latest_timestamp %@",latest_timestamp);
     
+    // Parse is treating greaterThan like greaterThanOrEqual, so increment timestamp
+    latest_timestamp = [latest_timestamp dateByAddingTimeInterval:1];
+    
+    PFQuery *query = [PFQuery queryWithClassName:@"UserRecording" predicate:predicate];
+    [query whereKey:@"timestamp" greaterThan:latest_timestamp];
+    [query orderByAscending:@"timestamp"];
+    // do not update user's lastRetrieved date.
+    
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (objects.count > 0) {
+            for (PFObject *eachObject in objects) {
+                
+                // does this object already exist?
+                if ([dictToArrayIndex objectForKey:eachObject.objectId] != nil) {
+                    // just update a few fields
+                    NSLog(@"objectid %@ already exists in db",eachObject.objectId);
+                    int listenCount = [eachObject[@"listenCount"] integerValue];
+                    int objIndex = [[dictToArrayIndex objectForKey:eachObject.objectId] integerValue];
+                    NSMutableDictionary *mydict = [self.allChatArray objectAtIndex:objIndex];
+                    
+                    mydict[@"listenCount"] = @(listenCount);
+                } else {
+                
+                    NSMutableDictionary *cchat = [[NSMutableDictionary alloc] init];
+                
+                    [cchat setValue:eachObject.objectId forKey:@"objectId"];
+                    [cchat setValue:[eachObject objectForKey:@"toUser"] forKey:@"toUser"];
+                    [cchat setValue:[eachObject objectForKey:@"fromUser"] forKey:@"fromUser"];
+                    [cchat setValue:[eachObject objectForKey:@"timestamp"] forKey:@"timestamp"];
+                    [cchat setValue:[eachObject objectForKey:@"listenCount"] forKey:@"listenCount"];
+
+                    // link to recording...
+                    [cchat setValue:[eachObject objectForKey:@"recording"] forKey:@"thisFile"];
+                    [cchat setValue:@"NO" forKey:@"readyToPlay"];
+                
+                    [cchat setValue:[eachObject objectForKey:@"duration"] forKey:@"duration"];
+                    
+                    NSLog(@"msg: from %@ to %@ at%@", cchat[@"fromUser"], cchat[@"toUser"], cchat[@"timestamp"]);
+                
+                    [self.userChatArray addObject:cchat];
+                }
+            }
+            // load data
+            [self backgroundOperation];
+            [self.myChattingTable reloadData];
+            
+        }
+        else {
+            NSLog(@"Found no new messages to this user");
+            return;
+        }
+    }];
+
+    [self.myChattingTable reloadData];
+    [self.myChattingTable setContentOffset:CGPointMake(0, self.myChattingTable.contentSize.height - self.myChattingTable.frame.size.height+50)];
+    
+}
+
+- (void) backgroundOperation {
+    if (!myQueueDataload) {
+        myQueueDataload = dispatch_queue_create("load.chat.data", NULL);
+    }
+    dispatch_async(myQueueDataload, ^{
+        [self downloadChatData];
+    });
+}
+
+- (void) downloadChatData {
+    for (NSMutableDictionary *cchat in self.userChatArray) {
+        if ([cchat[@"readyToPlay"] isEqualToString:@"NO"]) {
+            // download
+            PFFile *thisFile = cchat[@"thisFile"];
+            NSData *playData = [thisFile getData];
+            [cchat setValue:playData forKey:@"sound"];
+            [cchat setValue:@"YES" forKey:@"readyToPlay"];
+            NSLog(@"finished downloading %@ chat",cchat[@"timestamp"]);
+        } else {
+            NSLog(@"already downloaded %@ chat",cchat[@"timestamp"]);
+        }
+    }
 }
 
 #pragma mark Audio Section
@@ -293,13 +406,23 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
             [newRecording setObject:self.localUser.username forKey:@"fromUser"];
             [newRecording setObject:self.remoteUser.username forKey:@"toUser"];
             
+            [newRecording setObject:self.localUser.objectId forKey:@"fromId"];
+            [newRecording setObject:self.remoteUser.objectId forKey:@"toId"];
+            
             NSDate *currentTime = [[NSDate alloc]init];
             [newRecording setObject:currentTime forKey:@"timestamp"];
+
+            // duration is not strictly necessary, since it can be more accurately
+            // calculated from the size of the data.
             [newRecording setObject:@(self.durationRecording) forKey:@"duration"];
+            
+            // counts how many times the receipient heard the msg
+            [newRecording setObject:@(0) forKey:@"listenCount"];
 
             [newRecording saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                 if (!error) {
                     NSLog(@"Successfully saved block");
+                    [self loadChatBetweenUsers];
                 }
                 else {
                     NSLog(@"Error saving meta-object for recording: %@ %@", error, [error userInfo]);
