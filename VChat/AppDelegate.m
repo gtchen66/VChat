@@ -13,6 +13,7 @@
 #import "ContactsTableViewController.h"
 
 #define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
+#define RGB2UIColor(r, g, b)  [UIColor colorWithRed:((r) / 255.0) green:((g) / 255.0) blue:((b) / 255.0) alpha:1.0]
 
 
 @implementation AppDelegate
@@ -64,7 +65,9 @@
     tabBarItem3.image = [UIImage imageNamed:@"NearbyIcon"];
     tabBarItem4.image = [UIImage imageNamed:@"ProfileIcon"];
     
-    tabBarController.tabBar.backgroundColor = UIColorFromRGB(0x4099FF);
+//    tabBarController.tabBar.backgroundColor = UIColorFromRGB(4233727);
+    tabBarController.tabBar.backgroundColor = RGB2UIColor(158, 135, 193);
+    [[UINavigationBar appearance] setBarTintColor:RGB2UIColor(158, 135, 193)];
     self.window.rootViewController = tabBarController;
 
     

@@ -135,16 +135,25 @@ NSString* const CONTACTS_KEY = @"contacts";
     NSLog(@"ContactsTableViewController : didSelectRowAtIndexPath - index is %d",indexPath.row);
     
     NSDictionary *userDictionary = [self.contacts objectAtIndex:indexPath.row];
-    PFQuery *query = [PFUser query];
-    [query getObjectInBackgroundWithId:userDictionary[@"objectId"] block:^(PFObject *object, NSError *error) {
-        PFUser *user = (PFUser *)object;
-        NSLog(@"Open conversation with %@",user.username);
-        // open the chat window.
-        ChattingViewController *cvc = [[ChattingViewController alloc] init];
-        cvc.remoteUser = user;
-        
-        [self.navigationController pushViewController:cvc animated:YES];
-    }];
+    NSLog(@"%@", userDictionary[@"userId"]);
+    // If not friends, don't allow chat
+    if (![userDictionary[@"status"] isEqualToString:@"friends"]) {
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Action Required" message:@"You must be friends to chat with someone." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        [alert show];
+    } else {
+        // Fetch for user object and pass to ChattingViewController
+        PFQuery *query = [PFUser query];
+        [query getObjectInBackgroundWithId:userDictionary[@"userId"] block:^(PFObject *object, NSError *error) {
+            PFUser *user = (PFUser *)object;
+            NSLog(@"Open conversation with %@",user.username);
+            // open the chat window.
+            ChattingViewController *cvc = [[ChattingViewController alloc] init];
+            cvc.remoteUser = user;
+            
+            [self.navigationController pushViewController:cvc animated:YES];
+        }];
+    }
     
 }
  
@@ -192,6 +201,7 @@ NSString* const CONTACTS_KEY = @"contacts";
                         if ([friend[@"status"] isEqualToString:@"pending"]) {
                             NSDictionary *userDictionary = @{ @"objectId" : friend.objectId,
                                                               @"username" : from.username,
+                                                              @"userId" :   from.objectId,
                                                               @"displayName" : from[@"displayName"] ? from[@"displayName"] : from[@"username"],
                                                               @"status" : @"accept request"
                                                               };
@@ -199,6 +209,7 @@ NSString* const CONTACTS_KEY = @"contacts";
                         } else {
                             NSDictionary *userDictionary = @{ @"objectId" : friend.objectId,
                                                               @"username" : from.username,
+                                                              @"userId" :   from.objectId,
                                                               @"displayName" : from[@"displayName"] ? from[@"displayName"] : from[@"username"],
                                                               @"status" : @"friends"
                                                               };
@@ -210,6 +221,7 @@ NSString* const CONTACTS_KEY = @"contacts";
                             NSLog((@"status from id pending"));
                             NSDictionary *userDictionary = @{ @"objectId" : friend.objectId,
                                                               @"username" : to.username,
+                                                              @"userId" :   to.objectId,
                                                               @"displayName" : to[@"displayName"] ? to[@"displayName"] : to[@"username"],
                                                               @"status" : @"request sent"
                                                               };
@@ -217,21 +229,20 @@ NSString* const CONTACTS_KEY = @"contacts";
                         } else {
                             NSDictionary *userDictionary = @{ @"objectId" : friend.objectId,
                                                               @"username" : to.username,
+                                                              @"userId" :   to.objectId,
                                                               @"displayName" : to[@"displayName"] ? to[@"displayName"] : to[@"username"],
                                                               @"status" : @"friends"
                                                               };
                             [self.contacts addObject:userDictionary];
                         }
                     }
-                    NSLog(@"Contacts: ");
-                    NSLog(@"%@", self.contacts);
                 }
             } else {
                 NSLog(@"%@", error);
             }
             
 //            NSLog(@"Contacts: ");
-            NSLog(@"%@", self.contacts);
+//            NSLog(@"%@", self.contacts);
             [self.tableView reloadData];
         }];
 
@@ -241,7 +252,7 @@ NSString* const CONTACTS_KEY = @"contacts";
         // fetch for newly created relations
     }
     
-    // sort self.contacts in alphabetical order
+    // sort self.contacts in alphabetical order, then 
     
 }
 
