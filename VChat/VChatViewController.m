@@ -375,7 +375,14 @@
         int i;
         for (i=0; i<self.allChatArray.count; i++) {
             NSDictionary *dict = [self.allChatArray objectAtIndex:i];
-            [dictToArrayIndex setValue:@(i) forKey:dict[@"objectId"]];
+            if (dict[@"objectId"] == nil) {
+                // this is an older, incompatible, object.  delete it.
+                NSLog(@"WARNING: cleaning up old file, removing object at %d",i);
+                [self.allChatArray removeObjectAtIndex:i];
+                i--;
+            } else {
+                [dictToArrayIndex setValue:@(i) forKey:dict[@"objectId"]];
+            }
         }
     }
     

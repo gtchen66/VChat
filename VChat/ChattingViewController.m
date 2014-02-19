@@ -17,12 +17,14 @@
 @property (weak, nonatomic) IBOutlet UIButton *pushToRecordButton;
 @property (nonatomic, strong) NSMutableArray *latestRecordingArray;
 @property (weak, nonatomic) IBOutlet UITableView *myChattingTable;
+@property (weak, nonatomic) IBOutlet UILabel *recordingSecondLabel;
 
 @property (nonatomic, strong) NSMutableArray *allChatArray;
 @property (nonatomic, strong) NSMutableArray *userChatArray;
 
 @property (nonatomic, strong) NSString *pathLocalStorage;
 
+@property int recordingTimeInSeconds;
 @property float startRecordingTime;
 @property float endRecordingTime;
 @property int indexForPlayback;
@@ -69,6 +71,8 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
     
     UINib *customNib = [UINib nibWithNibName:@"ChattingViewCell" bundle:nil];
     [self.myChattingTable registerNib:customNib forCellReuseIdentifier:@"ChattingViewCell"];
+    
+    self.recordingSecondLabel.text = @"";
     
     // Hook up table view
     self.myChattingTable.delegate = self;
@@ -356,6 +360,21 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
     NSLog(@"Recording to %@ at time %.2f",[audioRecorder url],self.startRecordingTime);
     
     [audioRecorder record];
+    
+    // start a counter with the number of seconds recorded.
+    self.recordingTimeInSeconds = 0;
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(clearRecordingCounter) object:nil];
+    [self performSelector:@selector(incrementRecordingCounter) withObject:nil afterDelay:1];
+}
+
+- (void) incrementRecordingCounter {
+    self.recordingTimeInSeconds++;
+    self.recordingSecondLabel.text = [NSString stringWithFormat:@"%d sec",self.recordingTimeInSeconds];
+    [self performSelector:@selector(incrementRecordingCounter) withObject:nil afterDelay:1];
+}
+
+- (void) clearRecordingCounter {
+    self.recordingSecondLabel.text = @"";
 }
 
 - (IBAction)onUpPushToTalk:(id)sender {
@@ -364,6 +383,9 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
     self.endRecordingTime = [audioRecorder deviceCurrentTime];
     // get duration
     self.durationRecording = self.endRecordingTime - self.startRecordingTime;
+
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(incrementRecordingCounter) object:nil];
+    [self performSelector:@selector(clearRecordingCounter) withObject:nil afterDelay:3];
     
     NSLog(@"Recording finished at %.2f, delta is %.2f",self.endRecordingTime,self.durationRecording);
     
