@@ -69,7 +69,7 @@
     tabBarController.tabBar.backgroundColor = RGB2UIColor(158, 135, 193);
     [[UINavigationBar appearance] setBarTintColor:RGB2UIColor(175, 158, 227)];
     [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
-    NSDictionary *textTitleOptions = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor darkGrayColor], nil];
+    NSDictionary *textTitleOptions = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor darkGrayColor], NSForegroundColorAttributeName, nil];
     [[UINavigationBar appearance] setTitleTextAttributes:textTitleOptions];
     self.window.rootViewController = tabBarController;
 
