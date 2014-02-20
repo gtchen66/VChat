@@ -207,21 +207,23 @@
         // for now.
         
     }
+
+    NSString *durationString = [NSString stringWithFormat:@"(%ds)",messageDuration];
     
     // make duration negative to indicate this was self-sent.
     NSString *directionString;
     if ([[chat objectForKey:@"fromUser"] isEqualToString:[PFUser currentUser].username]) {
         messageDuration = -messageDuration;
         directionString = @"sent to";
+        vcell.myVChatCellLabel.textAlignment = NSTextAlignmentLeft;
     } else {
+        vcell.myVChatCellLabel.textAlignment = NSTextAlignmentRight;
         directionString = @"from";
     }
     
-    
     cellString = [self findDisplayNameforObjectid:chat[@"remoteId"]];
     
-    vcell.myVChatCellLabel.text = [NSString stringWithFormat:@"%@ %@",directionString,cellString];
-    
+    vcell.myVChatCellLabel.text = [NSString stringWithFormat:@"%@ %@ %@",directionString,cellString,durationString];
     
     vcell.myVChatCellTimeLabel.text = shortTime;
     
@@ -316,6 +318,8 @@
 -(void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
     NSLog(@"Playback finished");
     [self.myVChatTableView deselectRowAtIndexPath:self.playingIndexPath animated:YES];
+    [self incrementListenCountForIndexPath:self.playingIndexPath];
+    
     self.playingIndexPath = 0;
 //    self.isPlaying = NO;
     self.rowIsPlaying = -1;
