@@ -369,6 +369,7 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
 
 - (void) incrementRecordingCounter {
     self.recordingTimeInSeconds++;
+    self.recordingSecondLabel.alpha = 1.0f;
     self.recordingSecondLabel.text = [NSString stringWithFormat:@"%d sec",self.recordingTimeInSeconds];
     [self performSelector:@selector(incrementRecordingCounter) withObject:nil afterDelay:1];
 }
@@ -385,7 +386,13 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
     self.durationRecording = self.endRecordingTime - self.startRecordingTime;
 
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(incrementRecordingCounter) object:nil];
-    [self performSelector:@selector(clearRecordingCounter) withObject:nil afterDelay:3];
+    // fade out the time.
+//    [self performSelector:@selector(clearRecordingCounter) withObject:nil afterDelay:3];
+    [UIView animateWithDuration:2.0 delay:2.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+        self.recordingSecondLabel.alpha = 0.0;
+    } completion:^(BOOL finished) {
+        self.recordingSecondLabel.text = @"";
+    }];
     
     NSLog(@"Recording finished at %.2f, delta is %.2f",self.endRecordingTime,self.durationRecording);
     

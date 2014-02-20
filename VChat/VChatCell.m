@@ -70,7 +70,7 @@
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
 {
     [super setSelected:selected animated:animated];
-    NSLog(@"VChatCell : setSelected");
+//    NSLog(@"VChatCell : setSelected");
 
 }
 

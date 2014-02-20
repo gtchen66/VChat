@@ -228,7 +228,7 @@
     vcell.countdown = 4 - [chat[@"listenCount"] integerValue];
     
     //    vcell.countdown = indexPath.row % 5;
-    NSLog(@"random value is %d",vcell.countdown);
+//    NSLog(@"random value is %d",vcell.countdown);
     
     vcell.duration = messageDuration;
     //    cell.textLabel.text = cellString;
@@ -279,6 +279,7 @@
     
     if (chatPlayer == nil) {
         NSLog(@"Error trying to play %@.",[chat objectForKey:@"timestamp"]);
+        [self.myVChatTableView deselectRowAtIndexPath:indexPath animated:YES];
     } else {
         chatPlayer.delegate = self;
         self.playingIndexPath = indexPath;
@@ -395,7 +396,9 @@
     
     //    [query whereKey:@"toUser" equalTo:user.username];
     [query whereKey:@"timestamp" greaterThan:lastRetrieved];
-    
+    // this pust most recent in front.  Use Ascending to make most recent at the bottom.
+    [query orderByDescending:@"timestamp"];
+
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         self.latestToUserArray = [NSMutableArray array];
         if (objects.count > 0) {
@@ -513,7 +516,10 @@
     }];
     [self.myVChatTableView reloadData];
     
-    [self.myVChatTableView setContentOffset:CGPointMake(0, self.myVChatTableView.contentSize.height - self.myVChatTableView.frame.size.height+50)];
+    // if descending, no content offset needed
+    
+    // if ascending then, offset needed
+    // [self.myVChatTableView setContentOffset:CGPointMake(0, self.myVChatTableView.contentSize.height - self.myVChatTableView.frame.size.height+50)];
     //    NSLog(@"%@",[self.myVChatTableView contentOffset]);
     
 
@@ -581,6 +587,7 @@
     if (user == nil) {
         PFQuery *query = [PFUser query];
         [query whereKey:@"objectId" equalTo:objectid];
+        // TODO: background this process, or don't run in main thread.
         NSArray *foundUser = [query findObjects];
         
         if (foundUser.count != 1) {
@@ -611,11 +618,22 @@
             PFFile *thisFile = [vchat objectForKey:@"thisFile"];
             NSData *playData = [thisFile getData];
             [vchat setValue:playData forKey:@"sound"];
-        
-            // this allows the file to be written.
-            [vchat setValue:NULL forKey:@"thisFile"];
-            [vchat setValue:@"YES" forKey:@"readyToPlay"];
-            NSLog(@"finished downloading %@ msg",[vchat objectForKey:@"timestamp"]);
+            
+            // there is an error here  if sound < 1 second.  8000 is actually
+            // .25 seconds, but okay for now.
+            if (playData.length < 8000) {
+                // unable to remove because this is a datasource.
+                // TODO: abstract datasource from tableview, so we can
+                // manipulate data without crashing the tableview.
+                [vchat setValue:@(0.5) forKey:@"duration"];
+                // [self.allChatArray removeObject:vchat];
+                NSLog(@"Error with sound file at %@, deleting",vchat[@"timestamp"]);
+            }
+                // this allows the file to be written.
+                [vchat setValue:NULL forKey:@"thisFile"];
+                [vchat setValue:@"YES" forKey:@"readyToPlay"];
+                NSLog(@"finished downloading %@ msg",[vchat objectForKey:@"timestamp"]);
+           
         } else {
             NSLog(@"already downloaded %@ msg",[vchat objectForKey:@"timestamp"]);
         }
@@ -625,7 +643,8 @@
     
 }
 
-// Build displayable list of chats
+// Build displayable list of chats.  data is being pulled presorted,
+// but since there could be some previous data, need to resort anyway.
 -(void) arrangeData {
     // sort the data from oldest to newest.
     
@@ -639,7 +658,12 @@
         // each object is a NSDictionary with a timestamp value
         NSDate *date1 = [obj1 objectForKey:@"timestamp"];
         NSDate *date2 = [obj2 objectForKey:@"timestamp"];
-        return (NSComparisonResult)[date1 compare:date2];
+        
+        // Use for descending (latest at top)
+        return (NSComparisonResult)[date2 compare:date1];
+
+        // Use for ascending (latest at bottom)
+        // return (NSComparisonResult)[date1 compare:date2];
     }];
     
     NSLog(@"Post sort:");

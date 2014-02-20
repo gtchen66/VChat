@@ -41,6 +41,10 @@
     float width = self.frame.size.width - 3;
     float leftX = 2.0;
     float rightX = 4*self.duration;
+    
+    // was 120.
+    float widthInSeconds = 30;
+    
     CGContextRef context = UIGraphicsGetCurrentContext();
     
     // countdown = 4+ - solid, 0% green
@@ -95,12 +99,12 @@
         if (self.duration > 0) {
             // left side
             leftX = thickness+2;
-            rightX = MIN(self.duration*(width/120) + leftX, width-thickness);
+            rightX = MIN(self.duration*(width/widthInSeconds) + leftX, width-thickness);
             
         } else {
             // right side.  duration is negative.
             rightX = width - thickness;
-            leftX = MAX(width + self.duration*(width/120) - thickness, thickness+2);
+            leftX = MAX(width + self.duration*(width/widthInSeconds) - thickness, thickness+2);
         }
         
         
@@ -142,12 +146,12 @@
         if (self.duration > 0) {
             // left side
             leftX = thick1 + thick2 + 2;
-            rightX = MIN(self.duration*(width/120) + leftX, width-thick1-thick2-2);
+            rightX = MIN(self.duration*(width/widthInSeconds) + leftX, width-thick1-thick2-2);
             
         } else {
             // right side.  duration is negative.
             rightX = width - thick1-thick2-2;
-            leftX = MAX(width + self.duration*(width/120) - thick2, thick1+thick2+2);
+            leftX = MAX(width + self.duration*(width/widthInSeconds) - thick2, thick1+thick2+2);
         }
         
         CGContextBeginPath(context);
