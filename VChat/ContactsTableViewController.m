@@ -12,6 +12,7 @@
 @interface ContactsTableViewController ()
 
 @property (nonatomic, strong) NSMutableArray *contacts;
+@property (nonatomic, strong) NSMutableDictionary *sections;
 
 - (void)loadData;
 
@@ -61,23 +62,46 @@ NSString* const CONTACTS_KEY = @"contacts";
 
 #pragma mark - Table view data source
 
+//- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+//{
+//    // Return the number of sections.
+//    return 1;
+//}
+//
+//- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+//{
+//    NSLog(@"numberOfRowsInSection");
+//    // Return the number of rows in the section.
+//    return [self.contacts count];
+//}
+
+#pragma mark Table view data source
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    // Return the number of sections.
-    return 1;
+    return [[self.sections allKeys] count];
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    return [[[self.sections allKeys] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)] objectAtIndex:section];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    NSLog(@"numberOfRowsInSection");
-    // Return the number of rows in the section.
-    return [self.contacts count];
+    return [[self.sections valueForKey:[[[self.sections allKeys] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)] objectAtIndex:section]] count];
+}
+
+- (NSArray *)sectionIndexTitlesForTableView:(UITableView *)tableView {
+    return [[self.sections allKeys] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     ContactsCell *cell = [tableView dequeueReusableCellWithIdentifier:CONTACTS_CELL_IDENTIFIER];
-    NSDictionary *userDictionary = [self.contacts objectAtIndex:indexPath.row];
+//    NSDictionary *userDictionary = [self.contacts objectAtIndex:indexPath.row];
+    NSDictionary *userDictionary = [[self.sections valueForKey:[[[self.sections allKeys] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)] objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
+
     cell.nameLabel.text = userDictionary[@"displayName"];
     // determine whether to show "accept request" button, or show "request sent" status
     if ([userDictionary[@"status"] isEqualToString:@"accept request"]) {
@@ -134,8 +158,8 @@ NSString* const CONTACTS_KEY = @"contacts";
 {
     NSLog(@"ContactsTableViewController : didSelectRowAtIndexPath - index is %d",indexPath.row);
     
-    NSDictionary *userDictionary = [self.contacts objectAtIndex:indexPath.row];
-    NSLog(@"%@", userDictionary[@"userId"]);
+    NSDictionary *userDictionary = [[self.sections valueForKey:[[[self.sections allKeys] sortedArrayUsingSelector:@selector(localizedCaseInsensitiveCompare:)] objectAtIndex:indexPath.section]] objectAtIndex:indexPath.row];
+
     // If not friends, don't allow chat
     if (![userDictionary[@"status"] isEqualToString:@"friends"]) {
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -195,8 +219,8 @@ NSString* const CONTACTS_KEY = @"contacts";
                     // if friending request was from other person, check if need to show "accept request" button
                     PFUser *to = [friend objectForKey:@"to"];
                     PFUser *from = [friend objectForKey:@"from"];
-                    NSLog(@"%@", to);
-                    NSLog(@"%@", from);
+//                    NSLog(@"%@", to);
+//                    NSLog(@"%@", from);
                     if ([me.objectId isEqualToString:to.objectId]) {
                         if ([friend[@"status"] isEqualToString:@"pending"]) {
                             NSDictionary *userDictionary = @{ @"objectId" : friend.objectId,
@@ -216,9 +240,9 @@ NSString* const CONTACTS_KEY = @"contacts";
                             [self.contacts addObject:userDictionary];
                         }
                     } else {
-                        NSLog(@"from id matches");
+//                        NSLog(@"from id matches");
                         if ([friend[@"status"] isEqualToString:@"pending"]) {
-                            NSLog((@"status from id pending"));
+//                            NSLog((@"status from id pending"));
                             NSDictionary *userDictionary = @{ @"objectId" : friend.objectId,
                                                               @"username" : to.username,
                                                               @"userId" :   to.objectId,
@@ -241,18 +265,45 @@ NSString* const CONTACTS_KEY = @"contacts";
                 NSLog(@"%@", error);
             }
             
-//            NSLog(@"Contacts: ");
-//            NSLog(@"%@", self.contacts);
+            // process array to show section headers with first alphabet
+            self.sections = [[NSMutableDictionary alloc] init];
+            bool found;
+            for (NSDictionary *contact in self.contacts)    {
+                found = NO;
+                NSString *c = [[contact objectForKey:@"displayName"] substringToIndex:1];
+                
+                for (NSString *str in [self.sections allKeys])  {
+                    if ([str isEqualToString:c])    {
+                        found = YES;
+                    }
+                }
+                if (!found) {
+                    [self.sections setValue:[[NSMutableArray alloc] init] forKey:c];
+                }
+            }
+            
+            // Loop again and sort the contacts into their respective keys
+            for (NSDictionary *contact in self.contacts)    {
+                [[self.sections objectForKey:[[contact objectForKey:@"displayName"] substringToIndex:1]] addObject:contact];
+            }
+            
+            // Sort each section array
+            for (NSString *key in [self.sections allKeys])  {
+                [[self.sections objectForKey:key] sortUsingDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"displayName" ascending:YES]]];
+            }    
+            
+            NSLog(@"sections:");
+            NSLog(@"%@", self.sections);
+            
             [self.tableView reloadData];
         }];
 
         
     } else {
-        self.contacts = [[NSMutableArray alloc] initWithArray:cachedContacts];
+//        self.contacts = [[NSMutableArray alloc] initWithArray:cachedContacts];
         // fetch for newly created relations
     }
     
-    // sort self.contacts in alphabetical order, then 
     
 }
 

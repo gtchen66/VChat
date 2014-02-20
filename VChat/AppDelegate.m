@@ -65,9 +65,12 @@
     tabBarItem3.image = [UIImage imageNamed:@"NearbyIcon"];
     tabBarItem4.image = [UIImage imageNamed:@"ProfileIcon"];
     
-//    tabBarController.tabBar.backgroundColor = UIColorFromRGB(4233727);
+    // Change color of tabBar and navigationBar
     tabBarController.tabBar.backgroundColor = RGB2UIColor(158, 135, 193);
-    [[UINavigationBar appearance] setBarTintColor:RGB2UIColor(158, 135, 193)];
+    [[UINavigationBar appearance] setBarTintColor:RGB2UIColor(175, 158, 227)];
+    [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
+    NSDictionary *textTitleOptions = [NSDictionary dictionaryWithObjectsAndKeys:[UIColor darkGrayColor], nil];
+    [[UINavigationBar appearance] setTitleTextAttributes:textTitleOptions];
     self.window.rootViewController = tabBarController;
 
     

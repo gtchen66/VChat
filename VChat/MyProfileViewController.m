@@ -105,6 +105,7 @@
     }   else {
         cell.fieldNameLabel.text = [keyValue[0] capitalizedString];
     }
+    
     cell.fieldValueLabel.text = keyValue[1];
     return cell;
 }
@@ -210,7 +211,15 @@ accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath{
     PFUser *currentUser = [PFUser currentUser];
     self.profileInfo = [[NSMutableArray alloc] init];
     NSMutableArray *basicInfoFields = [[NSMutableArray alloc] init];
-    NSString *userName = [NSString stringWithFormat:@"%@", [currentUser objectForKey:@"username"]];
+    
+    NSString *userName;
+    // Display a default user name if facebook user
+    if ([PFFacebookUtils isLinkedWithUser:currentUser]) {
+        userName = @"[FB User]";
+    } else {
+        userName = [NSString stringWithFormat:@"%@", [currentUser objectForKey:@"username"]];
+    }
+    
     NSString *displayName = [NSString stringWithFormat:@"%@",[currentUser objectForKey:@"displayName"] ? [currentUser objectForKey:@"displayName"] : @""];
 
     [basicInfoFields addObject:[NSString stringWithFormat:@"username:%@", userName]];
