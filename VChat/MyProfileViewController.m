@@ -8,7 +8,10 @@
 
 #import "MyProfileViewController.h"
 #import "MyProfileCell.h"
+#import "EditPhotoCell.h"
 #import "EditFieldViewController.h"
+#include <stdlib.h>
+
 
 @interface MyProfileViewController ()
 
@@ -41,7 +44,9 @@
 //    NSLog(@"MyProfileView: viewDidLoad");
     [super viewDidLoad];
     UINib *customNib = [UINib nibWithNibName:@"MyProfileCell" bundle:nil];
+    UINib *photoNib = [UINib nibWithNibName:@"EditPhotoCell" bundle:nil];
     [self.tableView registerNib:customNib forCellReuseIdentifier:@"MyProfileCell"];
+    [self.tableView registerNib:photoNib forCellReuseIdentifier:@"EditPhotoCell"];
     [self populateProfileInfoArray];
 
 
@@ -74,45 +79,52 @@
 //    NSLog(@"MyProfileView: numberOfRowsInSection");
     // Return the number of rows in the section.
     NSArray *segment = [self.profileInfo objectAtIndex:section];
-//    NSLog(@"%@,",segment);
-//    NSLog(@"segment[0]: %@", segment[0]);
-//    if (segment[1])
-//        NSLog(@"segment[1]: %@", segment[1]);
-//    NSLog(@"segment.count: %i", segment.count);
     return segment.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-//    NSLog(@"MyProfileView: cellForRowAtIndexPath");
-    MyProfileCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MyProfileCell"];
+    // Special custom cell for profile photo
+    if (indexPath.section == 0 && indexPath.row == 0) {
+        EditPhotoCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EditPhotoCell"];
+        
+        return cell;
+    } else {
     
-    // make user name cell unclickable
-    if (!(indexPath.section == 0 && indexPath.row == 0)) {
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        MyProfileCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MyProfileCell"];
+        
+        // Make user name cell unclickable
+        if (!(indexPath.section == 0 && indexPath.row == 1)) {
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        }
+        
+        // Configure the cell...
+        NSMutableArray *profileSection = [self.profileInfo objectAtIndex:indexPath.section];
+        NSString *profileField = [profileSection objectAtIndex:indexPath.row];
+        NSArray *keyValue = [profileField componentsSeparatedByString:@":"];
+        if ([keyValue[0] isEqualToString:@"displayName"]) {
+            cell.fieldNameLabel.text = @"Display Name";
+        } else if ([keyValue[0] isEqualToString:@"username"]) {
+            cell.fieldNameLabel.text = @"User Name";
+        }   else {
+            cell.fieldNameLabel.text = [keyValue[0] capitalizedString];
+        }
+        
+        cell.fieldValueLabel.text = keyValue[1];
+        
+        return cell;
     }
-    
-    // Configure the cell...
-    NSMutableArray *profileSection = [self.profileInfo objectAtIndex:indexPath.section];
-    NSString *profileField = [profileSection objectAtIndex:indexPath.row];
-//    NSLog(@"profileField: %@", profileField);
-    NSArray *keyValue = [profileField componentsSeparatedByString:@":"];
-//    NSLog(@"keyValue: %@", keyValue);
-    if ([keyValue[0] isEqualToString:@"displayName"]) {
-        cell.fieldNameLabel.text = @"Display Name";
-    } else if ([keyValue[0] isEqualToString:@"username"]) {
-        cell.fieldNameLabel.text = @"User Name";
-    }   else {
-        cell.fieldNameLabel.text = [keyValue[0] capitalizedString];
-    }
-    
-    cell.fieldValueLabel.text = keyValue[1];
-    return cell;
 }
 
-- (CGFloat) tableView:(UITableView *)tableView
-heightForHeaderInSection:(NSInteger)section {
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (indexPath.section == 0 && indexPath.row == 0) {
+        return 70;
+    }
     
+    return 45;
+}
+
+- (CGFloat) tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     return 20.0f;
 }
 
@@ -137,44 +149,6 @@ accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath{
     }
 }
 
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    }   
-    else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
 
 #pragma mark - Table view delegate
 
@@ -182,25 +156,50 @@ accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath{
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSLog(@"MyProfileView: didSelectRowAtIndexPath");
-    NSLog(@"indexPath.section: %i", indexPath.section);
-    if (!(indexPath.section == 0 && indexPath.row == 0)) {
-        NSMutableArray *profileSection = [self.profileInfo objectAtIndex:indexPath.section];
-        NSString *profileField = [profileSection objectAtIndex:indexPath.row];
-        //    NSLog(@"profileField: %@", profileField);
-        NSArray *keyValue = [profileField componentsSeparatedByString:@":"];
-        //    NSLog(@"keyValue: %@", keyValue);
-        NSString *fieldName = keyValue[0];
-        NSString *fieldValue = keyValue[1];
-        EditFieldViewController *efvc = [[EditFieldViewController alloc] init];
-        efvc.fieldName = fieldName;
-        efvc.fieldValue = fieldValue;
-        if ([fieldName isEqualToString:@"displayName"]) {
-            efvc.title = @"Display Name";
+    NSLog(@"indexPath.section: %i, indexPath.row: %i", indexPath.section, indexPath.row);
+    
+    // Special handling for Profile Photo cell
+    if (indexPath.section == 0 && indexPath.row == 0) {
+        if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeSavedPhotosAlbum] == YES){
+            
+            NSLog(@"Create image picker");
+            // Create image picker controller
+            UIImagePickerController *imagePicker = [[UIImagePickerController alloc] init];
+            
+            // Set source to the camera
+            imagePicker.sourceType =  UIImagePickerControllerSourceTypeSavedPhotosAlbum;
+            
+            imagePicker.mediaTypes =
+            [UIImagePickerController availableMediaTypesForSourceType:
+             UIImagePickerControllerSourceTypeSavedPhotosAlbum];
+            
+            // Delegate is self
+            imagePicker.delegate = self;
+            
+            // Show image picker
+            [self presentViewController:imagePicker animated:YES completion:nil];
         }
-        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:efvc];
-        [self.navigationController presentViewController:navController animated:YES completion:nil];
-    } else {
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    } else {
+        if (!(indexPath.section == 0 && indexPath.row == 1)) {
+            NSMutableArray *profileSection = [self.profileInfo objectAtIndex:indexPath.section];
+            NSString *profileField = [profileSection objectAtIndex:indexPath.row];
+            //    NSLog(@"profileField: %@", profileField);
+            NSArray *keyValue = [profileField componentsSeparatedByString:@":"];
+            //    NSLog(@"keyValue: %@", keyValue);
+            NSString *fieldName = keyValue[0];
+            NSString *fieldValue = keyValue[1];
+            EditFieldViewController *efvc = [[EditFieldViewController alloc] init];
+            efvc.fieldName = fieldName;
+            efvc.fieldValue = fieldValue;
+            if ([fieldName isEqualToString:@"displayName"]) {
+                efvc.title = @"Display Name";
+            }
+            UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:efvc];
+            [self.navigationController presentViewController:navController animated:YES completion:nil];
+        } else {
+            [tableView deselectRowAtIndexPath:indexPath animated:YES];
+        }
     }
 }
 
@@ -212,6 +211,7 @@ accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath{
     self.profileInfo = [[NSMutableArray alloc] init];
     NSMutableArray *basicInfoFields = [[NSMutableArray alloc] init];
     
+    [basicInfoFields addObject:@"Profile Picture"];
     NSString *userName;
     // Display a default user name if facebook user
     if ([PFFacebookUtils isLinkedWithUser:currentUser]) {

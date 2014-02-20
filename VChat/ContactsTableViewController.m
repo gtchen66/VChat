@@ -114,6 +114,15 @@ NSString* const CONTACTS_KEY = @"contacts";
         cell.backgroundColor = [UIColor whiteColor];
     }
     
+    // Attempting to make the background color of the section index on the right non-opaque
+    for(UIView *view in [tableView subviews])  {
+        if([[[view class] description] isEqualToString:@"UITableViewIndex"])    {
+            [view setBackgroundColor:[UIColor clearColor]];
+            [view setAlpha:0.5];
+            [view setOpaque:NO];
+        }
+    }
+    
     cell.delegate = self;
     return cell;
 }

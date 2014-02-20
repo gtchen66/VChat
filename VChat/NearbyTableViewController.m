@@ -110,33 +110,20 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
         [cell.profileImageView setImageWithURL:[NSURL URLWithString:user[@"profileImage"]]];
     }
     
-//    NSLog(@"looping through friends");
     // Update the Add button to the appropriate status if there is already a friend relations
-    // perhaps find a better way to find user in the array than to loop through every friend
-    // predicate as a possible solution ???
-    for (PFObject *friend in self.friends) {
-//        NSLog(@"%@", friend);
-        PFUser *to = [friend objectForKey:@"to"];
-        PFUser *from = [friend objectForKey:@"from"];
-//        NSLog(@"to user");
-//        NSLog(@"%@", to);
-        if ([user.objectId isEqualToString:from.objectId] || [user.objectId isEqualToString:to.objectId]) {
-            NSLog(@"friend found");
-            // if user is not blocked, display either "Pending" or "Friends"
-            if ([friend[@"status"] isEqualToString:@"blocked"] == NO) {
-                cell.addButton.backgroundColor = [UIColor whiteColor];
-                [cell.addButton setEnabled:NO];
-                [cell.addButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-                [cell.addButton setTitle:friend[@"status"] forState:UIControlStateNormal];
-            }
+    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"to.objectId = %@ OR from.objectId = %@",user.objectId,user.objectId];
+    NSArray *filteredArray = [self.friends filteredArrayUsingPredicate:predicate];
+//    NSLog(@"filteredArray");
+//    NSLog(@"%@", filteredArray);
+    if ([filteredArray count] != 0) {
+        PFObject *friend = filteredArray[0];
+        if ([friend[@"status"] isEqualToString:@"blocked"] == NO) {
+            cell.addButton.backgroundColor = [UIColor whiteColor];
+            [cell.addButton setEnabled:NO];
+            [cell.addButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+            [cell.addButton setTitle:friend[@"status"] forState:UIControlStateNormal];
         }
     }
-    
-//    cell.clickChatButton.tag = indexPath.row;
-    
-//    objc_setAssociatedObject(cell.userNameLabel, &indexPathKey, indexPath, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-
-//    NSLog(@"%@", cell.userNameLabel.text);
     
     cell.delegate = self;
     return cell;
