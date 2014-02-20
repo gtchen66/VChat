@@ -224,9 +224,16 @@ NSString* const CONTACTS_KEY = @"contacts";
         [friendQuery includeKey:@"to"];
         [friendQuery includeKey:@"from"];
         
+        // make the query cached
+        friendQuery.cachePolicy = kPFCachePolicyCacheThenNetwork;
         [friendQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
             // save the objectId, display name, user name, and status (request sent, accept request, friends)
 //            NSLog(@"%@", objects);
+            if ([self.contacts count] != 0 && self.contacts != nil) {
+                self.contacts = nil;
+                self.contacts = [[NSMutableArray alloc] init];
+            }
+            NSLog(@"friend query returns");
             if (!error) {
                 for (PFObject *friend in objects) {
                     // if friending request was from other person, check if need to show "accept request" button

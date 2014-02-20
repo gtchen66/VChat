@@ -104,10 +104,35 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
     cell.userNameLabel.text = (user[@"displayName"] && ![user[@"displayName"] isEqual: @""]) ? user[@"displayName"] : user.username;
     cell.affiliationLabel.text = user[@"affiliation"];
     cell.positionLabel.text = user[@"position"];
-    if (!user[@"profileImage"]) {
-        [cell.profileImageView setImage:[UIImage imageNamed:@"DefaultProfileIcon"]];
-    } else {
-        [cell.profileImageView setImageWithURL:[NSURL URLWithString:user[@"profileImage"]]];
+    
+    // search for image file in parse, then facebook, otherwise show default
+    if (!cell.profileImageView.image) {
+        PFQuery *query = [PFQuery queryWithClassName:@"UserPhoto"];
+        [query whereKey:@"user" equalTo:user];
+        [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+            if (!error) {
+                // If no profile image exist, look for facebook image, otherwise set default image
+                if ([objects count] == 0 || objects == nil) {
+                    if (user[@"profileImage"] && ![user[@"profileImage"] isEqualToString:@""]) {
+                        [cell.profileImageView setImageWithURL:[NSURL URLWithString:user[@"profileImage"]]];
+                    } else {
+                        [cell.profileImageView setImage:[UIImage imageNamed:@"DefaultProfileIcon"]];
+                    }
+                } else {
+                    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+                        PFFile *imageFile = [objects[0] objectForKey:@"imageFile"];
+                        NSData *imageData = [imageFile getData];
+                        dispatch_sync(dispatch_get_main_queue(), ^{
+                            UIImage *image = [UIImage imageWithData:imageData];
+                            [cell.profileImageView setImage:image];
+                            [self.tableView beginUpdates];
+                            [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+                            [self.tableView endUpdates];
+                        });
+                    });
+                }
+            }
+        }];
     }
     
     // Update the Add button to the appropriate status if there is already a friend relations
