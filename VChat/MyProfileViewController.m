@@ -10,16 +10,20 @@
 #import "MyProfileCell.h"
 #import "EditPhotoCell.h"
 #import "EditFieldViewController.h"
-#include <stdlib.h>
+#import "UIImageView+AFNetworking.h"
 
 
 @interface MyProfileViewController ()
 
 @property (nonatomic, strong) NSMutableArray *profileInfo;
 
+- (void)uploadImage:(NSData *)imageData;
 - (void)populateProfileInfoArray;
 
 @end
+
+MBProgressHUD *HUD;
+MBProgressHUD *refreshHUD;
 
 @implementation MyProfileViewController
 
@@ -87,7 +91,32 @@
     // Special custom cell for profile photo
     if (indexPath.section == 0 && indexPath.row == 0) {
         EditPhotoCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EditPhotoCell"];
-        
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+
+        // Set the profile image view
+        PFQuery *query = [PFQuery queryWithClassName:@"UserPhoto"];
+        PFUser *user = [PFUser currentUser];
+        [query whereKey:@"user" equalTo:user];
+        [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+            if (!error) {
+                NSLog(@"fetching image");
+                NSLog(@"%@", objects);
+                // If no profile image exist, look for facebook image, otherwise set default image
+                if ([objects count] == 0 || objects == nil) {
+                    PFUser *currentUser = [PFUser currentUser];
+                    if (currentUser[@"profileImage"] && ![currentUser[@"profileImage"] isEqualToString:@""]) {
+                        [cell.profileImageView setImageWithURL:[NSURL URLWithString:user[@"profileImage"]]];
+                    } else {
+                        [cell.profileImageView setImage:[UIImage imageNamed:@"DefaultProfileIcon"]];
+                    }
+                } else {
+                    PFFile *theImage = [objects[0] objectForKey:@"imageFile"];
+                    NSData *imageData = [theImage getData];
+                    UIImage *image = [UIImage imageWithData:imageData];
+                    [cell.profileImageView setImage:image];
+                }
+            }
+        }];
         return cell;
     } else {
     
@@ -166,12 +195,8 @@ accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath{
             // Create image picker controller
             UIImagePickerController *imagePicker = [[UIImagePickerController alloc] init];
             
-            // Set source to the camera
+            // Set source to the photo album
             imagePicker.sourceType =  UIImagePickerControllerSourceTypeSavedPhotosAlbum;
-            
-            imagePicker.mediaTypes =
-            [UIImagePickerController availableMediaTypesForSourceType:
-             UIImagePickerControllerSourceTypeSavedPhotosAlbum];
             
             // Delegate is self
             imagePicker.delegate = self;
@@ -203,6 +228,96 @@ accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath{
     }
 }
 
+# pragma mark - MBProgressHUDDelegate
+
+- (void)hudWasHidden:(MBProgressHUD *)hud {
+    // Remove HUD from screen when the HUD hides
+    [HUD removeFromSuperview];
+    HUD = nil;
+}
+
+# pragma mark - UIImagePickerControllerDelegate
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+    // Access the uncropped image from info dictionary
+    UIImage *image = [info objectForKey:@"UIImagePickerControllerOriginalImage"];
+    
+    // Dismiss controller
+    [picker dismissViewControllerAnimated:YES completion:nil];
+    
+    // Resize image
+    UIGraphicsBeginImageContext(CGSizeMake(640, 960));
+    [image drawInRect: CGRectMake(0, 0, 640, 960)];
+    UIImage *smallImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    // Upload image
+    NSData *imageData = UIImageJPEGRepresentation(smallImage, 0.05f);
+    [self uploadImage:imageData];
+}
+
+
+- (void)uploadImage:(NSData *)imageData {
+    PFFile *imageFile = [PFFile fileWithName:@"Image.jpg" data:imageData];
+    
+    //HUD
+    HUD = [[MBProgressHUD alloc] initWithView:self.view];
+    [self.view addSubview:HUD];
+    
+    // Set determinate mode
+    HUD.mode = MBProgressHUDModeDeterminate;
+    HUD.delegate = self;
+    HUD.labelText = @"Uploading";
+    [HUD show:YES];
+    
+    // Save PFFile
+    [imageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (!error) {
+            // Hide old HUD, show completed HUD
+            [HUD hide:YES];
+            
+            // Create a PFObject around a PFFile and associate it with the current user
+            PFQuery *query = [PFQuery queryWithClassName:@"UserPhoto"];
+            PFUser *currentUser = [PFUser currentUser];
+            [query whereKey:@"user" equalTo:currentUser];
+            [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                if (!error) {
+                    // delete if photo already exists
+                    if ([objects count] != 0) {
+                        PFObject *object = objects[0];
+                        [object deleteInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                            if (!error) {
+                                NSLog(@"old profile picture delete");
+                            }
+                        }];
+                    }
+                }
+            }];
+            
+            PFObject *userPhoto = [PFObject objectWithClassName:@"UserPhoto"];
+            [userPhoto setObject:imageFile forKey:@"imageFile"];
+            // Set the access control list to current user for security purposes
+            userPhoto.ACL = [PFACL ACLWithUser:[PFUser currentUser]];
+            [userPhoto setObject:currentUser forKey:@"user"];
+            [userPhoto saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+                if (!error) {
+                    [self.tableView reloadData];
+                } else {
+                    // Log details of the failure
+                    NSLog(@"Error: %@ %@", error, [error userInfo]);
+                }
+            }];
+        } else {
+            [HUD hide:YES];
+            // Log details of the failure
+            NSLog(@"Error: %@ %@", error, [error userInfo]);
+        }
+    } progressBlock:^(int percentDone) {
+        // Update your progress spinner here. percentDone will be between 0 and 100.
+        HUD.progress = (float)percentDone/100;
+    }];
+}
 
 - (void)populateProfileInfoArray {
 //    NSLog(@"MyProfileView: populateProfileInfoArray");

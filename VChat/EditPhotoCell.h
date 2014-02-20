@@ -9,6 +9,6 @@
 #import <UIKit/UIKit.h>
 
 @interface EditPhotoCell : UITableViewCell
-@property (weak, nonatomic) IBOutlet UIImageView *profileImage;
+@property (weak, nonatomic) IBOutlet UIImageView *profileImageView;
 
 @end
