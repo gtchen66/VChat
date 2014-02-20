@@ -13,18 +13,20 @@
 #import "UIImageView+AFNetworking.h"
 
 
-@interface MyProfileViewController ()
+@interface MyProfileViewController () {
+    dispatch_queue_t myQueue;
+}
 
 @property (nonatomic, strong) NSMutableArray *profileInfo;
 
 - (void)uploadImage:(NSData *)imageData;
+- (void)downloadImage:(NSIndexPath *)indexPath imageFile:(PFFile *)imageFile;
 - (void)populateProfileInfoArray;
 
 @end
 
 MBProgressHUD *HUD;
 MBProgressHUD *refreshHUD;
-
 @implementation MyProfileViewController
 
 - (id)initWithStyle:(UITableViewStyle)style
@@ -92,31 +94,39 @@ MBProgressHUD *refreshHUD;
     if (indexPath.section == 0 && indexPath.row == 0) {
         EditPhotoCell *cell = [tableView dequeueReusableCellWithIdentifier:@"EditPhotoCell"];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-
+        
         // Set the profile image view
-        PFQuery *query = [PFQuery queryWithClassName:@"UserPhoto"];
-        PFUser *user = [PFUser currentUser];
-        [query whereKey:@"user" equalTo:user];
-        [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-            if (!error) {
-                NSLog(@"fetching image");
-                NSLog(@"%@", objects);
-                // If no profile image exist, look for facebook image, otherwise set default image
-                if ([objects count] == 0 || objects == nil) {
-                    PFUser *currentUser = [PFUser currentUser];
-                    if (currentUser[@"profileImage"] && ![currentUser[@"profileImage"] isEqualToString:@""]) {
-                        [cell.profileImageView setImageWithURL:[NSURL URLWithString:user[@"profileImage"]]];
+        if (!cell.profileImageView.image) {
+            PFQuery *query = [PFQuery queryWithClassName:@"UserPhoto"];
+            PFUser *user = [PFUser currentUser];
+            [query whereKey:@"user" equalTo:user];
+            [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                if (!error) {
+                    // If no profile image exist, look for facebook image, otherwise set default image
+                    if ([objects count] == 0 || objects == nil) {
+                        PFUser *currentUser = [PFUser currentUser];
+                        if (currentUser[@"profileImage"] && ![currentUser[@"profileImage"] isEqualToString:@""]) {
+                            [cell.profileImageView setImageWithURL:[NSURL URLWithString:user[@"profileImage"]]];
+                        } else {
+                            [cell.profileImageView setImage:[UIImage imageNamed:@"DefaultProfileIcon"]];
+                        }
                     } else {
-                        [cell.profileImageView setImage:[UIImage imageNamed:@"DefaultProfileIcon"]];
+                            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+                                PFFile *imageFile = [objects[0] objectForKey:@"imageFile"];
+                                NSData *imageData = [imageFile getData];
+                                dispatch_sync(dispatch_get_main_queue(), ^{
+                                    UIImage *image = [UIImage imageWithData:imageData];
+                                    [cell.profileImageView setImage:image];
+                                        [self.tableView beginUpdates];
+                                        [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+                                        [self.tableView endUpdates];
+                                });
+                            });
                     }
-                } else {
-                    PFFile *theImage = [objects[0] objectForKey:@"imageFile"];
-                    NSData *imageData = [theImage getData];
-                    UIImage *image = [UIImage imageWithData:imageData];
-                    [cell.profileImageView setImage:image];
                 }
-            }
-        }];
+            }];
+        }
+        NSLog(@"returning cell");
         return cell;
     } else {
     
@@ -144,6 +154,7 @@ MBProgressHUD *refreshHUD;
         return cell;
     }
 }
+
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 0 && indexPath.row == 0) {
@@ -257,6 +268,25 @@ accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath{
     [self uploadImage:imageData];
 }
 
+
+- (void)downloadImage:(NSIndexPath *)indexPath imageFile:(PFFile *)imageFile {
+    UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section]];
+    EditPhotoCell *editPhotoCell = (EditPhotoCell* )((id)cell);
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+        NSData *imageData = [imageFile getData];
+        UIImage *image = [UIImage imageWithData:imageData];
+        NSLog(@"setting profile image");
+        NSLog(@"%@", editPhotoCell.profileImageView);
+        [editPhotoCell.profileImageView setImage:image];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            NSLog(@"updating cell");
+            NSLog(@"%@", indexPath);
+            [self.tableView beginUpdates];
+            [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+            [self.tableView endUpdates];
+        });
+    });
+}
 
 - (void)uploadImage:(NSData *)imageData {
     PFFile *imageFile = [PFFile fileWithName:@"Image.jpg" data:imageData];

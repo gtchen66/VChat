@@ -33,13 +33,15 @@ NSString* const CONTACTS_KEY = @"contacts";
     return self;
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [self loadData];
+}
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     NSLog(@"ContactsTableViewController: viewDidLoad");
     self.title = @"Contacts";
-    [self loadData];
     
     // Register custom ContactsCell
     UINib *customNib = [UINib nibWithNibName:CONTACTS_CELL_IDENTIFIER bundle:nil];
@@ -192,6 +194,8 @@ NSString* const CONTACTS_KEY = @"contacts";
  
 
 - (void)loadData {
+    self.contacts = nil;
+    self.sections = nil;
     NSLog(@"ContactsViewController: loadData");
     PFUser *me = [PFUser currentUser];
     
