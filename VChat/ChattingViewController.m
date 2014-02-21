@@ -120,6 +120,12 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
     
 }
 
+- (void)viewWillDisappear:(BOOL)animated {
+    NSLog(@"ChattingViewController : viewWillDisappear");
+    
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -152,8 +158,6 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"MM/dd HH:mm"];
     NSString *shortTime = [dateFormatter stringFromDate:timestamp];
-
-    
     
     cell.myChattingViewCellTimeLabel.text = shortTime;
     
@@ -167,8 +171,10 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
     if ([[chat objectForKey:@"fromUser"] isEqualToString:self.localUser.username]) {
         // message from me.  right side.
         messageDuration = -messageDuration;
+        cell.myChattingViewCellDrawing.countdown = 4 - [chat[@"senderCount"] integerValue];
+    } else {
+        cell.myChattingViewCellDrawing.countdown = 4 - [chat[@"listenCount"] integerValue];
     }
-    cell.myChattingViewCellDrawing.countdown = 4 - [chat[@"listenCount"] integerValue];
     cell.myChattingViewCellDrawing.duration = messageDuration;
     [cell redisplay];
     
@@ -208,14 +214,24 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
 
 - (void)incrementUserListenCountForIndexPath:(NSIndexPath *)indexPath {
     NSMutableDictionary *chat = [self.userChatArray objectAtIndex:indexPath.row];
+    int senderCount = [chat[@"senderCount"] integerValue];
     int listenCount = [chat[@"listenCount"] integerValue];
-    listenCount++;
-    chat[@"listenCount"] = @(listenCount);
-    NSLog(@"Updating listenCount to %d",listenCount);
+
+    if ([[chat objectForKey:@"fromUser"] isEqualToString:self.localUser.username]) {
+        // message from me.  right side.  update sender count
+        senderCount++;
+        chat[@"senderCount"] = @(senderCount);
+    } else {
+        listenCount++;
+        chat[@"listenCount"] = @(listenCount);
+    }
+    NSLog(@"Update counts: listen=%d sender=%d", listenCount, senderCount);
     
+    // TODO: optimize by only sending back the object being changed?  maybe it sends back everything anyway.
     PFQuery *query = [PFQuery queryWithClassName:@"UserRecording"];
     [query getObjectInBackgroundWithId:chat[@"objectId"] block:^(PFObject *object, NSError *error) {
         object[@"listenCount"] = @(listenCount);
+        object[@"senderCount"] = @(senderCount);
         [object saveInBackground];
     }];
     [self.myChattingTable reloadData];
@@ -285,10 +301,14 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
                     // just update a few fields
                     NSLog(@"objectid %@ already exists in db",eachObject.objectId);
                     int listenCount = [eachObject[@"listenCount"] integerValue];
+                    int senderCount = [eachObject[@"senderCount"] integerValue];
+
                     int objIndex = [[dictToArrayIndex objectForKey:eachObject.objectId] integerValue];
                     NSMutableDictionary *mydict = [self.allChatArray objectAtIndex:objIndex];
                     
                     mydict[@"listenCount"] = @(listenCount);
+                    mydict[@"sendCount"] = @(senderCount);
+
                 } else {
                     
                     NSMutableDictionary *cchat = [[NSMutableDictionary alloc] init];
@@ -298,6 +318,8 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
                     [cchat setValue:[eachObject objectForKey:@"fromUser"] forKey:@"fromUser"];
                     [cchat setValue:[eachObject objectForKey:@"timestamp"] forKey:@"timestamp"];
                     [cchat setValue:[eachObject objectForKey:@"listenCount"] forKey:@"listenCount"];
+                    [cchat setValue:[eachObject objectForKey:@"senderCount"] forKey:@"senderCount"];
+
                     
                     // link to recording...
                     [cchat setValue:[eachObject objectForKey:@"recording"] forKey:@"thisFile"];
@@ -447,7 +469,8 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
             
             // counts how many times the receipient heard the msg
             [newRecording setObject:@(0) forKey:@"listenCount"];
-            
+            [newRecording setObject:@(0) forKey:@"senderCount"];
+
             [newRecording saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                 if (!error) {
                     NSLog(@"Successfully saved block");

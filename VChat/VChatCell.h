@@ -12,12 +12,13 @@
 @protocol VChatCellDelegate
 @optional
 - (void) onVChatCellButton:(id)sender;
-
 @end
 
 @interface VChatCell : UITableViewCell
 @property (weak, nonatomic) IBOutlet UILabel *myVChatCellLabel;
 @property (weak, nonatomic) IBOutlet UILabel *myVChatCellTimeLabel;
+@property (weak, nonatomic) IBOutlet UILabel *myVChatCellStatusLabel;
+
 // @property (weak, nonatomic) IBOutlet UIView *myVChatCellView;
 @property (weak, nonatomic) IBOutlet VChatDrawingView *myVChatDrawingView;
 
