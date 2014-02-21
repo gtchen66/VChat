@@ -80,7 +80,7 @@
 }
 
 - (void) setDuration:(int)duration {
-    NSLog(@"VChatCell : setDuration with %d",duration);
+//    NSLog(@"VChatCell : setDuration with %d",duration);
     _duration = duration;
     
     self.myVChatDrawingView.duration = duration;

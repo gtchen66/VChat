@@ -43,7 +43,7 @@
     float rightX = 4*self.duration;
     
     // was 120.
-    float widthInSeconds = 30;
+    float widthInSeconds = 60;
     
     CGContextRef context = UIGraphicsGetCurrentContext();
     

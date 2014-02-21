@@ -36,11 +36,14 @@
 @property (strong, nonatomic) NSMutableDictionary *mapObjectIdToDisplayName;
 @property (strong, nonatomic) NSMutableDictionary *mapObjectIdToPFUser;
 
+@property NSInteger periodicCounter;
 // @property BOOL isPlaying;
 
 - (void)logOutButtonTapAction;
 - (void)initLogInController;
 - (void)updateContacts;
+
+- (void) periodicTimerMethod:(NSTimer *)timer;
 
 @end
 
@@ -93,13 +96,13 @@
     self.mapObjectIdToDisplayName = [[NSMutableDictionary alloc] init];
     self.mapObjectIdToPFUser = [[NSMutableDictionary alloc] init];
 
-    // Check and update contacts (This should be refactored out of this controller so things aren't so cluttered!)
+    self.periodicCounter = 0;
+//    [NSTimer scheduledTimerWithTimeInterval:15.0 target:self selector:@selector(periodicTimerMethod:) userInfo:nil repeats:YES];
     
-
+    // Check and update contacts (This should be refactored out of this controller so things aren't so cluttered!)
 }
 
-- (void)viewDidAppear:(BOOL)animated
-{
+- (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
 //    NSLog(@"VChatViewController : viewDidAppear");
 
@@ -166,7 +169,7 @@
 
 #pragma mark - TableView Source
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    NSLog(@"VChatViewController : numberOfSectionsInTableView");
+//    NSLog(@"VChatViewController : numberOfSectionsInTableView");
     return 1;
 }
 
@@ -216,37 +219,33 @@
         messageDuration = -messageDuration;
         directionString = @"sent to";
         vcell.myVChatCellLabel.textAlignment = NSTextAlignmentLeft;
+        vcell.myVChatCellStatusLabel.textAlignment = NSTextAlignmentLeft;
+        vcell.countdown = 4 - [chat[@"senderCount"] integerValue];
     } else {
         vcell.myVChatCellLabel.textAlignment = NSTextAlignmentRight;
-        directionString = @"from";
+        vcell.myVChatCellStatusLabel.textAlignment = NSTextAlignmentRight;
+        directionString = @"received from";
+        vcell.countdown = 4 - [chat[@"listenCount"] integerValue];
     }
     
-    cellString = [self findDisplayNameforObjectid:chat[@"remoteId"]];
+    // this is slow.  fill this in during the loaddata background thread instead
+    // cellString = [self findDisplayNameforObjectid:chat[@"remoteId"]];
+    cellString = chat[@"displayName"];
     
-    vcell.myVChatCellLabel.text = [NSString stringWithFormat:@"%@ %@ %@",directionString,cellString,durationString];
-    
+    vcell.myVChatCellLabel.text = cellString;
+    // vcell.myVChatCellLabel.text = [NSString stringWithFormat:@"%@ %@ %@",directionString,cellString,durationString];
+    vcell.myVChatCellStatusLabel.text = [NSString stringWithFormat:@"%@ %@", directionString, durationString];
     vcell.myVChatCellTimeLabel.text = shortTime;
     
-    vcell.countdown = 4 - [chat[@"listenCount"] integerValue];
-    
-    //    vcell.countdown = indexPath.row % 5;
-//    NSLog(@"random value is %d",vcell.countdown);
-    
     vcell.duration = messageDuration;
-    //    cell.textLabel.text = cellString;
-    
-    // [NSString stringWithFormat:@"chat with %d",indexPath.row];
-    
-    //    NSLog(@"message index %d is %d seconds",indexPath.row,messageDuration);
     
     [vcell redisplay];
     vcell.delegate = self;
     
     return vcell;
-    
-//    return cell;
 }
 
+#pragma mark - TableView Delegates
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     NSLog(@"VChatViewController : didSelectRowAtIndexPath (%d)", indexPath.row);
     
@@ -272,7 +271,7 @@
     
     NSLog(@"Playback message");
     NSDictionary *chat = [self.allChatArray objectAtIndex:indexPath.row];
-
+    // TODO: do something clever if recording is bad...
     NSData *soundData = [chat objectForKey:@"sound"];
     NSError *outError;
 
@@ -296,6 +295,7 @@
     // is the recipient or the sender.
     
 }
+
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath {
     NSLog(@"VChatViewController : didDeselectRowAtIndexPath (%d)",indexPath.row);
 }
@@ -303,19 +303,28 @@
 - (void)incrementListenCountForIndexPath:(NSIndexPath *)indexPath {
     NSMutableDictionary *chat = [self.allChatArray objectAtIndex:indexPath.row];
     int listenCount = [chat[@"listenCount"] integerValue];
-    listenCount++;
-    chat[@"listenCount"] = @(listenCount);
-    NSLog(@"Updating listenCount to %d",listenCount);
+    int senderCount = [chat[@"senderCount"] integerValue];
+
+    if ([[chat objectForKey:@"fromUser"] isEqualToString:[PFUser currentUser].username]) {
+        senderCount++;
+        chat[@"senderCount"] = @(senderCount);
+    } else {
+        listenCount++;
+        chat[@"listenCount"] = @(listenCount);
+    }
+    
+    NSLog(@"Updating listenCount to %d, senderCount to %d", listenCount, senderCount);
     
     PFQuery *query = [PFQuery queryWithClassName:@"UserRecording"];
     [query getObjectInBackgroundWithId:chat[@"objectId"] block:^(PFObject *object, NSError *error) {
         object[@"listenCount"] = @(listenCount);
+        object[@"senderCount"] = @(senderCount);
         [object saveInBackground];
     }];
     [self.myVChatTableView reloadData];
 }
 
--(void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
+- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
     NSLog(@"Playback finished");
     [self.myVChatTableView deselectRowAtIndexPath:self.playingIndexPath animated:YES];
     [self incrementListenCountForIndexPath:self.playingIndexPath];
@@ -325,11 +334,7 @@
     self.rowIsPlaying = -1;
 }
 
-//- (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath {
-//    NSLog(@"VChatViewController : accessoryButtonTappedForRowWithIndexPath (%d)",indexPath.row);
-//}
-
--(void)onVChatCellButton:(id) sender {
+- (void)onVChatCellButton:(id) sender {
     NSIndexPath *indexPath = [self.myVChatTableView indexPathForCell:sender];
     NSLog(@"VChatViewController : onVChatCellButton (%d)",indexPath.row);
     
@@ -345,7 +350,7 @@
 }
 
 // Pulls chatting data from repository, appends to local-data
-- (void) loadChattingDataFromRepository {
+- (void)loadChattingDataFromRepository {
     // Parse implementation.
     //    PFQuery *query = [PFQuery queryWithClassName:@"UserRecording"];
     PFUser *user = [PFUser currentUser];
@@ -361,7 +366,7 @@
     //    }
     
     NSLog(@"path: %@",self.pathLocalStorage);
-    NSLog(@"last retrieved: %@",lastRetrieved);
+//    NSLog(@"last retrieved: %@",lastRetrieved);
     
     //    [self.allChatArray removeAllObjects];
     self.allChatArray = [[NSMutableArray alloc] initWithContentsOfFile:self.pathLocalStorage];
@@ -394,7 +399,7 @@
     // find recordings sent to me OR sent by me.
     
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(toUser = %@) OR (fromUser = %@)",user.username,user.username];
-    NSLog(@"Predicate %@",predicate);
+//    NSLog(@"Predicate %@",predicate);
     
     PFQuery *query = [PFQuery queryWithClassName:@"UserRecording" predicate:predicate];
     
@@ -413,13 +418,20 @@
                 // does this object already exist?
                 if ([dictToArrayIndex objectForKey:eachObject.objectId] != nil) {
                     // just update a few fields
-                    NSLog(@"objectid %@ already exists in db",eachObject.objectId);
+                    // NSLog(@"objectid %@ already exists in db",eachObject.objectId);
+                    
+                    // retrieve listen-counts from cloud.
+                    
                     int listenCount = [eachObject[@"listenCount"] integerValue];
+                    int senderCount = [eachObject[@"senderCount"] integerValue];
+                    
                     int objIndex = [[dictToArrayIndex objectForKey:eachObject.objectId] integerValue];
                     NSMutableDictionary *mydict = [self.allChatArray objectAtIndex:objIndex];
                     
                     mydict[@"listenCount"] = @(listenCount);
+                    mydict[@"senderCount"] = @(senderCount);
                     
+                    // fix.  earlier versions did not have remoteId set, so set it now.
                     if (mydict[@"remoteId"] == nil) {
                         if ([user.objectId isEqualToString:mydict[@"fromId"]]) {
                             mydict[@"remoteId"] = mydict[@"toId"];
@@ -427,7 +439,6 @@
                             mydict[@"remoteId"] = mydict[@"fromId"];
                         }
                         NSLog(@"missing remote user id.  Setting to %@",mydict[@"remoteId"]);
-                        
                     }
                     
                 } else {
@@ -440,7 +451,8 @@
                     [vchat setValue:[eachObject objectForKey:@"fromUser"] forKey:@"fromUser"];
                     [vchat setValue:[eachObject objectForKey:@"timestamp"] forKey:@"timestamp"];
                     [vchat setValue:[eachObject objectForKey:@"listenCount"] forKey:@"listenCount"];
-                    
+                    [vchat setValue:[eachObject objectForKey:@"senderCount"] forKey:@"senderCount"];
+
                     NSString *fromId = eachObject[@"fromId"];
                     NSString *toId = eachObject[@"toId"];
                     NSString *remoteId = fromId;
@@ -493,11 +505,14 @@
                     
                     [self.latestToUserArray addObject:vchat];
                 }
+                // put here paramters to retrieve, regardless of whether this user
+                // is already in the system or not.
             }
             NSLog(@"Found %d new messages to this user", self.latestToUserArray.count);
             
             [self.allChatArray addObjectsFromArray:self.latestToUserArray];
             [self arrangeData];
+            [self backgroundOperationGetDisplayName];
             [self backgroundOperation];
             [self.myVChatTableView reloadData];
             
@@ -529,8 +544,7 @@
 
 }
 
-
-- (NSString *) findObjectIdForUsername:(NSString *)username {
+- (NSString *)findObjectIdForUsername:(NSString *)username {
     
     if (username == nil) {
         NSLog(@"ERROR! attempting to find objectid for username null");
@@ -555,7 +569,7 @@
     return objid;
 }
 
-- (NSString *) findDisplayNameforObjectid:(NSString *)objectid {
+- (NSString *)findDisplayNameforObjectid:(NSString *)objectid {
     // return username if display name does not exist.
     if (objectid == nil) {
         NSLog(@"ERROR! attempting to find display name for nil objectid");
@@ -572,17 +586,17 @@
             displayName = testPFUser[@"username"];
         }
         
-        NSLog(@"found %@ for objectId %@", displayName, objectid);
+        NSLog(@"Parse returned %@ for objectId %@", displayName, objectid);
         [self.mapObjectIdToDisplayName setObject:displayName forKey:objectid];
         
     } else {
-        NSLog(@"existing %@ for objectId %@", displayName, objectid);
+//        NSLog(@"existing %@ for objectId %@", displayName, objectid);
     }
     
     return displayName;
 }
 
-- (PFUser *) findPFUserForObjectid:(NSString *)objectid {
+- (PFUser *)findPFUserForObjectid:(NSString *)objectid {
     if (objectid == nil) {
         NSLog(@"ERROR! attempting to find PFUser for nil objectid");
         return nil;
@@ -604,7 +618,7 @@
     return user;
 }
 
-- (void) backgroundOperation {
+- (void)backgroundOperation {
     if (!myQueue) {
         myQueue = dispatch_queue_create("load.parse.data", NULL);
     }
@@ -612,7 +626,7 @@
     NSLog(@"started downloadData");
 }
 
-- (void) downloadData {
+- (void)downloadData {
     // go through the latestFromUserArray and fix things.
     for (NSMutableDictionary *vchat in self.allChatArray) {
 
@@ -632,6 +646,9 @@
                 [vchat setValue:@(0.5) forKey:@"duration"];
                 // [self.allChatArray removeObject:vchat];
                 NSLog(@"Error with sound file at %@, deleting",vchat[@"timestamp"]);
+                
+                // TODO: should I set this to readyToPlay?
+                
             }
                 // this allows the file to be written.
                 [vchat setValue:NULL forKey:@"thisFile"];
@@ -639,7 +656,7 @@
                 NSLog(@"finished downloading %@ msg",[vchat objectForKey:@"timestamp"]);
            
         } else {
-            NSLog(@"already downloaded %@ msg",[vchat objectForKey:@"timestamp"]);
+//            NSLog(@"already downloaded %@ msg",[vchat objectForKey:@"timestamp"]);
         }
     }
     [self.allChatArray writeToFile:self.pathLocalStorage atomically:YES];
@@ -647,12 +664,30 @@
     
 }
 
-// Build displayable list of chats.  data is being pulled presorted,
-// but since there could be some previous data, need to resort anyway.
--(void) arrangeData {
-    // sort the data from oldest to newest.
+- (void)backgroundOperationGetDisplayName {
+    if (!myQueue) {
+        myQueue = dispatch_queue_create("load.parse.data", NULL);
+    }
+    dispatch_async(myQueue, ^{
+        for (NSMutableDictionary *vchat in self.allChatArray) {
+            [vchat setValue:[self findDisplayNameforObjectid:vchat[@"remoteId"]] forKey:@"displayName"];
+//            NSLog(@"got %@", vchat[@"displayName"]);
+        }
+//        NSLog(@"finished getting Display names");
+        // this should run back in main thread
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.myVChatTableView reloadData];
+        });
+        
+    });
+    NSLog(@"started getting display names");
     
-    NSLog(@"Presort:");
+}
+
+- (void)arrangeData {
+    // sort the data from oldest to newest.  or not :-)
+    
+//    NSLog(@"Presort:");
 //    // before sort
 //    for (NSDictionary *eachObj in self.allChatArray) {
 //        NSLog(@"time: %@",[eachObj objectForKey:@"timestamp"]);
@@ -670,7 +705,7 @@
         // return (NSComparisonResult)[date1 compare:date2];
     }];
     
-    NSLog(@"Post sort:");
+//    NSLog(@"Post sort:");
 //    // before sort
 //    for (NSDictionary *eachObj in self.allChatArray) {
 //        NSLog(@"time: %@",[eachObj objectForKey:@"timestamp"]);
@@ -678,6 +713,13 @@
 
 }
 
+// Timer operation.  In lieu of push notification.
+- (void)periodicTimerMethod:(NSTimer *)timer {
+    NSLog(@"VChatViewController : periodicTimerMethod (%d)",self.periodicCounter);
+    self.periodicCounter++;
+    
+    [self loadChattingDataFromRepository];
+}
 
 #pragma mark - PFLogInViewControllerDelegate
 
