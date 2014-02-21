@@ -23,6 +23,7 @@
 - (void)loadData;
 - (void)modifyAddButton:(NSString *)title;
 - (void)refresh:(UIRefreshControl *)refresh;
+- (void)cleanUp;
 
 @end
 
@@ -37,9 +38,17 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
 {
     self = [super initWithStyle:style];
     if (self) {
-        // Custom initialization
+        // Subscribe to log out notification
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cleanUp) name:UserLogoutNotification object:nil];
     }
     return self;
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    if ([self.nearbyUsers count] == 0 || self.nearbyUsers == nil) {
+        [self loadData];
+    }
 }
 
 - (void)viewDidLoad
@@ -49,7 +58,7 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
     [super viewDidLoad];
     self.title = @"Nearby";
     self.refreshing = false;
-    [self loadData];
+//    [self loadData];
     
     // Register custom NearbyUserCell
     UINib *customNib = [UINib nibWithNibName:CELL_IDENTIFIER bundle:nil];
@@ -156,6 +165,14 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return 72;
+}
+
+#pragma mark - Table view delegate
+
+// In a xib-based application, navigation from a table can be handled in -tableView:didSelectRowAtIndexPath:
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];    
 }
 
 #pragma mark Nearby User Cell delegate
@@ -296,6 +313,13 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
     [self loadData];
     [self.tableView reloadData];
     [refresh endRefreshing];
+}
+
+- (void)cleanUp {
+    NSLog(@"NearbyTableViewController: cleanUp");
+    // clear data for log out
+    self.nearbyUsers = nil;
+    self.friends = nil;
 }
 
 @end

@@ -29,6 +29,8 @@
 		5377656518ADFD6D00DC8E4E /* ContactsTableViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5377656318ADFD6D00DC8E4E /* ContactsTableViewController.xib */; };
 		538CCA0318B58641006F8616 /* EditPhotoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 538CCA0218B58641006F8616 /* EditPhotoCell.m */; };
 		538CCA0518B58654006F8616 /* EditPhotoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 538CCA0418B58654006F8616 /* EditPhotoCell.xib */; };
+		538CCA0718B6CEA0006F8616 /* ActionCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 538CCA0618B6CEA0006F8616 /* ActionCell.xib */; };
+		538CCA0A18B7113F006F8616 /* Globals.m in Sources */ = {isa = PBXBuildFile; fileRef = 538CCA0918B7113F006F8616 /* Globals.m */; };
 		53BA251818A73F4900C328E8 /* MyProfileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 53BA251618A73F4900C328E8 /* MyProfileViewController.m */; };
 		53BA251918A73F4900C328E8 /* MyProfileViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 53BA251718A73F4900C328E8 /* MyProfileViewController.xib */; };
 		53BA251C18A7819100C328E8 /* MyProfileCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 53BA251B18A7819100C328E8 /* MyProfileCell.m */; };
@@ -123,6 +125,9 @@
 		538CCA0118B58641006F8616 /* EditPhotoCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditPhotoCell.h; sourceTree = "<group>"; };
 		538CCA0218B58641006F8616 /* EditPhotoCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditPhotoCell.m; sourceTree = "<group>"; };
 		538CCA0418B58654006F8616 /* EditPhotoCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EditPhotoCell.xib; sourceTree = "<group>"; };
+		538CCA0618B6CEA0006F8616 /* ActionCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ActionCell.xib; sourceTree = "<group>"; };
+		538CCA0818B7113F006F8616 /* Globals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Globals.h; sourceTree = "<group>"; };
+		538CCA0918B7113F006F8616 /* Globals.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Globals.m; sourceTree = "<group>"; };
 		53BA251518A73F4900C328E8 /* MyProfileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyProfileViewController.h; sourceTree = "<group>"; };
 		53BA251618A73F4900C328E8 /* MyProfileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyProfileViewController.m; sourceTree = "<group>"; };
 		53BA251718A73F4900C328E8 /* MyProfileViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MyProfileViewController.xib; sourceTree = "<group>"; };
@@ -256,6 +261,7 @@
 				538CCA0118B58641006F8616 /* EditPhotoCell.h */,
 				538CCA0218B58641006F8616 /* EditPhotoCell.m */,
 				538CCA0418B58654006F8616 /* EditPhotoCell.xib */,
+				538CCA0618B6CEA0006F8616 /* ActionCell.xib */,
 			);
 			name = "Profile and Settings";
 			sourceTree = "<group>";
@@ -430,6 +436,8 @@
 				B507647118A4AE2D00ECE2F5 /* ChattingViewController.xib */,
 				B5ECEECC189100980012F86E /* NearbyTableViewController.h */,
 				B5ECEECD189100980012F86E /* NearbyTableViewController.m */,
+				538CCA0818B7113F006F8616 /* Globals.h */,
+				538CCA0918B7113F006F8616 /* Globals.m */,
 			);
 			path = VChat;
 			sourceTree = "<group>";
@@ -542,6 +550,7 @@
 			files = (
 				5325EF2D18B2C25300D0C821 /* ContactsCell.xib in Resources */,
 				53F3C1AF1897756C00422FF2 /* Default@2x.png in Resources */,
+				538CCA0718B6CEA0006F8616 /* ActionCell.xib in Resources */,
 				53F3C1AC1897756C00422FF2 /* Icon.png in Resources */,
 				B5ECEEBC189100370012F86E /* ChatsTableViewController.xib in Resources */,
 				53F3C1B41897756C00422FF2 /* FacebookDown.png in Resources */,
@@ -627,6 +636,7 @@
 			files = (
 				B5ECEEBB189100370012F86E /* ChatsTableViewController.m in Sources */,
 				5377656418ADFD6D00DC8E4E /* ContactsTableViewController.m in Sources */,
+				538CCA0A18B7113F006F8616 /* Globals.m in Sources */,
 				532568C318A855C400A59E35 /* EditFieldViewController.m in Sources */,
 				53BA251C18A7819100C328E8 /* MyProfileCell.m in Sources */,
 				B527191418B1C702007C6E5E /* VChatDrawingView.m in Sources */,

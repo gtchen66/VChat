@@ -51,8 +51,10 @@ MBProgressHUD *refreshHUD;
     [super viewDidLoad];
     UINib *customNib = [UINib nibWithNibName:@"MyProfileCell" bundle:nil];
     UINib *photoNib = [UINib nibWithNibName:@"EditPhotoCell" bundle:nil];
+    UINib *actionNib = [UINib nibWithNibName:@"ActionCell" bundle:nil];
     [self.tableView registerNib:customNib forCellReuseIdentifier:@"MyProfileCell"];
     [self.tableView registerNib:photoNib forCellReuseIdentifier:@"EditPhotoCell"];
+    [self.tableView registerNib:actionNib forCellReuseIdentifier:@"ActionCell"];
     [self populateProfileInfoArray];
 
 
@@ -130,28 +132,39 @@ MBProgressHUD *refreshHUD;
         return cell;
     } else {
     
-        MyProfileCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MyProfileCell"];
-        
-        // Make user name cell unclickable
-        if (!(indexPath.section == 0 && indexPath.row == 1)) {
-            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        }
-        
         // Configure the cell...
         NSMutableArray *profileSection = [self.profileInfo objectAtIndex:indexPath.section];
         NSString *profileField = [profileSection objectAtIndex:indexPath.row];
         NSArray *keyValue = [profileField componentsSeparatedByString:@":"];
-        if ([keyValue[0] isEqualToString:@"displayName"]) {
-            cell.fieldNameLabel.text = @"Display Name";
-        } else if ([keyValue[0] isEqualToString:@"username"]) {
-            cell.fieldNameLabel.text = @"User Name";
-        }   else {
-            cell.fieldNameLabel.text = [keyValue[0] capitalizedString];
+        
+        // Action buttons
+        if ([keyValue[0] isEqualToString:@"logOut"]) {
+            UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ActionCell"];
+            
+            return cell;
+        } else {
+        
+            MyProfileCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MyProfileCell"];
+            
+            // Make user name cell unclickable
+            if (!(indexPath.section == 0 && indexPath.row == 1)) {
+                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            }
+            
+            
+            if ([keyValue[0] isEqualToString:@"displayName"]) {
+                cell.fieldNameLabel.text = @"Display Name";
+            } else if ([keyValue[0] isEqualToString:@"username"]) {
+                cell.fieldNameLabel.text = @"User Name";
+            }   else {
+                cell.fieldNameLabel.text = [keyValue[0] capitalizedString];
+            }
+            
+            cell.fieldValueLabel.text = keyValue[1];
+            
+            return cell;
         }
         
-        cell.fieldValueLabel.text = keyValue[1];
-        
-        return cell;
     }
 }
 
@@ -178,16 +191,16 @@ MBProgressHUD *refreshHUD;
 //}
 
 //informs the delegate that the user tapped the accessory view associated with a given row
-- (void) tableView:(UITableView *)tableView
-accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath{
-    
-    NSLog(@"MyProfileView: accessoryButtonTapped");
-    NSLog(@"indexPath.section: %i", indexPath.section);
-    if (indexPath.section != 0) {
-        EditFieldViewController *efvc = [[EditFieldViewController alloc] init];
-        [self.navigationController pushViewController:efvc animated:YES];
-    }
-}
+//- (void) tableView:(UITableView *)tableView
+//accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath{
+//    
+//    NSLog(@"MyProfileView: accessoryButtonTapped");
+//    NSLog(@"indexPath.section: %i", indexPath.section);
+//    if (indexPath.section != 0) {
+//        EditFieldViewController *efvc = [[EditFieldViewController alloc] init];
+//        [self.navigationController pushViewController:efvc animated:YES];
+//    }
+//}
 
 
 #pragma mark - Table view delegate
@@ -201,17 +214,13 @@ accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath{
     // Special handling for Profile Photo cell
     if (indexPath.section == 0 && indexPath.row == 0) {
         if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeSavedPhotosAlbum] == YES){
-            
             NSLog(@"Create image picker");
             // Create image picker controller
             UIImagePickerController *imagePicker = [[UIImagePickerController alloc] init];
-            
             // Set source to the photo album
             imagePicker.sourceType =  UIImagePickerControllerSourceTypeSavedPhotosAlbum;
-            
             // Delegate is self
             imagePicker.delegate = self;
-            
             // Show image picker
             [self presentViewController:imagePicker animated:YES completion:nil];
         }
@@ -275,12 +284,8 @@ accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath{
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
         NSData *imageData = [imageFile getData];
         UIImage *image = [UIImage imageWithData:imageData];
-        NSLog(@"setting profile image");
-        NSLog(@"%@", editPhotoCell.profileImageView);
         [editPhotoCell.profileImageView setImage:image];
         dispatch_async(dispatch_get_main_queue(), ^{
-            NSLog(@"updating cell");
-            NSLog(@"%@", indexPath);
             [self.tableView beginUpdates];
             [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
             [self.tableView endUpdates];
@@ -305,7 +310,6 @@ accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath{
     [imageFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (!error) {
             // Hide old HUD, show completed HUD
-            [HUD hide:YES];
             
             // Create a PFObject around a PFFile and associate it with the current user
             PFQuery *query = [PFQuery queryWithClassName:@"UserPhoto"];
@@ -332,6 +336,11 @@ accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath{
             [userPhoto setObject:currentUser forKey:@"user"];
             [userPhoto saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                 if (!error) {
+                    NSLog(@"MyProfileViewController - reloading tableview after uploading image");
+                    UITableViewCell *c = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+                    EditPhotoCell *cell = (EditPhotoCell* )((id)c);
+                    [cell.profileImageView setImage:[UIImage imageWithData:imageData]];
+                    [HUD hide:YES];
                     [self.tableView reloadData];
                 } else {
                     // Log details of the failure
@@ -379,6 +388,12 @@ accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath{
     [affiliationInfoFields addObject:[NSString stringWithFormat:@"affiliation:%@",affiliation]];
     [affiliationInfoFields addObject:[NSString stringWithFormat:@"position:%@", position]];
     [self.profileInfo addObject:affiliationInfoFields];
+    
+//    NSMutableArray *actionFields = [[NSMutableArray alloc] init];
+//    NSString *logOut = @"logOut";
+//    [actionFields addObject:logOut];
+//    [self.profileInfo addObject:actionFields];
+
     
     NSLog(@"%@", self.profileInfo);
 }

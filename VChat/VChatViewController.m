@@ -770,9 +770,11 @@
 - (void)logOutButtonTapAction {
     NSLog(@"User logged out");
     [PFUser logOut];
+    // Send out notification
+    [[NSNotificationCenter defaultCenter] postNotificationName:UserLogoutNotification object:nil];
+    
     if (self.logInViewController) {
         [self presentViewController:self.logInViewController animated:YES completion:NULL];
-
     } else {
         NSLog(@"loginviewcontroller is nil");
     }
