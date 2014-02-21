@@ -172,7 +172,7 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
 // In a xib-based application, navigation from a table can be handled in -tableView:didSelectRowAtIndexPath:
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];    
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 #pragma mark Nearby User Cell delegate
