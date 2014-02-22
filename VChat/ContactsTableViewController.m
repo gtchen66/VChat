@@ -108,10 +108,12 @@ NSString* const CONTACTS_KEY = @"contacts";
     // determine whether to show "accept request" button, or show "request sent" status
     if ([userDictionary[@"status"] isEqualToString:@"accept request"]) {
         cell.acceptRequestButton.hidden = NO;
+        cell.backgroundColor = RGB2UIColor(252, 247, 200);
     } else if ([userDictionary[@"status"] isEqualToString:@"request sent"]) {
         cell.acceptRequestButton.hidden = NO;
         [cell.acceptRequestButton setEnabled:NO];
         [cell.acceptRequestButton setTitle:@"Request Sent" forState:UIControlStateNormal];
+        cell.backgroundColor = RGB2UIColor(252, 247, 200);
     } else {
         cell.backgroundColor = [UIColor whiteColor];
     }
@@ -133,13 +135,18 @@ NSString* const CONTACTS_KEY = @"contacts";
 - (void)onClickAcceptRequestButton:(id)sender {
     // Change state of relation to "friends" in DB and on local cache
     NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
-    NSDictionary *userDictionary = [self.contacts objectAtIndex:indexPath.row];
+    
+    // Get the data object from self.sections (pick the right section by key, then the right array by index)
+    NSArray *keys = [self.sections allKeys];
+    NSArray *sortedKeys = [keys sortedArrayUsingSelector: @selector (compare:)];
+    id sectionKey = [sortedKeys objectAtIndex:indexPath.section];
+    NSArray *sectionArray = [self.sections objectForKey:sectionKey];
+    NSDictionary *userDictionary = [sectionArray objectAtIndex:indexPath.row];
     PFQuery *query = [PFQuery queryWithClassName:@"Friend"];
     
-    NSLog(@"fetching friend object with objectId: %@", userDictionary[@"objectId"] );
+    NSLog(@"%@", userDictionary);
     [query getObjectInBackgroundWithId:userDictionary[@"objectId"] block:^(PFObject *friend, NSError *error) {
         if (!error) {
-            NSLog(@"updating friends object");
             friend[@"status"] = @"friends";
             // update object
             [friend saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
@@ -291,7 +298,7 @@ NSString* const CONTACTS_KEY = @"contacts";
             for (NSDictionary *contact in self.contacts)    {
                 found = NO;
                 NSString *c = [[contact objectForKey:@"displayName"] substringToIndex:1];
-                
+                c = [c lowercaseString];
                 for (NSString *str in [self.sections allKeys])  {
                     if ([str isEqualToString:c])    {
                         found = YES;
@@ -304,16 +311,18 @@ NSString* const CONTACTS_KEY = @"contacts";
             
             // Loop again and sort the contacts into their respective keys
             for (NSDictionary *contact in self.contacts)    {
-                [[self.sections objectForKey:[[contact objectForKey:@"displayName"] substringToIndex:1]] addObject:contact];
+                NSString *sectionLetter = [[contact objectForKey:@"displayName"] substringToIndex:1];
+                sectionLetter = [sectionLetter lowercaseString];
+                [[self.sections objectForKey:sectionLetter] addObject:contact];
             }
             
             // Sort each section array
             for (NSString *key in [self.sections allKeys])  {
                 [[self.sections objectForKey:key] sortUsingDescriptors:[NSArray arrayWithObject:[NSSortDescriptor sortDescriptorWithKey:@"displayName" ascending:YES]]];
-            }    
+            }
             
-            NSLog(@"sections:");
-            NSLog(@"%@", self.sections);
+//            NSLog(@"sections:");
+//            NSLog(@"%@", self.sections);
             
             [self.tableView reloadData];
         }];
