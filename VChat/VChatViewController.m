@@ -60,6 +60,8 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(logOutButtonTapAction) name:UserLogoutNotification object:nil];
+
     }
     return self;
 }
@@ -106,10 +108,11 @@
     [super viewDidAppear:animated];
 //    NSLog(@"VChatViewController : viewDidAppear");
 
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Sign Out" style:UIBarButtonItemStylePlain target:self action:@selector(logOutButtonTapAction)];
+//    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Sign Out" style:UIBarButtonItemStylePlain target:self action:@selector(logOutButtonTapAction)];
 //    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"PlusIcon"] style:UIBarButtonItemStylePlain target:nil action:nil];
     self.title = @"Recent";
     
+    // Instantiate the login and signup controllers
     [self initLogInController];
     
     PFUser *currentUser = [PFUser currentUser];
@@ -117,17 +120,6 @@
         // Present the log in view controller
         [self presentViewController:self.logInViewController animated:YES completion:NULL];
     } else {
-//        NSLog(@"user logged in");
-        // update user location
-        [PFGeoPoint geoPointForCurrentLocationInBackground:^(PFGeoPoint *geoPoint, NSError *error) {
-            if (!error) {
-                // do something with the new geoPoint
-                //                NSLog(@"%f, %f", geoPoint.latitude, geoPoint.longitude);
-                NSLog(@"VChatViewController: update location");
-                currentUser[@"location"] = geoPoint;
-                [currentUser saveInBackground];
-            } 
-        }];
         
         FBRequest *request = [FBRequest requestForMe];
         
@@ -756,6 +748,8 @@
 // Sent to the delegate to determine whether the sign up request should be submitted to the server.
 - (BOOL)signUpViewController:(PFSignUpViewController *)signUpController shouldBeginSignUp:(NSDictionary *)info {
     BOOL informationComplete = YES;
+    NSLog(@"sign up info");
+    NSLog(@"%@", info);
     for (id key in info) {
         NSString *field = [info objectForKey:key];
         if (!field || field.length == 0) {
@@ -773,6 +767,10 @@
 
 // Sent to the delegate when a PFUser is signed up.
 - (void)signUpViewController:(PFSignUpViewController *)signUpController didSignUpUser:(PFUser *)user {
+    if (user[@"additional"] && ![user[@"additional"] isEqualToString:@""]) {
+        user[@"displayName"] = user[@"additional"];
+        [user saveInBackground];
+    }
     [self dismissViewControllerAnimated:YES completion:NULL];
 }
 
@@ -804,6 +802,7 @@
     // Create the sign up view controller
     SignupViewController *signUpViewController = [[SignupViewController alloc] init];
     [signUpViewController setDelegate:self]; // Set ourselves as the delegate
+    [signUpViewController setFields:PFSignUpFieldsDefault | PFSignUpFieldsAdditional];
     
     // Assign our sign up controller to be displayed from the login controller
     [self.logInViewController setSignUpController:signUpViewController];
@@ -812,8 +811,6 @@
 - (void)logOutButtonTapAction {
     NSLog(@"User logged out");
     [PFUser logOut];
-    // Send out notification
-    [[NSNotificationCenter defaultCenter] postNotificationName:UserLogoutNotification object:nil];
     
     if (self.logInViewController) {
         [self presentViewController:self.logInViewController animated:YES completion:NULL];

@@ -233,16 +233,25 @@ MBProgressHUD *refreshHUD;
             NSArray *keyValue = [profileField componentsSeparatedByString:@":"];
             //    NSLog(@"keyValue: %@", keyValue);
             NSString *fieldName = keyValue[0];
-            NSString *fieldValue = keyValue[1];
-            EditFieldViewController *efvc = [[EditFieldViewController alloc] init];
-            efvc.fieldName = fieldName;
-            efvc.fieldValue = fieldValue;
-            if ([fieldName isEqualToString:@"displayName"]) {
-                efvc.title = @"Display Name";
+            
+            // When logout row is clicked, send out nsnotification and change tab bar view to the main page
+            if ([fieldName isEqualToString:@"logOut"]) {
+                // Send out notification
+                [[NSNotificationCenter defaultCenter] postNotificationName:UserLogoutNotification object:nil];
+                [self.parentViewController.tabBarController setSelectedIndex:0];
+            } else {
+                NSString *fieldValue = keyValue[1];
+                EditFieldViewController *efvc = [[EditFieldViewController alloc] init];
+                efvc.fieldName = fieldName;
+                efvc.fieldValue = fieldValue;
+                if ([fieldName isEqualToString:@"displayName"]) {
+                    efvc.navTitle = @"Display Name";
+                }
+                UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:efvc];
+                [self.navigationController presentViewController:navController animated:YES completion:nil];
             }
-            UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:efvc];
-            [self.navigationController presentViewController:navController animated:YES completion:nil];
         } else {
+            // User name field is clicked
             [tableView deselectRowAtIndexPath:indexPath animated:YES];
         }
     }
@@ -389,10 +398,10 @@ MBProgressHUD *refreshHUD;
     [affiliationInfoFields addObject:[NSString stringWithFormat:@"position:%@", position]];
     [self.profileInfo addObject:affiliationInfoFields];
     
-//    NSMutableArray *actionFields = [[NSMutableArray alloc] init];
-//    NSString *logOut = @"logOut";
-//    [actionFields addObject:logOut];
-//    [self.profileInfo addObject:actionFields];
+    NSMutableArray *actionFields = [[NSMutableArray alloc] init];
+    NSString *logOut = @"logOut";
+    [actionFields addObject:logOut];
+    [self.profileInfo addObject:actionFields];
 
     
     NSLog(@"%@", self.profileInfo);

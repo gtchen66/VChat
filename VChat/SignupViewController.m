@@ -71,7 +71,7 @@
     [self.signUpView.additionalField setTextColor:[UIColor colorWithRed:135.0f/255.0f green:118.0f/255.0f blue:92.0f/255.0f alpha:1.0]];
     
     // Change "Additional" to match our use
-//    [self.signUpView.additionalField setPlaceholder:@"Phone number"];
+    [self.signUpView.additionalField setPlaceholder:@"Display Name"];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -83,7 +83,8 @@
     [self.signUpView.usernameField setFrame:CGRectMake(66.5f, 168.0f, 187.0f, 50.0f)];
     [self.signUpView.passwordField setFrame:CGRectMake(66.5f, 218.0f, 187.0f, 50.0f)];
     [self.signUpView.emailField setFrame:CGRectMake(66.5f, 268.0f, 187.0f, 50.0f)];
-    [self.fieldsBackground setFrame:CGRectMake(35.0f, 168.0f, 250.0f, 174.0f)];
+    [self.signUpView.additionalField setFrame:CGRectMake(66.5f, 318.0f, 187.0f, 50.0f)];
+    [self.fieldsBackground setFrame:CGRectMake(35.0f, 168.0f, 250.0f, 200.0f)];
 
     [self.signUpView.signUpButton setFrame:CGRectMake(35.0f, 385.0f, 250.0f, 40.0f)];
     

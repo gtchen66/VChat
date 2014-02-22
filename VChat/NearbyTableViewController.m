@@ -92,22 +92,18 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-//    NSLog(@"calling number of sections");
     // Return the number of sections.
     return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-//    NSLog(@"calling number of rows");
-//    NSLog(@"%lu", (unsigned long)[self.nearbyUsers count]);
     // Return the number of rows in the section.
     return [self.nearbyUsers count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-//    NSLog(@"generating cell");
     NearbyUserCell *cell = [tableView dequeueReusableCellWithIdentifier:CELL_IDENTIFIER];
     PFUser *user = self.nearbyUsers[indexPath.row];
     cell.userNameLabel.text = (user[@"displayName"] && ![user[@"displayName"] isEqual: @""]) ? user[@"displayName"] : user.username;
@@ -145,17 +141,31 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
     }
     
     // Update the Add button to the appropriate status if there is already a friend relations
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"to.objectId = %@ OR from.objectId = %@",user.objectId,user.objectId];
-    NSArray *filteredArray = [self.friends filteredArrayUsingPredicate:predicate];
-//    NSLog(@"filteredArray");
-//    NSLog(@"%@", filteredArray);
-    if ([filteredArray count] != 0) {
-        PFObject *friend = filteredArray[0];
+    NSPredicate *toPredicate = [NSPredicate predicateWithFormat:@"to.objectId = %@",user.objectId];
+    NSPredicate *fromPredicate = [NSPredicate predicateWithFormat:@"from.objectId = %@",user.objectId];
+    NSArray *toArray = [self.friends filteredArrayUsingPredicate:toPredicate];
+
+    // Need more work if we are going to distinguish between request sent and accept request
+    if ([toArray count] != 0) {
+        PFObject *friend = toArray[0];
         if ([friend[@"status"] isEqualToString:@"blocked"] == NO) {
             cell.addButton.backgroundColor = [UIColor whiteColor];
             [cell.addButton setEnabled:NO];
             [cell.addButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
             [cell.addButton setTitle:friend[@"status"] forState:UIControlStateNormal];
+        }
+    } else {
+        NSArray *fromArray = [self.friends filteredArrayUsingPredicate:fromPredicate];
+
+        if ([fromArray count] != 0) {
+            // Show button text "
+            PFObject *friend = fromArray[0];
+            if ([friend[@"status"] isEqualToString:@"blocked"] == NO) {
+                cell.addButton.backgroundColor = [UIColor whiteColor];
+                [cell.addButton setEnabled:NO];
+                [cell.addButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+                [cell.addButton setTitle:friend[@"status"] forState:UIControlStateNormal];
+            }
         }
     }
     
@@ -176,12 +186,10 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
 }
 
 #pragma mark Nearby User Cell delegate
--(void)onClickChatButton:(id)sender {
+-(void)onClickChatButton:(id)sender{
     NSIndexPath *indexPath = [self.tableView indexPathForCell:sender];
-    NSLog(@"NearbyTableViewController : onClickChatButton - index is %d",indexPath.row);
     
     PFUser *user = self.nearbyUsers[indexPath.row];
-    NSLog(@"Open conversation with %@",user.username);
     
     // open the chat window.
     ChattingViewController *cvc = [[ChattingViewController alloc] init];
@@ -205,37 +213,16 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
     [friend setObject:userToAdd forKey:@"to"];
     [friend setObject:@"pending" forKey:@"status"];
     [friend saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-        NSLog(@"friend request sent");
-        
-        // fade Add button and show "friends" instead
+        // Change Add Button to Cancel button
         UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section]];
         NearbyUserCell *nearbyCell = (NearbyUserCell* )((id)cell);
-        nearbyCell.addButton.backgroundColor = [UIColor whiteColor];
-        [nearbyCell.addButton setEnabled:NO];
-        [nearbyCell.addButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-        [nearbyCell.addButton setTitle:@"Pending" forState:UIControlStateNormal];
+        nearbyCell.addButton.backgroundColor = [UIColor grayColor];
+//        [nearbyCell.addButton setEnabled:NO];
+//        [nearbyCell.addButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        [nearbyCell.addButton setTitle:@"Cancel Request" forState:UIControlStateNormal];
         
     }];
 }
-
-
-/*
-#pragma mark - Table view delegate
-
-// In a xib-based application, navigation from a table can be handled in -tableView:didSelectRowAtIndexPath:
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Navigation logic may go here, for example:
-    // Create the next view controller.
-    <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-
-    // Pass the selected object to the new view controller.
-    
-    // Push the view controller.
-    [self.navigationController pushViewController:detailViewController animated:YES];
-}
- 
- */
 
 #pragma mark - MBProgressHUD delegate
 - (void)hudWasHidden:(MBProgressHUD *)hud {
@@ -246,14 +233,6 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
 
 
 - (void)loadData {
-    // Clear lists
-    if (self.nearbyUsers || self.nearbyUsers.count) {
-        NSLog(@"nearbyusers not empty");
-        self.nearbyUsers = nil;
-    }
-    if (self.friends || self.friends.count) {
-        self.friends = nil;
-    }
     
     PFUser *currentUser = [PFUser currentUser];
     
@@ -270,38 +249,49 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
     [toQuery whereKey:@"to" equalTo:currentUser];
     
     PFQuery *friendQuery = [PFQuery orQueryWithSubqueries:@[fromQuery, toQuery]];
+    NSLog(@"finding friends");
     [friendQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        self.friends = [[NSMutableArray alloc] initWithArray:objects];
-        //NSLog(@"%@", self.friends);
+        if (!error) {
+            NSLog(@"friends found");
+            self.friends = [[NSMutableArray alloc] initWithArray:objects];
+        }
     }];
 
     
-    /****** SHOULD PROBABLY QUERY FOR LOCATION AGAIN INSTEAD OF READING USER OBJECT *********/
     self.nearbyUsers = [[NSMutableArray alloc] init];
-    PFGeoPoint *userGeoPoint = currentUser[@"location"];
-    // Find users near a given location
-    PFQuery *userQuery = [PFUser query];
-    [userQuery whereKey:@"location"
-           nearGeoPoint:userGeoPoint
-            withinMiles:10.0];
-    userQuery.limit = 10;
-    [userQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        // Remove current user from user list
-        // TODO - remove blocked users from showing up
-        for (PFUser *eachUser in objects) {
-            NSLog(@"%@", eachUser);
-            if ([eachUser.objectId isEqualToString:currentUser.objectId] == YES) {
-//                NSLog(@"Skipping %@",eachUser.username);
-            } else {
-                [self.nearbyUsers addObject:eachUser];
-            }
+    [PFGeoPoint geoPointForCurrentLocationInBackground:^(PFGeoPoint *geoPoint, NSError *error) {
+        if (!error) {
+            NSLog(@"Geopoint obtained");
+            // do something with the new geoPoint
+            //                NSLog(@"%f, %f", geoPoint.latitude, geoPoint.longitude);
+            currentUser[@"location"] = geoPoint;
+            [currentUser saveInBackground];
+            
+            // Find users near a given location
+            PFQuery *userQuery = [PFUser query];
+            [userQuery whereKey:@"location"
+                   nearGeoPoint:geoPoint
+                    withinMiles:10.0];
+            userQuery.limit = 10;
+            [userQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+                // Remove current user from user list
+                // TODO - remove blocked users from showing up
+                NSLog(@"nearby users obtained");
+                for (PFUser *eachUser in objects) {
+                    if ([eachUser.objectId isEqualToString:currentUser.objectId] == YES) {
+                    } else {
+                        [self.nearbyUsers addObject:eachUser];
+                    }
+                }
+                
+                [MBProgressHUD hideHUDForView:self.view animated:YES];
+                [self.tableView reloadData];
+                
+            }];
+
         }
-        
-        [MBProgressHUD hideHUDForView:self.view animated:YES];
-        [self.tableView reloadData];
-        
     }];
-}
+    }
 
 - (void)modifyAddButton:(NSString *)title {
     
@@ -310,13 +300,14 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
 - (void)refresh:(UIRefreshControl *)refresh {
     self.refreshing = true;
     refresh.attributedTitle = [[NSAttributedString alloc] initWithString:@"Refreshing data..."];
+    self.nearbyUsers = nil;
+    self.friends = nil;
     [self loadData];
     [self.tableView reloadData];
     [refresh endRefreshing];
 }
 
 - (void)cleanUp {
-    NSLog(@"NearbyTableViewController: cleanUp");
     // clear data for log out
     self.nearbyUsers = nil;
     self.friends = nil;

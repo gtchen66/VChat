@@ -22,7 +22,7 @@
                     </label>
                 </subviews>
             </tableViewCellContentView>
-            <color key="backgroundColor" red="0.74168925382653061" green="0.12726464745118027" blue="0.07678309085072868" alpha="1" colorSpace="calibratedRGB"/>
+            <color key="backgroundColor" red="0.58294935819127258" green="0.38921771858332688" blue="0.63060028698979598" alpha="1" colorSpace="calibratedRGB"/>
         </tableViewCell>
     </objects>
 </document>
