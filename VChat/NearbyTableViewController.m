@@ -165,6 +165,11 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
                 [cell.addButton setEnabled:NO];
                 [cell.addButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
                 [cell.addButton setTitle:friend[@"status"] forState:UIControlStateNormal];
+            } else {
+                cell.addButton.backgroundColor = RGB2UIColor(158, 135, 193);
+                [cell.addButton setEnabled:YES];
+                [cell.addButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+                [cell.addButton setTitle:@"Add" forState:UIControlStateNormal];
             }
         }
     }
