@@ -37,6 +37,7 @@
 @property (strong, nonatomic) NSMutableDictionary *mapObjectIdToPFUser;
 
 @property NSInteger periodicCounter;
+@property NSTimer *myTimer;
 // @property BOOL isPlaying;
 
 - (void)logOutButtonTapAction;
@@ -98,15 +99,15 @@
     self.mapObjectIdToDisplayName = [[NSMutableDictionary alloc] init];
     self.mapObjectIdToPFUser = [[NSMutableDictionary alloc] init];
 
-    self.periodicCounter = 0;
-//    [NSTimer scheduledTimerWithTimeInterval:15.0 target:self selector:@selector(periodicTimerMethod:) userInfo:nil repeats:YES];
+//    self.periodicCounter = 0;
+//    self.myTimer = [NSTimer scheduledTimerWithTimeInterval:15.0 target:self selector:@selector(periodicTimerMethod:) userInfo:nil repeats:YES];
     
     // Check and update contacts (This should be refactored out of this controller so things aren't so cluttered!)
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-//    NSLog(@"VChatViewController : viewDidAppear");
+    NSLog(@"VChatViewController : viewDidAppear");
 
 //    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Sign Out" style:UIBarButtonItemStylePlain target:self action:@selector(logOutButtonTapAction)];
 //    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"PlusIcon"] style:UIBarButtonItemStylePlain target:nil action:nil];
@@ -157,7 +158,19 @@
         [self loadChattingDataFromRepository];
         self.title = @"Recent";
     }
+    if (GlobalRepeatTimerFlag == YES) {
+        NSLog(@"VChatViewController : Activating NSTimer");
+        self.periodicCounter = 0;
+        self.myTimer = [NSTimer scheduledTimerWithTimeInterval:15.0 target:self selector:@selector(periodicTimerMethod:) userInfo:nil repeats:YES];
+    }
 }
+
+
+- (void)viewWillDisappear:(BOOL)animated {
+    NSLog(@"VChatViewController : viewWillDisappear");
+    [self.myTimer invalidate];
+}
+
 
 #pragma mark - TableView Source
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -166,7 +179,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    NSLog(@"VChatViewController : numberOfRowsInSection = %d",self.allChatArray.count);
+//    NSLog(@"VChatViewController : numberOfRowsInSection = %d",self.allChatArray.count);
     return self.allChatArray.count;
 }
 
@@ -187,7 +200,7 @@
     NSDate *timestamp = [chat objectForKey:@"timestamp"];
     
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"MM/dd HH:mm"];
+    [dateFormatter setDateFormat:@"E, MM/dd HH:mm"];
     NSString *shortTime = [dateFormatter stringFromDate:timestamp];
     
     messageDuration = round([[chat objectForKey:@"duration"] floatValue]);
@@ -203,21 +216,36 @@
         
     }
 
-    NSString *durationString = [NSString stringWithFormat:@"(%ds)",messageDuration];
+    NSString *durationString = [NSString stringWithFormat:@"%ds",messageDuration];
+    NSMutableString *statusString = [[NSMutableString alloc] init];
     
     // make duration negative to indicate this was self-sent.
     NSString *directionString;
     if ([[chat objectForKey:@"fromUser"] isEqualToString:[PFUser currentUser].username]) {
+        //
+        // Outgoing message.  Username/status on left side.  Chat length on right.  Chat icon on right.
         messageDuration = -messageDuration;
         directionString = @"sent to";
         vcell.myVChatCellLabel.textAlignment = NSTextAlignmentLeft;
         vcell.myVChatCellStatusLabel.textAlignment = NSTextAlignmentLeft;
-        vcell.countdown = 4 - [chat[@"senderCount"] integerValue];
+        vcell.myVChatCellTimeLabel.textAlignment = NSTextAlignmentRight;
+        vcell.countdown = [chat[SenderCountKey] integerValue];
+        int listenCount = [chat[ListenCountKey] integerValue];
+        statusString = [NSMutableString stringWithFormat:@"sent %@",shortTime];
+        if (listenCount == 1) {
+            [statusString appendString:@" - delivered"];
+        } else if (listenCount > 1) {
+            [statusString appendString:@" - heard"];
+        }
     } else {
         vcell.myVChatCellLabel.textAlignment = NSTextAlignmentRight;
         vcell.myVChatCellStatusLabel.textAlignment = NSTextAlignmentRight;
+        vcell.myVChatCellTimeLabel.textAlignment = NSTextAlignmentLeft;
         directionString = @"received from";
-        vcell.countdown = 4 - [chat[@"listenCount"] integerValue];
+        vcell.countdown = [chat[ListenCountKey] integerValue];
+        
+        statusString = [NSMutableString stringWithFormat:@"received %@",shortTime];
+
     }
     
     // this is slow.  fill this in during the loaddata background thread instead
@@ -225,9 +253,8 @@
     cellString = chat[@"displayName"];
     
     vcell.myVChatCellLabel.text = cellString;
-    // vcell.myVChatCellLabel.text = [NSString stringWithFormat:@"%@ %@ %@",directionString,cellString,durationString];
-    vcell.myVChatCellStatusLabel.text = [NSString stringWithFormat:@"%@ %@", directionString, durationString];
-    vcell.myVChatCellTimeLabel.text = shortTime;
+    vcell.myVChatCellStatusLabel.text = statusString;
+    vcell.myVChatCellTimeLabel.text = durationString;
     
     vcell.duration = messageDuration;
     
@@ -416,13 +443,13 @@
                     
                     int listenCount = [eachObject[@"listenCount"] integerValue];
                     int senderCount = [eachObject[@"senderCount"] integerValue];
+                    if (senderCount == 0){
+                        senderCount++;
+                    }
                     
                     int objIndex = [[dictToArrayIndex objectForKey:eachObject.objectId] integerValue];
                     NSMutableDictionary *mydict = [self.allChatArray objectAtIndex:objIndex];
-                    
-                    mydict[@"listenCount"] = @(listenCount);
-                    mydict[@"senderCount"] = @(senderCount);
-                    
+                                        
                     // fix.  earlier versions did not have remoteId set, so set it now.
                     if (mydict[@"remoteId"] == nil) {
                         if ([user.objectId isEqualToString:mydict[@"fromId"]]) {
@@ -432,6 +459,20 @@
                         }
                         NSLog(@"missing remote user id.  Setting to %@",mydict[@"remoteId"]);
                     }
+                    
+                    if (listenCount == 0) {
+                        NSLog(@"found listenCount == 0 for msg at %@",mydict[@"timestamp"]);
+                        if ([mydict[@"remoteId"] isEqualToString:mydict[@"fromId"]]) {
+                            listenCount++;
+                            NSLog(@"existing %@ had listenCount set to 0, changing",mydict[@"timestamp"]);
+                            eachObject[ListenCountKey] = @(1);
+                            [eachObject saveInBackground];
+                        }
+                    }
+
+                    mydict[@"listenCount"] = @(listenCount);
+                    mydict[@"senderCount"] = @(senderCount);
+
                     
                 } else {
                     // new data.
@@ -444,6 +485,9 @@
                     [vchat setValue:[eachObject objectForKey:@"timestamp"] forKey:@"timestamp"];
                     [vchat setValue:[eachObject objectForKey:@"listenCount"] forKey:@"listenCount"];
                     [vchat setValue:[eachObject objectForKey:@"senderCount"] forKey:@"senderCount"];
+                    if (vchat[SenderCountKey] == 0) {
+                        vchat[SenderCountKey] = @(1);
+                    }
 
                     NSString *fromId = eachObject[@"fromId"];
                     NSString *toId = eachObject[@"toId"];
@@ -494,6 +538,16 @@
                     // first identify which, then find user.
                     
                     NSLog(@"msg: from %@ to %@ at %@ (%@) %@", vchat[@"fromUser"], vchat[@"toUser"], vchat[@"timestamp"], vchat[@"objectId"], vchat[@"duration"]);
+                    
+                    // all new objects, check for listenCount.  if listenCount == 0, then increment
+                    if (vchat[ListenCountKey] == 0) {
+                        if ([remoteId isEqualToString:fromId]) {
+                            // I am the receiver, aka the listener
+                            vchat[ListenCountKey] = @(1);
+                            eachObject[ListenCountKey] = @(1);
+                            [eachObject saveInBackground];
+                        }
+                    }
                     
                     [self.latestToUserArray addObject:vchat];
                 }
@@ -707,7 +761,7 @@
 
 // Timer operation.  In lieu of push notification.
 - (void)periodicTimerMethod:(NSTimer *)timer {
-    NSLog(@"VChatViewController : periodicTimerMethod (%d)",self.periodicCounter);
+    NSLog(@"\n\nVChatViewController : periodicTimerMethod (%d)",self.periodicCounter);
     self.periodicCounter++;
     
     [self loadChattingDataFromRepository];

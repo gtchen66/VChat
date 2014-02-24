@@ -111,6 +111,7 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
     NSLog(@"profile image");
     // search for image file in parse, then facebook, otherwise show default
     if (!cell.profileImageView.image) {
+        NSLog(@"NearbyTableViewController : cellForRowAtIndexPath : looking for image for %@",user.username);
         PFQuery *query = [PFQuery queryWithClassName:@"UserPhoto"];
         [query whereKey:@"user" equalTo:user];
         [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
@@ -119,11 +120,14 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
                 // If no profile image exist, look for facebook image, otherwise set default image
                 if ([objects count] == 0 || objects == nil) {
                     if (user[@"profileImage"] && ![user[@"profileImage"] isEqualToString:@""]) {
+                        NSLog(@"found image for %@ at 1",user.username);
                         [cell.profileImageView setImageWithURL:[NSURL URLWithString:user[@"profileImage"]]];
                     } else {
+                        NSLog(@"found image for %@ at 2",user.username);
                         [cell.profileImageView setImage:[UIImage imageNamed:@"DefaultProfileIcon"]];
                     }
                 } else {
+                    NSLog(@"found image for %@ at 3",user.username);
                     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
                         PFFile *imageFile = [objects[0] objectForKey:@"imageFile"];
                         NSData *imageData = [imageFile getData];

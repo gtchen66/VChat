@@ -14,28 +14,28 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ygD-7r-hJf" customClass="VChatDrawingView">
-                        <rect key="frame" x="5" y="5" width="242" height="33"/>
+                        <rect key="frame" x="5" y="5" width="285" height="33"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     </view>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="Username AjBwX" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Qan-sk-HFM">
-                        <rect key="frame" x="5" y="5" width="227" height="24"/>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="252" verticalCompressionResistancePriority="751" text="Username AjBwX" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Qan-sk-HFM">
+                        <rect key="frame" x="10" y="5" width="272" height="24"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <fontDescription key="fontDescription" name="Papyrus" family="Papyrus" pointSize="15"/>
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="received from (15s)" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Quu-KY-fZi">
-                        <rect key="frame" x="5" y="29" width="227" height="10"/>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="received from (15s)" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Quu-KY-fZi">
+                        <rect key="frame" x="10" y="29" width="272" height="10"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <fontDescription key="fontDescription" type="italicSystem" pointSize="12"/>
                         <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="12/30 14:45" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="30" translatesAutoresizingMaskIntoConstraints="NO" id="khi-c4-eNt">
-                        <rect key="frame" x="252" y="5" width="30" height="33"/>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="120s" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="265" translatesAutoresizingMaskIntoConstraints="NO" id="khi-c4-eNt">
+                        <rect key="frame" x="15" y="5" width="265" height="33"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="10"/>
-                        <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                        <fontDescription key="fontDescription" name="Papyrus" family="Papyrus" pointSize="17"/>
+                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="CpJ-JN-dff">
@@ -54,18 +54,23 @@
                 </subviews>
                 <constraints>
                     <constraint firstItem="ygD-7r-hJf" firstAttribute="top" secondItem="nFp-bp-YiW" secondAttribute="top" constant="5" id="3vS-61-ydA"/>
-                    <constraint firstItem="khi-c4-eNt" firstAttribute="leading" secondItem="ygD-7r-hJf" secondAttribute="trailing" constant="5" id="4eZ-fX-UW2"/>
                     <constraint firstItem="ygD-7r-hJf" firstAttribute="leading" secondItem="nFp-bp-YiW" secondAttribute="leading" constant="5" id="9BM-XJ-z0l"/>
                     <constraint firstItem="Qan-sk-HFM" firstAttribute="top" secondItem="nFp-bp-YiW" secondAttribute="top" constant="5" id="BJb-uW-LJS"/>
-                    <constraint firstItem="Qan-sk-HFM" firstAttribute="leading" secondItem="nFp-bp-YiW" secondAttribute="leading" constant="5" id="FyZ-mj-AHX"/>
+                    <constraint firstAttribute="bottom" secondItem="Quu-KY-fZi" secondAttribute="bottom" constant="4" id="Flo-xe-aOo"/>
+                    <constraint firstItem="Qan-sk-HFM" firstAttribute="leading" secondItem="nFp-bp-YiW" secondAttribute="leading" constant="10" id="FyZ-mj-AHX"/>
                     <constraint firstItem="CpJ-JN-dff" firstAttribute="top" secondItem="nFp-bp-YiW" secondAttribute="top" constant="5" id="Goi-xU-wnY"/>
                     <constraint firstAttribute="trailing" secondItem="CpJ-JN-dff" secondAttribute="trailing" id="Hla-mE-r2l"/>
+                    <constraint firstItem="CpJ-JN-dff" firstAttribute="leading" secondItem="Qan-sk-HFM" secondAttribute="trailing" constant="8" id="ICd-SW-n62"/>
                     <constraint firstAttribute="bottom" secondItem="ygD-7r-hJf" secondAttribute="bottom" constant="5" id="L2O-0B-72t"/>
                     <constraint firstAttribute="bottom" secondItem="CpJ-JN-dff" secondAttribute="bottom" constant="5" id="OjT-gU-ygu"/>
-                    <constraint firstItem="CpJ-JN-dff" firstAttribute="leading" secondItem="khi-c4-eNt" secondAttribute="trailing" constant="8" id="RQz-bh-wsH"/>
-                    <constraint firstItem="khi-c4-eNt" firstAttribute="leading" secondItem="Qan-sk-HFM" secondAttribute="trailing" constant="20" id="XDu-RC-Ulc"/>
+                    <constraint firstItem="Quu-KY-fZi" firstAttribute="leading" secondItem="nFp-bp-YiW" secondAttribute="leading" constant="10" id="Pgm-AB-36r"/>
+                    <constraint firstItem="CpJ-JN-dff" firstAttribute="leading" secondItem="khi-c4-eNt" secondAttribute="trailing" constant="10" id="RQz-bh-wsH"/>
+                    <constraint firstItem="CpJ-JN-dff" firstAttribute="leading" secondItem="Quu-KY-fZi" secondAttribute="trailing" constant="8" id="Wj4-l2-6qt"/>
+                    <constraint firstItem="Quu-KY-fZi" firstAttribute="top" secondItem="Qan-sk-HFM" secondAttribute="bottom" id="a1w-wY-qmV"/>
                     <constraint firstAttribute="bottom" secondItem="khi-c4-eNt" secondAttribute="bottom" constant="5" id="aR2-PY-N3u"/>
                     <constraint firstItem="khi-c4-eNt" firstAttribute="top" secondItem="nFp-bp-YiW" secondAttribute="top" constant="5" id="b5v-If-UPW"/>
+                    <constraint firstItem="CpJ-JN-dff" firstAttribute="leading" secondItem="ygD-7r-hJf" secondAttribute="trailing" id="ead-bx-gBC"/>
+                    <constraint firstItem="khi-c4-eNt" firstAttribute="leading" secondItem="nFp-bp-YiW" secondAttribute="leading" constant="15" id="pif-1c-sOE"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
