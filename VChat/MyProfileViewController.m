@@ -22,6 +22,7 @@
 - (void)uploadImage:(NSData *)imageData;
 - (void)downloadImage:(NSIndexPath *)indexPath imageFile:(PFFile *)imageFile;
 - (void)populateProfileInfoArray;
+- (void)cleanUp;
 
 @end
 
@@ -35,6 +36,7 @@ MBProgressHUD *refreshHUD;
     if (self) {
         // Custom initialization
         self.title = @"My Profile";
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cleanUp) name:UserLogoutNotification object:nil];
     }
     return self;
 }
@@ -42,7 +44,6 @@ MBProgressHUD *refreshHUD;
 - (void)viewDidAppear:(BOOL)animated {
     NSLog(@"MyProfileView: viewDidAppear");
     [self populateProfileInfoArray];
-    [self.tableView reloadData];
 }
 
 - (void)viewDidLoad
@@ -55,7 +56,7 @@ MBProgressHUD *refreshHUD;
     [self.tableView registerNib:customNib forCellReuseIdentifier:@"MyProfileCell"];
     [self.tableView registerNib:photoNib forCellReuseIdentifier:@"EditPhotoCell"];
     [self.tableView registerNib:actionNib forCellReuseIdentifier:@"ActionCell"];
-    [self populateProfileInfoArray];
+//    [self populateProfileInfoArray];
 
 
     // Uncomment the following line to preserve selection between presentations.
@@ -118,6 +119,7 @@ MBProgressHUD *refreshHUD;
                                 NSData *imageData = [imageFile getData];
                                 dispatch_sync(dispatch_get_main_queue(), ^{
                                     UIImage *image = [UIImage imageWithData:imageData];
+                                    NSLog(@"setting profile image");
                                     [cell.profileImageView setImage:image];
                                         [self.tableView beginUpdates];
                                         [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
@@ -340,8 +342,10 @@ MBProgressHUD *refreshHUD;
             
             PFObject *userPhoto = [PFObject objectWithClassName:@"UserPhoto"];
             [userPhoto setObject:imageFile forKey:@"imageFile"];
-            // Set the access control list to current user for security purposes
-            userPhoto.ACL = [PFACL ACLWithUser:[PFUser currentUser]];
+            PFACL *defaultACL = [PFACL ACL];
+            // Optionally enable public read access while disabling public write access.
+            [defaultACL setPublicReadAccess:YES];
+            [PFACL setDefaultACL:defaultACL withAccessForCurrentUser:YES];
             [userPhoto setObject:currentUser forKey:@"user"];
             [userPhoto saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                 if (!error) {
@@ -371,6 +375,7 @@ MBProgressHUD *refreshHUD;
 //    NSLog(@"MyProfileView: populateProfileInfoArray");
     // Build an array with section name and field name and value
     PFUser *currentUser = [PFUser currentUser];
+    self.profileInfo = nil;
     self.profileInfo = [[NSMutableArray alloc] init];
     NSMutableArray *basicInfoFields = [[NSMutableArray alloc] init];
     
@@ -405,6 +410,12 @@ MBProgressHUD *refreshHUD;
 
     
     NSLog(@"%@", self.profileInfo);
+    
+    [self.tableView reloadData];
+}
+
+- (void)cleanUp {
+    self.profileInfo = nil;
 }
 
 @end

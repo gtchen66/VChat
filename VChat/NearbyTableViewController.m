@@ -54,7 +54,6 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
 - (void)viewDidLoad
 {
     // Load list of nearby users and friends
-    NSLog(@"NearbyTableViewController : viewDidLoad");
     [super viewDidLoad];
     self.title = @"Nearby";
     self.refreshing = false;
@@ -109,12 +108,13 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
     cell.userNameLabel.text = (user[@"displayName"] && ![user[@"displayName"] isEqual: @""]) ? user[@"displayName"] : user.username;
     cell.affiliationLabel.text = user[@"affiliation"];
     cell.positionLabel.text = user[@"position"];
-    
+    NSLog(@"profile image");
     // search for image file in parse, then facebook, otherwise show default
     if (!cell.profileImageView.image) {
         PFQuery *query = [PFQuery queryWithClassName:@"UserPhoto"];
         [query whereKey:@"user" equalTo:user];
         [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+            NSLog(@"%@", objects);
             if (!error) {
                 // If no profile image exist, look for facebook image, otherwise set default image
                 if ([objects count] == 0 || objects == nil) {
@@ -254,10 +254,8 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
     [toQuery whereKey:@"to" equalTo:currentUser];
     
     PFQuery *friendQuery = [PFQuery orQueryWithSubqueries:@[fromQuery, toQuery]];
-    NSLog(@"finding friends");
     [friendQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if (!error) {
-            NSLog(@"friends found");
             self.friends = [[NSMutableArray alloc] initWithArray:objects];
         }
     }];
@@ -266,7 +264,6 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
     self.nearbyUsers = [[NSMutableArray alloc] init];
     [PFGeoPoint geoPointForCurrentLocationInBackground:^(PFGeoPoint *geoPoint, NSError *error) {
         if (!error) {
-            NSLog(@"Geopoint obtained");
             // do something with the new geoPoint
             //                NSLog(@"%f, %f", geoPoint.latitude, geoPoint.longitude);
             currentUser[@"location"] = geoPoint;
@@ -281,7 +278,6 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
             [userQuery findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
                 // Remove current user from user list
                 // TODO - remove blocked users from showing up
-                NSLog(@"nearby users obtained");
                 for (PFUser *eachUser in objects) {
                     if ([eachUser.objectId isEqualToString:currentUser.objectId] == YES) {
                     } else {
@@ -293,6 +289,9 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
                 [self.tableView reloadData];
                 
             }];
+
+        } else {
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
 
         }
     }];
