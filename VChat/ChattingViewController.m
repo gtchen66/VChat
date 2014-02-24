@@ -116,6 +116,7 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
     self.mySendButton.enabled = NO;
 
     self.userChatArray = [[NSMutableArray alloc] init];
+    [self loadInitialChatDataBeteeenUsers];
     [self loadChatBetweenUsers];
 }
 
@@ -241,6 +242,21 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
     }
     
     NSDictionary *chat = [self.userChatArray objectAtIndex:indexPath.row];
+    
+    int count = 0;
+    if ([[chat objectForKey:@"fromUser"] isEqualToString:self.localUser.username]) {
+        // message from me.  right side.
+        count = [chat[SenderCountKey] integerValue];
+    } else {
+        count = [chat[ListenCountKey] integerValue];
+    }
+    if (count >= 3) {
+        NSLog(@"Playback disabled, count = %d",count);
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+
+        return;
+    }
+    
     NSData *soundData = [chat objectForKey:@"sound"];
     NSError *outError;
     
@@ -248,6 +264,8 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
     
     if (audioPlayer == nil) {
         NSLog(@"Error trying to play %@.",[chat objectForKey:@"timestamp"]);
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+
     } else {
         audioPlayer.delegate = self;
         self.playingIndexPath = indexPath;
@@ -297,13 +315,11 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
 //
 // load conversation between these two users
 //
--(void) loadChatBetweenUsers {
-    NSLog(@"ChattingViewController : loadChatBetweenUsers");
+-(void) loadInitialChatDataBeteeenUsers {
+    NSLog(@"ChattingViewController : loadInitialChatDataBeteeenUsers");
     
     self.allChatArray = [[NSMutableArray alloc] initWithContentsOfFile:self.pathLocalStorage];
-    
-    NSDate *latest_timestamp;
-    latest_timestamp = [[NSDate alloc] initWithTimeIntervalSince1970:0];
+    self.userChatArray = [[NSMutableArray alloc] init];
     
     for (NSDictionary *entry in self.allChatArray) {
         NSString *fromUser = entry[@"fromUser"];
@@ -312,12 +328,15 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
             [toUser isEqualToString:self.remoteUser.username]) {
             
             [self.userChatArray addObject:entry];
-            NSDate *timestamp = entry[@"timestamp"];
-            if ([timestamp laterDate:latest_timestamp]) {
-                latest_timestamp = timestamp;
-            }
         }
     }
+}
+
+-(void) loadChatBetweenUsers {
+    NSLog(@"ChattingViewController : loadChatBetweenUsers");
+    
+    NSDate *latest_timestamp;
+    latest_timestamp = [[NSDate alloc] initWithTimeIntervalSince1970:0];
     
     // sort in ascending order, so latest goes on bottom
     [self.userChatArray sortUsingComparator:^NSComparisonResult(id obj1, id obj2) {
@@ -331,9 +350,13 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
         // Use for ascending (latest at bottom)
         return (NSComparisonResult)[date1 compare:date2];
     }];
-
+    
     NSMutableDictionary *dictToArrayIndex = [[NSMutableDictionary alloc] init];
     if (self.userChatArray.count > 0) {
+        
+        // last item in sorted list is the newest.
+        latest_timestamp = [self.userChatArray objectAtIndex:(self.userChatArray.count - 1)][@"timestamp"];
+        
         int i;
         for (i=0; i<self.userChatArray.count; i++) {
             NSDictionary *dict = [self.userChatArray objectAtIndex:i];
@@ -346,27 +369,28 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
     // TODO: add more users directly from Parse....
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"((fromUser = %@) AND (toUser = %@)) OR ((fromUser = %@) AND (toUser = %@))",self.localUser.username,self.remoteUser.username,self.remoteUser.username,self.localUser.username];
     NSLog(@"Predicate (chatting) %@",predicate);
-    NSLog(@"latest_timestamp %@",latest_timestamp);
+//    NSLog(@"latest_timestamp %@",latest_timestamp);
 
     // Parse is treating greaterThan like greaterThanOrEqual, so increment timestamp
     latest_timestamp = [latest_timestamp dateByAddingTimeInterval:1];
     
     PFQuery *query = [PFQuery queryWithClassName:@"UserRecording" predicate:predicate];
-    [query whereKey:@"timestamp" greaterThan:latest_timestamp];
+//    [query whereKey:@"timestamp" greaterThan:latest_timestamp];
+    [query whereKey:@"updatedAt" greaterThan:latest_timestamp];
     [query orderByAscending:@"timestamp"];
     // do not update user's lastRetrieved date.
     
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if (objects.count > 0) {
-            NSLog(@"Retrieved %d new recordings",objects.count);
+            NSLog(@"Retrieved %d new objects",objects.count);
             for (PFObject *eachObject in objects) {
-                
+                NSLog(@"New object at timestamp %@ is newer than %@",eachObject[@"timestamp"], latest_timestamp);
                 // does this object already exist?
                 if ([dictToArrayIndex objectForKey:eachObject.objectId] != nil) {
                     // just update a few fields
 //                    NSLog(@"objectid %@ already exists in db",eachObject.objectId);
-                    int listenCount = [eachObject[@"listenCount"] integerValue];
-                    int senderCount = [eachObject[@"senderCount"] integerValue];
+                    int listenCount = [eachObject[ListenCountKey] integerValue];
+                    int senderCount = [eachObject[SenderCountKey] integerValue];
                     if (senderCount == 0) {
                         senderCount++;
                     }
@@ -375,8 +399,8 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
 //                    NSLog(@"object has index %d.  there are %d objects in allChatArray",objIndex, dictToArrayIndex.count);
                     NSMutableDictionary *mydict = [self.userChatArray objectAtIndex:objIndex];
                     
-                    mydict[@"listenCount"] = @(listenCount);
-                    mydict[@"sendCount"] = @(senderCount);
+                    mydict[ListenCountKey] = @(listenCount);
+                    mydict[SenderCountKey] = @(senderCount);
 
                 } else {
 //                    NSLog(@"generating new recording object");
@@ -387,8 +411,8 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
                     [cchat setValue:[eachObject objectForKey:@"toUser"] forKey:@"toUser"];
                     [cchat setValue:[eachObject objectForKey:@"fromUser"] forKey:@"fromUser"];
                     [cchat setValue:[eachObject objectForKey:@"timestamp"] forKey:@"timestamp"];
-                    [cchat setValue:[eachObject objectForKey:@"listenCount"] forKey:@"listenCount"];
-                    [cchat setValue:[eachObject objectForKey:@"senderCount"] forKey:@"senderCount"];
+                    [cchat setValue:[eachObject objectForKey:ListenCountKey] forKey:ListenCountKey];
+                    [cchat setValue:[eachObject objectForKey:SenderCountKey] forKey:SenderCountKey];
                     if (cchat[SenderCountKey] == 0) {
                         cchat[SenderCountKey] = @(1);
                     }

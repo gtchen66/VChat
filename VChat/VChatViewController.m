@@ -290,6 +290,23 @@
     
     NSLog(@"Playback message");
     NSDictionary *chat = [self.allChatArray objectAtIndex:indexPath.row];
+    // check to see if this should be disabled.
+    int count;
+    if ([chat[@"remoteId"] isEqualToString:chat[@"toId"]]) {
+        // I am the sender
+        count = [chat[SenderCountKey] integerValue];
+    } else {
+        // I am the reciepient
+        count = [chat[ListenCountKey] integerValue];
+    }
+    if (count >= 3) {
+        // played too often, skipping
+        NSLog(@"playback disabled at (%d)",count);
+        [self.myVChatTableView deselectRowAtIndexPath:indexPath animated:YES];
+        return;
+    }
+    
+    
     // TODO: do something clever if recording is bad...
     NSData *soundData = [chat objectForKey:@"sound"];
     NSError *outError;
