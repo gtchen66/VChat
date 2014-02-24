@@ -17,6 +17,7 @@
     dispatch_queue_t myQueue;
 }
 
+@property (nonatomic, assign) bool reloadImage;
 @property (nonatomic, strong) NSMutableArray *profileInfo;
 
 - (void)uploadImage:(NSData *)imageData;
@@ -99,7 +100,8 @@ MBProgressHUD *refreshHUD;
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         
         // Set the profile image view
-        if (!cell.profileImageView.image) {
+        if (!cell.profileImageView.image || self.reloadImage) {
+            self.reloadImage = false;
             PFQuery *query = [PFQuery queryWithClassName:@"UserPhoto"];
             PFUser *user = [PFUser currentUser];
             [query whereKey:@"user" equalTo:user];
@@ -114,18 +116,18 @@ MBProgressHUD *refreshHUD;
                             [cell.profileImageView setImage:[UIImage imageNamed:@"DefaultProfileIcon"]];
                         }
                     } else {
-                            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
-                                PFFile *imageFile = [objects[0] objectForKey:@"imageFile"];
-                                NSData *imageData = [imageFile getData];
-                                dispatch_sync(dispatch_get_main_queue(), ^{
-                                    UIImage *image = [UIImage imageWithData:imageData];
-                                    NSLog(@"setting profile image");
-                                    [cell.profileImageView setImage:image];
-                                        [self.tableView beginUpdates];
-                                        [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
-                                        [self.tableView endUpdates];
-                                });
+                        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
+                            PFFile *imageFile = [objects[0] objectForKey:@"imageFile"];
+                            NSData *imageData = [imageFile getData];
+                            dispatch_sync(dispatch_get_main_queue(), ^{
+                                UIImage *image = [UIImage imageWithData:imageData];
+                                NSLog(@"setting profile image");
+                                [cell.profileImageView setImage:image];
+                                    [self.tableView beginUpdates];
+                                    [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+                                    [self.tableView endUpdates];
                             });
+                        });
                     }
                 }
             }];
@@ -416,6 +418,7 @@ MBProgressHUD *refreshHUD;
 
 - (void)cleanUp {
     self.profileInfo = nil;
+    self.reloadImage = true;
 }
 
 @end
