@@ -12,6 +12,12 @@
 
 extern NSString *const UserLogoutNotification;
 
+extern NSString *const SenderCountKey;
+extern NSString *const ListenCountKey;
+extern NSString *const RecordingObjectName;
+
+extern BOOL GlobalRepeatTimerFlag;
+
 @interface Globals : NSObject
 
 @end

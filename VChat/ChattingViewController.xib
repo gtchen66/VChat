@@ -7,6 +7,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ChattingViewController">
             <connections>
                 <outlet property="myChattingTable" destination="Ops-ZC-M1N" id="nY9-5w-By6"/>
+                <outlet property="mySendButton" destination="yIV-Zv-9k9" id="Fux-s7-nRK"/>
                 <outlet property="pushToRecordButton" destination="tX5-0u-NGh" id="uqk-t9-CEE"/>
                 <outlet property="recordingSecondLabel" destination="8qC-wr-tIa" id="yYV-iT-VlW"/>
                 <outlet property="view" destination="1" id="3"/>

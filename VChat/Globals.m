@@ -10,6 +10,13 @@
 
 NSString * const UserLogoutNotification = @"UserLogoutNotification";
 
+NSString * const SenderCountKey = @"senderCount";
+NSString * const ListenCountKey = @"listenCount";
+
+NSString * const RecordingObjectName = @"UserRecording";
+
+BOOL GlobalRepeatTimerFlag = YES;
+
 @implementation Globals
 
 @end

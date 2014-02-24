@@ -12,6 +12,7 @@
 @interface ChattingViewCell : UITableViewCell
 @property (weak, nonatomic) IBOutlet UILabel *myChattingViewCellTimeLabel;
 @property (weak, nonatomic) IBOutlet VChatDrawingView *myChattingViewCellDrawing;
+@property (weak, nonatomic) IBOutlet UILabel *myChattingViewCellStatusLabel;
 
 @property (nonatomic, assign) int duration;
 @property (nonatomic, assign) int countdown;

@@ -47,13 +47,12 @@
     
     CGContextRef context = UIGraphicsGetCurrentContext();
     
-    // countdown = 4+ - solid, 0% green
-    // countdown = 3 - thick outline, 50% green
-    // countdown = 2 - thick outline, 75% green
-    // countdown = 1 - thick outline, empty
-    // countdown = 0 - thin outline
+    // countdown = 0 - undelivered, solid - full color edge, color1 inside
+    // countdown = 1 - delivered, same as 0
+    // countdown = 2 - heard, color edge, color2 inside
+    // countdown = 3 - heard, color edge, empty
     
-    //    CGFloat purple[4] = {1.0f, 0.0f, 1.0f, 1.0f};
+    CGFloat emptyColor[4] = {1.0f, 1.0f, 1.0f, 1.0f};
     
     CGFloat leftColor[4] = {1.0f, 0.0f, 1.0f, 1.0f};     // full color
     CGFloat leftColor1[4] = {1.0f, 0.5f, 1.0f, 1.0f};    // getting lighter
@@ -65,29 +64,29 @@
     
     if (self.duration < 0) {
         CGContextSetStrokeColor(context, rightColor);
-        if (self.countdown == 2) {
-            CGContextSetFillColor(context, rightColor2);
-        } else if (self.countdown == 3) {
+        if (self.countdown < 2) {
             CGContextSetFillColor(context, rightColor1);
+        } else if (self.countdown == 2) {
+            CGContextSetFillColor(context, rightColor2);
         } else {
-            CGContextSetFillColor(context, rightColor);
+            CGContextSetFillColor(context, emptyColor);
         }
     } else {
         CGContextSetStrokeColor(context, leftColor);
-        if (self.countdown == 2) {
-            CGContextSetFillColor(context, leftColor2);
-        } else if (self.countdown == 3) {
+        if (self.countdown < 2) {
             CGContextSetFillColor(context, leftColor1);
+        } else if (self.countdown == 2) {
+            CGContextSetFillColor(context, leftColor2);
         } else {
-            CGContextSetFillColor(context, leftColor);
+            CGContextSetFillColor(context, emptyColor);
         }
     }
     
-    if (self.countdown >= 1) {
-        CGContextSetLineWidth(context, 2.0f);
-    } else {
+//    if (self.countdown >= 1) {
+//        CGContextSetLineWidth(context, 2.0f);
+//    } else {
         CGContextSetLineWidth(context, 1.0f);
-    }
+//    }
     
     if (NO) {
         
@@ -166,7 +165,7 @@
         CGContextAddArc(context, leftX, thick1+thick2, thick2, M_PI, M_PI*1.5, 0);
         CGContextStrokePath(context);
         
-        if (self.countdown >= 2) {
+        if (self.countdown <= 3) {
             CGContextBeginPath(context);
             CGContextMoveToPoint(context, leftX, thick1);
             CGContextAddLineToPoint(context, rightX, thick1);
