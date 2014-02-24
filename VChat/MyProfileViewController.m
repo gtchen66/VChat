@@ -280,13 +280,13 @@ MBProgressHUD *refreshHUD;
     [picker dismissViewControllerAnimated:YES completion:nil];
     
     // Resize image
-    UIGraphicsBeginImageContext(CGSizeMake(640, 960));
-    [image drawInRect: CGRectMake(0, 0, 640, 960)];
+    UIGraphicsBeginImageContext(CGSizeMake(120, 120));
+    [image drawInRect: CGRectMake(0, 0, 120, 120)];
     UIImage *smallImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
     // Upload image
-    NSData *imageData = UIImageJPEGRepresentation(smallImage, 0.05f);
+    NSData *imageData = UIImageJPEGRepresentation(smallImage, 0.25f);
     [self uploadImage:imageData];
 }
 
