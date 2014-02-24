@@ -241,6 +241,21 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
     }
     
     NSDictionary *chat = [self.userChatArray objectAtIndex:indexPath.row];
+    
+    int count = 0;
+    if ([[chat objectForKey:@"fromUser"] isEqualToString:self.localUser.username]) {
+        // message from me.  right side.
+        count = [chat[SenderCountKey] integerValue];
+    } else {
+        count = [chat[ListenCountKey] integerValue];
+    }
+    if (count >= 3) {
+        NSLog(@"Playback disabled, count = %d",count);
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+
+        return;
+    }
+    
     NSData *soundData = [chat objectForKey:@"sound"];
     NSError *outError;
     
@@ -248,6 +263,8 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
     
     if (audioPlayer == nil) {
         NSLog(@"Error trying to play %@.",[chat objectForKey:@"timestamp"]);
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+
     } else {
         audioPlayer.delegate = self;
         self.playingIndexPath = indexPath;
@@ -360,7 +377,7 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
         if (objects.count > 0) {
             NSLog(@"Retrieved %d new recordings",objects.count);
             for (PFObject *eachObject in objects) {
-                
+                NSLog(@"New object at timestamp %@ is newer than %@",eachObject[@"timestamp"], latest_timestamp);
                 // does this object already exist?
                 if ([dictToArrayIndex objectForKey:eachObject.objectId] != nil) {
                     // just update a few fields

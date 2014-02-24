@@ -146,11 +146,13 @@
             // left side
             leftX = thick1 + thick2 + 2;
             rightX = MIN(self.duration*(width/widthInSeconds) + leftX, width-thick1-thick2-2);
+            rightX = MIN(rightX, 0.333*width);
             
         } else {
             // right side.  duration is negative.
             rightX = width - thick1-thick2-2;
             leftX = MAX(width + self.duration*(width/widthInSeconds) - thick2, thick1+thick2+2);
+            leftX = MAX(leftX, 0.666*width);
         }
         
         CGContextBeginPath(context);
