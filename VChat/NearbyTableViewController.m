@@ -226,9 +226,9 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
         UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section]];
         NearbyUserCell *nearbyCell = (NearbyUserCell* )((id)cell);
         nearbyCell.addButton.backgroundColor = [UIColor grayColor];
-//        [nearbyCell.addButton setEnabled:NO];
-//        [nearbyCell.addButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-        [nearbyCell.addButton setTitle:@"Cancel Request" forState:UIControlStateNormal];
+        [nearbyCell.addButton setEnabled:NO];
+        [nearbyCell.addButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        [nearbyCell.addButton setTitle:@"Pending" forState:UIControlStateNormal];
         
     }];
 }
