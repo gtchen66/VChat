@@ -305,6 +305,17 @@
         // played too often, skipping
         NSLog(@"playback disabled at (%d)",count);
         [self.myVChatTableView deselectRowAtIndexPath:indexPath animated:YES];
+        
+        // instead of returning, treat this as a request to go to the Chatting page.
+        
+        PFUser *remoteUser = [self findPFUserForObjectid:chat[@"remoteId"]];
+        
+        ChattingViewController *cvc = [[ChattingViewController alloc] init];
+        cvc.remoteUser = remoteUser;
+        
+        [self.navigationController pushViewController:cvc animated:YES];
+        
+        // the return is so that this doesn't try to playback.
         return;
     }
     
