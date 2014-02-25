@@ -43,13 +43,11 @@ MBProgressHUD *refreshHUD;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
-    NSLog(@"MyProfileView: viewDidAppear");
     [self populateProfileInfoArray];
 }
 
 - (void)viewDidLoad
 {
-//    NSLog(@"MyProfileView: viewDidLoad");
     [super viewDidLoad];
     UINib *customNib = [UINib nibWithNibName:@"MyProfileCell" bundle:nil];
     UINib *photoNib = [UINib nibWithNibName:@"EditPhotoCell" bundle:nil];
@@ -57,7 +55,6 @@ MBProgressHUD *refreshHUD;
     [self.tableView registerNib:customNib forCellReuseIdentifier:@"MyProfileCell"];
     [self.tableView registerNib:photoNib forCellReuseIdentifier:@"EditPhotoCell"];
     [self.tableView registerNib:actionNib forCellReuseIdentifier:@"ActionCell"];
-//    [self populateProfileInfoArray];
 
 
     // Uncomment the following line to preserve selection between presentations.
@@ -77,7 +74,6 @@ MBProgressHUD *refreshHUD;
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-//    NSLog(@"MyProfileView: numberofSectionsInTableView");
     // Return the number of sections.
     int numberOfSections = self.profileInfo.count;
 //    NSLog(@"numberOfSections: %i", numberOfSections);
@@ -86,7 +82,6 @@ MBProgressHUD *refreshHUD;
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-//    NSLog(@"MyProfileView: numberOfRowsInSection");
     // Return the number of rows in the section.
     NSArray *segment = [self.profileInfo objectAtIndex:section];
     return segment.count;
@@ -121,7 +116,6 @@ MBProgressHUD *refreshHUD;
                             NSData *imageData = [imageFile getData];
                             dispatch_sync(dispatch_get_main_queue(), ^{
                                 UIImage *image = [UIImage imageWithData:imageData];
-                                NSLog(@"setting profile image");
                                 [cell.profileImageView setImage:image];
                                     [self.tableView beginUpdates];
                                     [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
@@ -132,7 +126,6 @@ MBProgressHUD *refreshHUD;
                 }
             }];
         }
-        NSLog(@"returning cell");
         return cell;
     } else {
     
@@ -212,13 +205,9 @@ MBProgressHUD *refreshHUD;
 // In a xib-based application, navigation from a table can be handled in -tableView:didSelectRowAtIndexPath:
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSLog(@"MyProfileView: didSelectRowAtIndexPath");
-    NSLog(@"indexPath.section: %i, indexPath.row: %i", indexPath.section, indexPath.row);
-    
     // Special handling for Profile Photo cell
     if (indexPath.section == 0 && indexPath.row == 0) {
         if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeSavedPhotosAlbum] == YES){
-            NSLog(@"Create image picker");
             // Create image picker controller
             UIImagePickerController *imagePicker = [[UIImagePickerController alloc] init];
             // Set source to the photo album
@@ -233,9 +222,7 @@ MBProgressHUD *refreshHUD;
         if (!(indexPath.section == 0 && indexPath.row == 1)) {
             NSMutableArray *profileSection = [self.profileInfo objectAtIndex:indexPath.section];
             NSString *profileField = [profileSection objectAtIndex:indexPath.row];
-            //    NSLog(@"profileField: %@", profileField);
             NSArray *keyValue = [profileField componentsSeparatedByString:@":"];
-            //    NSLog(@"keyValue: %@", keyValue);
             NSString *fieldName = keyValue[0];
             
             // When logout row is clicked, send out nsnotification and change tab bar view to the main page
@@ -351,7 +338,6 @@ MBProgressHUD *refreshHUD;
             [userPhoto setObject:currentUser forKey:@"user"];
             [userPhoto saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                 if (!error) {
-                    NSLog(@"MyProfileViewController - reloading tableview after uploading image");
                     UITableViewCell *c = [self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
                     EditPhotoCell *cell = (EditPhotoCell* )((id)c);
                     [cell.profileImageView setImage:[UIImage imageWithData:imageData]];
@@ -374,7 +360,6 @@ MBProgressHUD *refreshHUD;
 }
 
 - (void)populateProfileInfoArray {
-//    NSLog(@"MyProfileView: populateProfileInfoArray");
     // Build an array with section name and field name and value
     PFUser *currentUser = [PFUser currentUser];
     self.profileInfo = nil;
@@ -411,7 +396,7 @@ MBProgressHUD *refreshHUD;
     [self.profileInfo addObject:actionFields];
 
     
-    NSLog(@"%@", self.profileInfo);
+//    NSLog(@"%@", self.profileInfo);
     
     [self.tableView reloadData];
 }

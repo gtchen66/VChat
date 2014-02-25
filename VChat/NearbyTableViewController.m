@@ -108,26 +108,20 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
     cell.userNameLabel.text = (user[@"displayName"] && ![user[@"displayName"] isEqual: @""]) ? user[@"displayName"] : user.username;
     cell.affiliationLabel.text = user[@"affiliation"];
     cell.positionLabel.text = user[@"position"];
-    NSLog(@"profile image");
     // search for image file in parse, then facebook, otherwise show default
     if (!cell.profileImageView.image) {
-        NSLog(@"NearbyTableViewController : cellForRowAtIndexPath : looking for image for %@",user.username);
         PFQuery *query = [PFQuery queryWithClassName:@"UserPhoto"];
         [query whereKey:@"user" equalTo:user];
         [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-            NSLog(@"%@", objects);
             if (!error) {
                 // If no profile image exist, look for facebook image, otherwise set default image
                 if ([objects count] == 0 || objects == nil) {
                     if (user[@"profileImage"] && ![user[@"profileImage"] isEqualToString:@""]) {
-                        NSLog(@"found image for %@ at 1",user.username);
                         [cell.profileImageView setImageWithURL:[NSURL URLWithString:user[@"profileImage"]]];
                     } else {
-                        NSLog(@"found image for %@ at 2",user.username);
                         [cell.profileImageView setImage:[UIImage imageNamed:@"DefaultProfileIcon"]];
                     }
                 } else {
-                    NSLog(@"found image for %@ at 3",user.username);
                     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
                         PFFile *imageFile = [objects[0] objectForKey:@"imageFile"];
                         NSData *imageData = [imageFile getData];
@@ -269,7 +263,6 @@ NSString* const CELL_IDENTIFIER = @"NearbyUserCell";
     [PFGeoPoint geoPointForCurrentLocationInBackground:^(PFGeoPoint *geoPoint, NSError *error) {
         if (!error) {
             // do something with the new geoPoint
-            //                NSLog(@"%f, %f", geoPoint.latitude, geoPoint.longitude);
             currentUser[@"location"] = geoPoint;
             [currentUser saveInBackground];
             
