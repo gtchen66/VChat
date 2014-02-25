@@ -162,6 +162,8 @@
         NSLog(@"VChatViewController : Activating NSTimer");
         self.periodicCounter = 0;
         self.myTimer = [NSTimer scheduledTimerWithTimeInterval:15.0 target:self selector:@selector(periodicTimerMethod:) userInfo:nil repeats:YES];
+    } else {
+        NSLog(@"Skipping NStimer activation");
     }
 }
 
@@ -437,6 +439,9 @@
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@"(toUser = %@) OR (fromUser = %@)",user.username,user.username];
 //    NSLog(@"Predicate %@",predicate);
     
+    // set lastRetrieved to current time, then run query
+    user[@"lastRetrieved"] = currentDate;
+    
     PFQuery *query = [PFQuery queryWithClassName:@"UserRecording" predicate:predicate];
     
     //    [query whereKey:@"toUser" equalTo:user.username];
@@ -487,8 +492,8 @@
                         }
                     }
 
-                    mydict[@"listenCount"] = @(listenCount);
-                    mydict[@"senderCount"] = @(senderCount);
+                    mydict[ListenCountKey] = @(listenCount);
+                    mydict[SenderCountKey] = @(senderCount);
 
                     
                 } else {
@@ -500,8 +505,8 @@
                     [vchat setValue:[eachObject objectForKey:@"toUser"] forKey:@"toUser"];
                     [vchat setValue:[eachObject objectForKey:@"fromUser"] forKey:@"fromUser"];
                     [vchat setValue:[eachObject objectForKey:@"timestamp"] forKey:@"timestamp"];
-                    [vchat setValue:[eachObject objectForKey:@"listenCount"] forKey:@"listenCount"];
-                    [vchat setValue:[eachObject objectForKey:@"senderCount"] forKey:@"senderCount"];
+                    [vchat setValue:[eachObject objectForKey:ListenCountKey] forKey:ListenCountKey];
+                    [vchat setValue:[eachObject objectForKey:SenderCountKey] forKey:SenderCountKey];
                     if (vchat[SenderCountKey] == 0) {
                         vchat[SenderCountKey] = @(1);
                     }
@@ -588,7 +593,8 @@
     
     
     // Update user's lastRetrieved date
-    user[@"lastRetrieved"] = currentDate;
+//    user[@"lastRetrieved"] = currentDate;
+    NSLog(@"Updating timestamp to %@",user[@"lastRetrieved"]);
     [user saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (!error) {
             NSLog(@"Updated user with lastRetrieved timestamp of %@",currentDate);
