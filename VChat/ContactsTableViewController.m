@@ -143,6 +143,8 @@ NSString* const CONTACTS_KEY = @"contacts";
     id sectionKey = [sortedKeys objectAtIndex:indexPath.section];
     NSArray *sectionArray = [self.sections objectForKey:sectionKey];
     NSDictionary *userDictionary = [sectionArray objectAtIndex:indexPath.row];
+    // Update array
+    [[self.sections[sectionKey] objectAtIndex:indexPath.row] setObject:@"friends" forKey:@"status"];
     PFQuery *query = [PFQuery queryWithClassName:@"Friend"];
     
     NSLog(@"%@", userDictionary);

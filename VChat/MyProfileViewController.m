@@ -334,7 +334,7 @@ MBProgressHUD *refreshHUD;
             PFACL *defaultACL = [PFACL ACL];
             // Optionally enable public read access while disabling public write access.
             [defaultACL setPublicReadAccess:YES];
-            [PFACL setDefaultACL:defaultACL withAccessForCurrentUser:YES];
+            [PFACL setDefaultACL:defaultACL withAccessForCurrentUser:NO];
             [userPhoto setObject:currentUser forKey:@"user"];
             [userPhoto saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
                 if (!error) {
