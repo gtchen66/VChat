@@ -387,10 +387,10 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
         if (objects.count > 0) {
             NSLog(@"Retrieved %d new objects",objects.count);
             for (PFObject *eachObject in objects) {
-                NSLog(@"New object at timestamp %@ is newer than %@",eachObject[@"timestamp"], self.latestTimeStamp);
+                NSLog(@"New object at timestamp %@, %@ is newer than %@",eachObject[@"timestamp"], eachObject.updatedAt, self.latestTimeStamp);
                 
                 // update latestTimeStamp to current
-                self.latestTimeStamp = [self.latestTimeStamp laterDate:eachObject[@"updatedAt"]];
+                self.latestTimeStamp = [self.latestTimeStamp laterDate:eachObject.updatedAt];
                 
                 NSMutableDictionary *cchat;
                 
