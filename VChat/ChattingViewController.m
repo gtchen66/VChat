@@ -88,7 +88,7 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
     // configue the audio system
     
     NSLog(@"chatting between local %@ and remote %@",self.localUser.username, self.remoteUser.username);
-    self.title = self.remoteUser.username;
+    self.title = self.remoteUser[@"displayName"] ? self.remoteUser[@"displayName"] : self.remoteUser.username;
     
     NSString *docsDir = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
     self.pathLocalStorage = [docsDir stringByAppendingPathComponent:[NSString stringWithFormat:@"localStorage.%@.plist",self.localUser.username]];

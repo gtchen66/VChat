@@ -115,6 +115,7 @@ NSString* const CONTACTS_KEY = @"contacts";
         [cell.acceptRequestButton setTitle:@"Request Sent" forState:UIControlStateNormal];
         cell.backgroundColor = RGB2UIColor(252, 247, 200);
     } else {
+        cell.acceptRequestButton.hidden = YES;
         cell.backgroundColor = [UIColor whiteColor];
     }
     
@@ -201,9 +202,9 @@ NSString* const CONTACTS_KEY = @"contacts";
  
 
 - (void)loadData {
-    self.contacts = nil;
-    self.sections = nil;
-    NSLog(@"ContactsViewController: loadData");
+//    self.contacts = nil;
+//    self.sections = nil;
+//    NSLog(@"ContactsViewController: loadData");
     PFUser *me = [PFUser currentUser];
     
     // Load contacts list from NSUserDefaults first, then find newer relations after latest time stamp.
@@ -212,6 +213,7 @@ NSString* const CONTACTS_KEY = @"contacts";
     // TODO - REFACTOR NSUserDeafult GET AND SET
     
     self.contacts = [[NSMutableArray alloc] init];
+    self.sections = [[NSMutableDictionary alloc] init];
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSArray *cachedContacts = [defaults arrayForKey:CONTACTS_KEY];
@@ -237,10 +239,13 @@ NSString* const CONTACTS_KEY = @"contacts";
             // save the objectId, display name, user name, and status (request sent, accept request, friends)
 //            NSLog(@"%@", objects);
             if ([self.contacts count] != 0 && self.contacts != nil) {
+//                NSLog(@"niling out contacts and sections");
                 self.contacts = nil;
+                self.sections = nil;
                 self.contacts = [[NSMutableArray alloc] init];
+                self.sections = [[NSMutableDictionary alloc] init];
             }
-            NSLog(@"friend query returns");
+//            NSLog(@"friend query returns");
             if (!error) {
                 for (PFObject *friend in objects) {
                     // if friending request was from other person, check if need to show "accept request" button
@@ -293,7 +298,6 @@ NSString* const CONTACTS_KEY = @"contacts";
             }
             
             // process array to show section headers with first alphabet
-            self.sections = [[NSMutableDictionary alloc] init];
             bool found;
             for (NSDictionary *contact in self.contacts)    {
                 found = NO;
@@ -324,6 +328,7 @@ NSString* const CONTACTS_KEY = @"contacts";
 //            NSLog(@"sections:");
 //            NSLog(@"%@", self.sections);
             
+//            NSLog(@"reloading tableview");
             [self.tableView reloadData];
         }];
 
