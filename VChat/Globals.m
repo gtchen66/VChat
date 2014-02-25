@@ -15,7 +15,7 @@ NSString * const ListenCountKey = @"listenCount";
 
 NSString * const RecordingObjectName = @"UserRecording";
 
-BOOL GlobalRepeatTimerFlag = NO;
+BOOL GlobalRepeatTimerFlag = YES;
 
 @implementation Globals
 

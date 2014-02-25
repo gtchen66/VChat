@@ -541,6 +541,7 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
         self.recordingSecondLabel.alpha = 0.0;
     } completion:^(BOOL finished) {
         self.recordingSecondLabel.text = @"";
+        self.recordingSecondLabel.alpha = 1.0;
     }];
     
 }
@@ -555,6 +556,9 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
 
 - (IBAction)onSendButton:(id)sender {
     // Okay to send...
+    self.recordingSecondLabel.text = @"Sending";
+    self.recordingSecondLabel.alpha = 1.0;
+
     NSData *recordingData = [[NSData alloc] initWithContentsOfURL:audioRecorder.url];
     NSLog(@"Sending to Parse.  Length of data is %d",recordingData.length);
 
@@ -567,6 +571,8 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
     NSLog(@"recording name is %@",recordingName);
     PFFile *newFile = [PFFile fileWithName:recordingName data:recordingData];
     
+//    self.recordingSecondLabel.text = @"Sending";
+
     [newFile saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (!error) {
             NSLog(@"Completed saving of %@",recordingName);
@@ -606,6 +612,18 @@ NSString* const RECORDING_CLASSNAME = @"UserRecording";
                     NSLog(@"Error saving meta-object for recording: %@ %@", error, [error userInfo]);
                 }
             }];
+            
+            self.recordingSecondLabel.text = @"Sent";
+            NSLog(@"msg should be 'sent'");
+            [UIView animateWithDuration:1.0 delay:1.5 options:UIViewAnimationOptionCurveEaseIn animations:^{
+                self.recordingSecondLabel.alpha = 0.0;
+            } completion:^(BOOL finished) {
+                self.recordingSecondLabel.text = @"";
+                self.recordingSecondLabel.alpha = 1.0;
+
+            }];
+
+
         }
         else {
             NSLog(@"Error during save: %@ %@", error, [error userInfo]);
