@@ -144,8 +144,10 @@ NSString* const CONTACTS_KEY = @"contacts";
     NSArray *sectionArray = [self.sections objectForKey:sectionKey];
     NSMutableDictionary *userDictionary = [sectionArray objectAtIndex:indexPath.row];
     // Update array
-    userDictionary[@"status"] = @"friends";
-
+    NSLog(@"before");
+    [userDictionary setObject:@"friends" forKey:@"status"]; 
+    NSLog(@"after");
+    
     PFQuery *query = [PFQuery queryWithClassName:@"Friend"];
     
     NSLog(@"%@", userDictionary);
@@ -258,40 +260,49 @@ NSString* const CONTACTS_KEY = @"contacts";
 //                    NSLog(@"%@", from);
                     if ([me.objectId isEqualToString:to.objectId]) {
                         if ([friend[@"status"] isEqualToString:@"pending"]) {
-                            NSDictionary *userDictionary = @{ @"objectId" : friend.objectId,
+                            NSDictionary *tmpDictionary = @{ @"objectId" : friend.objectId,
                                                               @"username" : from.username,
                                                               @"userId" :   from.objectId,
                                                               @"displayName" : from[@"displayName"] ? from[@"displayName"] : from[@"username"],
                                                               @"status" : @"accept request"
                                                               };
+                            NSMutableDictionary *userDictionary = [NSMutableDictionary dictionaryWithDictionary:tmpDictionary];
+                        
+                            
                             [self.contacts addObject:userDictionary];
                         } else {
-                            NSDictionary *userDictionary = @{ @"objectId" : friend.objectId,
+                            NSDictionary *tmpDictionary = @{ @"objectId" : friend.objectId,
                                                               @"username" : from.username,
                                                               @"userId" :   from.objectId,
                                                               @"displayName" : from[@"displayName"] ? from[@"displayName"] : from[@"username"],
                                                               @"status" : @"friends"
                                                               };
+                            NSMutableDictionary *userDictionary = [NSMutableDictionary dictionaryWithDictionary:tmpDictionary];
+
                             [self.contacts addObject:userDictionary];
                         }
                     } else {
 //                        NSLog(@"from id matches");
                         if ([friend[@"status"] isEqualToString:@"pending"]) {
 //                            NSLog((@"status from id pending"));
-                            NSDictionary *userDictionary = @{ @"objectId" : friend.objectId,
+                            NSDictionary *tmpDictionary = @{ @"objectId" : friend.objectId,
                                                               @"username" : to.username,
                                                               @"userId" :   to.objectId,
                                                               @"displayName" : to[@"displayName"] ? to[@"displayName"] : to[@"username"],
                                                               @"status" : @"request sent"
                                                               };
+                            NSMutableDictionary *userDictionary = [NSMutableDictionary dictionaryWithDictionary:tmpDictionary];
+
                             [self.contacts addObject:userDictionary];
                         } else {
-                            NSDictionary *userDictionary = @{ @"objectId" : friend.objectId,
+                            NSDictionary *tmpDictionary = @{ @"objectId" : friend.objectId,
                                                               @"username" : to.username,
                                                               @"userId" :   to.objectId,
                                                               @"displayName" : to[@"displayName"] ? to[@"displayName"] : to[@"username"],
                                                               @"status" : @"friends"
                                                               };
+                            NSMutableDictionary *userDictionary = [NSMutableDictionary dictionaryWithDictionary:tmpDictionary];
+
                             [self.contacts addObject:userDictionary];
                         }
                     }
